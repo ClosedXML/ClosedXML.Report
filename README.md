@@ -13,3 +13,6 @@ Furthermore, ClosedXML.Report doesn’t operate with the usual concepts of band-
 and Detail. So you get a much greater degree of freedom in report construction and design, and the easiest possible integration of .NET and Microsoft Excel. 
 
 # How to use?
+![template1](https://user-images.githubusercontent.com/1150085/33486458-3161eb92-d6bb-11e7-8833-d500461b18a5.png)
+![code1](https://user-images.githubusercontent.com/1150085/33486459-3181932a-d6bb-11e7-8696-59845cd1c8f9.png)
+![result1](https://user-images.githubusercontent.com/1150085/33486460-31a02542-d6bb-11e7-8899-8694157ee9dd.png)
