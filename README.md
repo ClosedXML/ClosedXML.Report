@@ -44,7 +44,24 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 
 **Code**
 
-![code1](https://user-images.githubusercontent.com/1150085/33486459-3181932a-d6bb-11e7-8696-59845cd1c8f9.png)
+    protected void Report()
+    {
+        const string outputFile = @".\Output\report.xlsx";
+        var workbook = new XLWorkbook(@".\Templates\report.xlsx");
+        var template = new XLTemplate(workbook);
+
+        using (var db = new DbDemos())
+        {
+            var cust = db.customers.LoadWith(c => c.Orders).First();
+            template.AddVariable(cust);
+            template.Generate();
+        }
+
+        workbook.SaveAs(outputFile);
+
+        //Show report
+        Process.Start(new ProcessStartInfo(outputFile) { UseShellExecute = true });
+    }
 
 **Result**
 
