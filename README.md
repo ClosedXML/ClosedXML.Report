@@ -12,7 +12,7 @@ to master such a versatile tool as Excel – ClosedXML.Report is an excellent ch
 Furthermore, ClosedXML.Report doesn’t operate with the usual concepts of band-oriented report tools: Footer, Header,
 and Detail. So you get a much greater degree of freedom in report construction and design, and the easiest possible integration of .NET and Microsoft Excel. 
 
-### Install ClosedXML via NuGet
+### Install ClosedXML.Report via NuGet
 
 If you want to include ClosedXML.Report in your project, you can [install it directly from NuGet](https://www.nuget.org/packages/ClosedXML.Report/)
 
