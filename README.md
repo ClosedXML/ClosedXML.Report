@@ -44,6 +44,7 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 
 **Code**
 
+```c#
     protected void Report()
     {
         const string outputFile = @".\Output\report.xlsx";
@@ -62,7 +63,10 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
         //Show report
         Process.Start(new ProcessStartInfo(outputFile) { UseShellExecute = true });
     }
+```
 
 **Result**
 
 ![result1](https://user-images.githubusercontent.com/1150085/33486460-31a02542-d6bb-11e7-8899-8694157ee9dd.png)
+
+[For more information see the wiki](https://github.com/closedxml/closedxml.report/wiki) and [tests](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
