@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -219,6 +220,13 @@ namespace ClosedXML.Report.Excel
             method.Invoke(sheet, new object[0]);
         }
 
+        public static void Consolidate(this IXLConditionalFormats formats)
+        {
+            var type = formats.GetType();
+            var method = type.GetMethod("Consolidate", BindingFlags.Instance | BindingFlags.NonPublic);
+            method.Invoke(formats, new object[0]);
+        }
+
         public static void ResumeEvents(this IXLWorksheet sheet)
         {
             var type = sheet.GetType();
@@ -247,7 +255,7 @@ namespace ClosedXML.Report.Excel
 
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
-            var frmtRng = format.Range.Relative(fromRange, toRange);
+            var frmtRng = Intersection(format.Range, fromRange).Relative(fromRange, toRange);
             if (expand && toRange.RangeAddress.RowCount() != format.Range.RowCount())
                 frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount()).Unsubscribed();
             var newFrmt = frmtRng.AddConditionalFormat();
@@ -265,6 +273,19 @@ namespace ClosedXML.Report.Excel
                 }
 
                 newFrmt.Values[v.Key] = new XLFormula((v.Value.IsFormula ? "=" : "") + f);
+            }
+        }
+
+        internal static IXLRangeBase Intersection(IXLRangeBase range, IXLRangeBase crop)
+        {
+            var sheet = range.Worksheet;
+            using (var xlRange = sheet.Range(
+                Math.Max(range.RangeAddress.FirstAddress.RowNumber, crop.RangeAddress.FirstAddress.RowNumber),
+                Math.Max(range.RangeAddress.FirstAddress.ColumnNumber, crop.RangeAddress.FirstAddress.ColumnNumber),
+                Math.Min(range.RangeAddress.LastAddress.RowNumber, crop.RangeAddress.LastAddress.RowNumber),
+                Math.Min(range.RangeAddress.LastAddress.ColumnNumber, crop.RangeAddress.LastAddress.ColumnNumber)))
+            {
+                return sheet.Range(xlRange.RangeAddress);
             }
         }
 

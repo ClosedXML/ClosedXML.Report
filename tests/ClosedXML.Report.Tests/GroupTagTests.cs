@@ -90,28 +90,5 @@ namespace ClosedXML.Report.Tests
                     CompareWithGauge(wb, "tLists2_sum.xlsx");
                 });
         }
-
-        [Fact]
-        public void TestName()
-        {
-            var fileName = Path.Combine(TestConstants.GaugesFolder, "Subranges_Simple_tMD1.xlsx");
-            var workbook = new XLWorkbook(fileName);
-            _output.WriteLine(DateTime.Now.ToLongTimeString());
-            var srcSheet = workbook.Worksheet(1);
-
-            srcSheet.Row(8).InsertRowsAbove(1);
-
-            var dstSheet = workbook.AddWorksheet("Copy");
-
-            for (int i = 0; i < 147; i++)
-            {
-                var srcRng = srcSheet.Range(i * 10 + 1, 1, i * 10 + 10, 9);
-                var dstRng = dstSheet.Cell(i * 10 + 1, 1);
-                srcRng.CopyTo(dstRng);
-            }
-            _output.WriteLine(DateTime.Now.ToLongTimeString());
-
-            workbook.SaveAs(Path.Combine(TestConstants.GaugesFolder, "bigcopy.xlsx"));
-        }
     }
 }

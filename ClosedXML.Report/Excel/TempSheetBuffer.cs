@@ -134,7 +134,7 @@ namespace ClosedXML.Report.Excel
 
         public void Dispose()
         {
-            //_wb.Worksheets.Delete(SheetName);
+            _wb.Worksheets.Delete(SheetName);
         }
     }
 }
