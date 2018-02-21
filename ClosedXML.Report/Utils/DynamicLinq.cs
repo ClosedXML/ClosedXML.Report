@@ -1714,7 +1714,13 @@ namespace ClosedXML.Report.Utils
             else
             {
                 MethodBase mb;
-                switch (FindIndexer(expr.Type, args, out mb))
+                var type = expr.Type;
+                if (type == typeof(object))
+                {
+                    type = typeof(IDictionary<string, object>);
+                    expr = Expression.Convert(expr, type);
+                }
+                switch (FindIndexer(type, args, out mb))
                 {
                     case 0:
                         throw ParseError(errorPos, Res.NoApplicableIndexer,
