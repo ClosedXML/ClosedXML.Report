@@ -120,7 +120,7 @@ namespace ClosedXML.Report.Excel
                 .ForEach(g =>
                 {
                     g.HeaderRow = _range.Row(g.Range.RangeAddress.FirstAddress.RowNumber - _range.RangeAddress.FirstAddress.RowNumber);
-                    g.HeaderRow.Clear(XLClearOptions.Contents);
+                    g.HeaderRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
                     g.HeaderRow.Cell(column).Value = g.GroupTitle;
                 });
 
@@ -149,10 +149,11 @@ namespace ClosedXML.Report.Excel
             {
                 if (row.IsSummary())
                 {
-                    Sheet.Row(row.RowNumber()).Delete();
-                    row = row.Unsubscribed().RowAbove();
+                    var rowNumber = row.RowNumber();
+                    row = row.RowAbove();
+                    Sheet.Row(rowNumber).Delete();
                 }
-                row = row.Unsubscribed().RowBelow();
+                row = row.RowBelow();
             }
             row.Dispose();
         }
@@ -255,7 +256,7 @@ namespace ClosedXML.Report.Excel
                 summRow.CopyStylesFrom(fr);
             }
 
-            summRow.Clear(XLClearOptions.Contents);
+            summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
             summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " Итог";
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
 

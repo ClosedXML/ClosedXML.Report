@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using FluentAssertions;
@@ -25,6 +27,8 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void OnlyValues_option_should_remove_formulas_on_sheet()
         {
+            //TODO make tests culture-independent
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             XlTemplateTest("5_options.xlsx",
                 tpl => { },
                 wb =>

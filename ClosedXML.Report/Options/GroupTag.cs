@@ -128,7 +128,7 @@ namespace ClosedXML.Report.Options
         {
             if (subGroup.HeaderRow != null)
             {
-                subGroup.HeaderRow.Clear(XLClearOptions.Formats);
+                subGroup.HeaderRow.Clear(XLClearOptions.AllFormats);
                 subGroup.HeaderRow.CopyStylesFrom(groupRow);
                 subGroup.HeaderRow.CopyConditionalFormatsFrom(groupRow);
 
@@ -137,7 +137,7 @@ namespace ClosedXML.Report.Options
             {
                 subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell;
             }
-            subGroup.SummaryRow.Clear(XLClearOptions.Formats);
+            subGroup.SummaryRow.Clear(XLClearOptions.AllFormats);
             subGroup.SummaryRow.CopyStylesFrom(groupRow);
             subGroup.SummaryRow.CopyConditionalFormatsFrom(groupRow);
         }
@@ -168,7 +168,7 @@ namespace ClosedXML.Report.Options
             {
                 using (var rng = subGroup.Range.Column(subGroup.Column))
                 {
-                    rng.Cell(1).Clear(XLClearOptions.Formats);
+                    rng.Cell(1).Clear(XLClearOptions.AllFormats);
                     rng.Cell(1).AsRange().Unsubscribed().CopyStylesFrom(rng.FirstCellUsed(false).AsRange().Unsubscribed());
                     rng.Cell(1).AsRange().Unsubscribed().CopyConditionalFormatsFrom(rng.FirstCellUsed(false).AsRange().Unsubscribed());
                     rng.Merge();

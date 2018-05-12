@@ -2,7 +2,7 @@
 {
     public class TestConstants
     {
-        public const string TemplatesFolder = "..\\..\\..\\Templates";
-        public const string GaugesFolder = "..\\..\\..\\Gauges";
+        public const string TemplatesFolder = @"..\..\..\..\Templates";
+        public const string GaugesFolder = @"..\..\..\..\Gauges";
     }
 }
