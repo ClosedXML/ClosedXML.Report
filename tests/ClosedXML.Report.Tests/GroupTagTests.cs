@@ -32,6 +32,8 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
+                    using (var ms = new MemoryStream())
+                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
                     //wb.SaveAs("GroupTagTests_Simple.xlsx");
                     CompareWithGauge(wb, "GroupTagTests_Simple.xlsx");
                 });
@@ -51,6 +53,8 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
+                    using (var ms = new MemoryStream())
+                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
                     //wb.SaveAs("GroupTagTests_Collapse.xlsx");
                     CompareWithGauge(wb, "GroupTagTests_Collapse.xlsx");
                 });
@@ -67,7 +71,9 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    wb.SaveAs("GroupTagTests_WithHeader.xlsx");
+                    using (var ms = new MemoryStream())
+                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
+                    //wb.SaveAs("GroupTagTests_WithHeader.xlsx");
                     CompareWithGauge(wb, "GroupTagTests_WithHeader.xlsx");
                 });
         }
@@ -86,6 +92,8 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
+                    using (var ms = new MemoryStream())
+                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
                     //wb.SaveAs("tLists2_sum.xlsx");
                     CompareWithGauge(wb, "tLists2_sum.xlsx");
                 });
@@ -110,8 +118,7 @@ namespace ClosedXML.Report.Tests
                 srcRng.CopyTo(dstRng);
             }
             _output.WriteLine(DateTime.Now.ToLongTimeString());
-
-            workbook.SaveAs(Path.Combine(TestConstants.GaugesFolder, "bigcopy.xlsx"));
+            //workbook.SaveAs(Path.Combine(TestConstants.GaugesFolder, "bigcopy.xlsx"));
         }
     }
 }

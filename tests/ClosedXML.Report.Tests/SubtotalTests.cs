@@ -28,7 +28,7 @@ namespace ClosedXML.Report.Tests
             LoadTemplate("9_plaindata.xlsx");
             _rng.Subtotal(2, "sum", new[] { 5, 7 });
             _rng.Subtotal(3, "sum", new[] { 5, 7 }, false);
-            //_workbook.SaveAs("out.xlsx");
+            //_workbook.SaveAs("XlExtensions_Subtotals.xlsx");
             CompareWithGauge(_workbook, "XlExtensions_Subtotals.xlsx");
         }
 
@@ -38,7 +38,7 @@ namespace ClosedXML.Report.Tests
             LoadTemplate("9_plaindata.xlsx");
             _rng.Subtotal(2, "sum", new[] { 5, 7 });
             _rng.Subtotal(3, "sum", new[] { 5, 7 });
-//            _workbook.SaveAs("out.xlsx");
+            //_workbook.SaveAs("XlExtensions_SubtotalsReplace.xlsx");
             CompareWithGauge(_workbook, "XlExtensions_SubtotalsReplace.xlsx");
         }
 

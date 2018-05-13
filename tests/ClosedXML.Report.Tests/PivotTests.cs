@@ -15,7 +15,7 @@ namespace ClosedXML.Report.Tests
         {
         }
 
-        [Fact]
+        [Fact(Skip = "Pivot support is limited")]
         public void Simple()
         {
             XlTemplateTest("tPivot1.xlsx",
@@ -30,12 +30,12 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    wb.SaveAs("tPivot1.xlsx");
+                    //wb.SaveAs("tPivot1.xlsx");
                     CompareWithGauge(wb, "tPivot1.xlsx");
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Pivot support is limited")]
         public void Static()
         {
             XlTemplateTest("tPivot5_Static.xlsx",
@@ -50,12 +50,12 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    wb.SaveAs("tPivot5_Static.xlsx");
+                    //wb.SaveAs("tPivot5_Static.xlsx");
                     CompareWithGauge(wb, "tPivot5_Static.xlsx");
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Pivot support is limited")]
         public void CreatePivot()
         {
             using (var db = new DbDemos())

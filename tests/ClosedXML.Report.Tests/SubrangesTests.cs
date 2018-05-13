@@ -71,7 +71,7 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    wb.SaveAs("Subranges_WithSubtotals_tMD2.xlsx");
+                    //wb.SaveAs("Subranges_WithSubtotals_tMD2.xlsx");
                     CompareWithGauge(wb, "Subranges_WithSubtotals_tMD2.xlsx");
                 });
         }

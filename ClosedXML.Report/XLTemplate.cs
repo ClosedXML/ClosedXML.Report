@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
+using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 
 namespace ClosedXML.Report
@@ -55,7 +56,9 @@ namespace ClosedXML.Report
         {
             foreach (var ws in _workbook.Worksheets.Where(sh => sh.Visibility == XLWorksheetVisibility.Visible && !sh.PivotTables.Any()).ToArray())
             {
+                ws.ReplaceCFFormulaeToR1C1();
                 _interpreter.Evaluate(ws.AsRange());
+                ws.ReplaceCFFormulaeToA1();
             }
         }
 

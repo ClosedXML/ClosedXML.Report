@@ -252,20 +252,6 @@ namespace ClosedXML.Report.Excel
                 frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount()).Unsubscribed();
             var newFrmt = frmtRng.AddConditionalFormat();
             newFrmt.CopyFrom(format);
-
-            var source = format.Range.FirstCell();
-            var target = frmtRng.FirstCell();
-            foreach (var v in newFrmt.Values.ToList())
-            {
-                var f = v.Value.Value;
-                if (v.Value.IsFormula)
-                {
-                    var r1c1 = source.GetFormulaR1C1(f);
-                    f = target.GetFormulaA1(r1c1);
-                }
-
-                newFrmt.Values[v.Key] = new XLFormula((v.Value.IsFormula ? "=" : "") + f);
-            }
         }
 
         internal static void CopyConditionalFormatsFrom(this IXLRangeBase targetRange, IXLRangeBase srcRange)
@@ -308,6 +294,37 @@ namespace ClosedXML.Report.Excel
             var calcEngine = wsType.GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(worksheet);
             calcEngine.GetType().GetProperty("CacheExpressions").SetValue(calcEngine, value);
         }
+
+        /* ClosedXML issue #686 */
+        public static void ReplaceCFFormulaeToR1C1(this IXLWorksheet worksheet)
+        {
+            foreach (var format in worksheet.ConditionalFormats)
+            {
+                var source = format.Range.FirstCell();
+                foreach (var v in format.Values.Where(v => v.Value.IsFormula).ToList())
+                {
+                    var f = v.Value.Value;
+                    var r1c1 = source.GetFormulaR1C1(f);
+                    format.Values[v.Key] = new XLFormula("&=" + r1c1);
+                }
+            }
+        }
+
+        /* ClosedXML issue #686 */
+        public static void ReplaceCFFormulaeToA1(this IXLWorksheet worksheet)
+        {
+            foreach (var format in worksheet.ConditionalFormats)
+            {
+                var target = format.Range.FirstCell();
+                foreach (var v in format.Values.Where(v => v.Value.Value.StartsWith("&=")).ToList())
+                {
+                    var f = v.Value.Value.Substring(1);
+                    var a1 = target.GetFormulaA1(f);
+                    format.Values[v.Key] = new XLFormula(a1);
+                }
+            }
+        }
+
     }
 
     public enum XlCopyType
