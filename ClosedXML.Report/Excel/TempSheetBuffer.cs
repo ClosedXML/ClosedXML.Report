@@ -36,7 +36,7 @@ namespace ClosedXML.Report.Excel
                     _sheet = _wb.AddWorksheet(SheetName);
                     _sheet.SetCalcEngineCacheExpressions(false);
                 }
-                _sheet.Visibility = XLWorksheetVisibility.VeryHidden;
+                //_sheet.Visibility = XLWorksheetVisibility.VeryHidden;
             }
             _row = 1;
             _clmn = 1;
@@ -92,7 +92,7 @@ namespace ClosedXML.Report.Excel
 
         public IXLRange CopyTo(IXLRange range)
         {
-            var tempRng = _sheet.Range(_sheet.Cell(1, 1), _sheet.Cell(_maxRow, _maxClmn)); //_sheet.Cell(_prevrow, _prevclmn));
+            var tempRng = _sheet.Range(_sheet.Cell(1, 1), _sheet.LastCellUsed()); //_sheet.Cell(_prevrow, _prevclmn));
 
             range.InsertRowsBelow(tempRng.RowCount() - range.RowCount(), true);
             range.InsertColumnsAfter(tempRng.ColumnCount() - range.ColumnCount(), true);

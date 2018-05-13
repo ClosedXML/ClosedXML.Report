@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using ClosedXML.Report.Utils;
 using FluentAssertions;
 using Xunit;
@@ -95,6 +96,8 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void ReadDateTimeTest()
         {
+            //TODO make tests culture-independent
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             var reader = new VernoStringReader("My birthday is 28.12.1979 (Дек 15, old style)", CultureInfo.GetCultureInfo("ru-RU"));
             reader.ReadTo("s");
             reader.ReadDateTime().Should().Be(DateTime.Parse("28.12.1979"));
