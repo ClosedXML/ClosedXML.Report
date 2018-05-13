@@ -1,26 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props" Condition="Exists('..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D529A371-3AEA-4D02-9A0D-308A6276D411}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClosedXML.Report.Tests</RootNamespace>
-    <AssemblyName>ClosedXML.Report.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>c47a47d5</NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
+    <TargetFrameworks>net45</TargetFrameworks>
+    <LangVersion>7.1</LangVersion>
+    <Configurations>Debug;Release;</Configurations>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -35,136 +32,49 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release 4.6|AnyCPU'">
-    <OutputPath>bin\Release 4.6\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D529A371-3AEA-4D02-9A0D-308A6276D411}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ClosedXML.Report.Tests</RootNamespace>
+    <AssemblyName>ClosedXML.Report.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>c47a47d5</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release 3.5|AnyCPU'">
-    <OutputPath>bin\Release 3.5\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+  <Import Project="..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props" Condition="Exists('..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props')" />
+  <PropertyGroup />
   <ItemGroup>
-    <Reference Include="dotMemory.Unit, Version=103.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\JetBrains.dotMemoryUnit.2.3.20160517.113140\lib\dotMemory.Unit.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FluentAssertions, Version=4.18.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.18.0\lib\net45\FluentAssertions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.18.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.18.0\lib\net45\FluentAssertions.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="JetBrains.Profiler.Windows.Api">
-      <HintPath>C:\Users\b0bi\AppData\Local\JetBrains\Installations\dotMemory07\JetBrains.Profiler.Windows.Api.dll</HintPath>
-    </Reference>
-    <Reference Include="linq2db, Version=1.0.7.1, Culture=neutral, PublicKeyToken=f19f8aed7feff67e, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\linq2db.1.0.7.1\lib\net45\linq2db.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NSubstitute, Version=1.10.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NSubstitute.1.10.0.0\lib\net45\NSubstitute.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.assert, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.assert.2.1.0\lib\portable-net45+win8+wp8+wpa81\xunit.assert.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.core, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.core.2.1.0\lib\portable-net45+win8+wp8+wpa81\xunit.core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.execution.desktop, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Compile Remove="FiledBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbContextTests.cs" />
-    <Compile Include="FormulaEvaluatorTests.cs" />
-    <Compile Include="GroupTagTests.cs" />
-    <Compile Include="PivotTests.cs" />
-    <Compile Include="RangeInterpreterTests.cs" />
-    <Compile Include="ReportOptionsTests.cs" />
-    <Compile Include="SubrangesTests.cs" />
-    <Compile Include="SubtotalTests.cs" />
-    <Compile Include="SubtotalSummaryFuncTests.cs" />
-    <Compile Include="TagsListTests.cs" />
-    <Compile Include="TestModels\Customer.cs" />
-    <Compile Include="TestModels\DbDemos.cs" />
-    <Compile Include="TestModels\Order.cs" />
-    <Compile Include="TestModels\item.cs" />
-    <Compile Include="Utils\ExcelDocsComparer.cs" />
-    <Compile Include="Utils\PackageHelper.cs" />
-    <Compile Include="Utils\ResourceFileExtractor.cs" />
-    <Compile Include="Utils\StreamHelper.cs" />
-    <Compile Include="VernoStringReaderTests.cs" />
-    <Compile Include="TestConstants.cs" />
-    <Compile Include="TestModels\Address.cs" />
-    <Compile Include="TestModels\TestEntity.cs" />
-    <Compile Include="XlExtensionsTests.cs" />
-    <Compile Include="XlsxTemplateTestsBase.cs" />
-    <Compile Include="XlTemplateTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\..\ClosedXML.Report\ClosedXML.Report.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.92.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.7.2" />
+    <PackageReference Include="FluentAssertions" Version="4.18.0" />
+    <PackageReference Include="linq2db" Version="1.0.7.1" />
+    <PackageReference Include="linq2db.Access" Version="1.7.6" />
+    <PackageReference Include="linq2db.t4models" Version="1.0.7.1" />
+    <PackageReference Include="NSubstitute" Version="1.10.0.0" />
+    <PackageReference Include="xunit" Version="2.1.0" />
+    <PackageReference Include="xunit.abstractions" Version="2.0.0" />
+    <PackageReference Include="xunit.assert" Version="2.1.0" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\asr\ClosedXML\ClosedXML\ClosedXML.csproj">
-      <Project>{bd5e6bfe-e837-4a35-bca9-39667d873a20}</Project>
-      <Name>ClosedXML</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ClosedXML.Report\ClosedXML.Report.csproj">
-      <Project>{def4a219-d1cf-42a2-a5ac-fe7f2f005ab0}</Project>
-      <Name>ClosedXML.Report</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

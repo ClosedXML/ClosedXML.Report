@@ -72,30 +72,107 @@ namespace ClosedXML.Report.Tests
             //MemoryProfiler.Dump();
         }
 
-        protected void CompareWithGauge(Stream streamActual, string fileExpected)
+        protected void CompareWithGauge(XLWorkbook actual, string fileExpected)
         {
             fileExpected = Path.Combine(TestConstants.GaugesFolder, fileExpected);
-            using (var streamExpected = File.OpenRead(fileExpected))
+            using (var expected = new XLWorkbook(fileExpected))
             {
-                string message;
-                var success = ExcelDocsComparer.Compare(streamActual, streamExpected, IsRunningOnUnix, out message);
-                var formattedMessage =
-                    String.Format(
-                        "Found difference from the expected file '{0}'. The difference is: '{1}'",
-                        fileExpected, message);
+                actual.Worksheets.Count.ShouldBeEquivalentTo(expected.Worksheets.Count, $"Count of worksheets must be {expected.Worksheets.Count}");
 
-                success.Should().BeTrue(formattedMessage);
+                for (int i = 0; i < actual.Worksheets.Count; i++)
+                {
+                    WorksheetsAreEqual(expected.Worksheets.ElementAt(i), actual.Worksheets.ElementAt(i), out var messages)
+                        .Should().BeTrue(string.Join("," + Environment.NewLine, messages));
+                }
             }
         }
 
-        protected void CompareWithGauge(XLWorkbook workbook, string fileExpected)
+        protected bool WorksheetsAreEqual(IXLWorksheet expected, IXLWorksheet actual, out IList<string> messages)
         {
-            using (var stream = new MemoryStream())
+            messages = new List<string>();
+
+            if (expected.Name != actual.Name)
+                messages.Add("Worksheet names differ");
+
+            if (expected.RangeUsed().RangeAddress.ToString() != actual.RangeUsed().RangeAddress.ToString())
+                messages.Add("Used ranges differ");
+
+            if (expected.Style.ToString() != actual.Style.ToString())
+                messages.Add("Worksheet styles differ");
+
+            foreach (var expectedCell in expected.CellsUsed())
             {
-                workbook.SaveAs(stream, true);
-                stream.Position = 0;
-                CompareWithGauge(stream, fileExpected);
+                var actualCell = actual.Cell(expectedCell.Address);
+                bool cellsAreEqual = true;
+
+                if (actualCell.Value?.ToString() != expectedCell.Value?.ToString())
+                {
+                    messages.Add($"Cell values are not equal starting from {actualCell.Address}");
+                    cellsAreEqual = false;
+                }
+
+                if (!string.Equals(actualCell.FormulaA1, expectedCell.FormulaA1, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    messages.Add($"Cell formulae are not equal starting from {actualCell.Address}");
+                    cellsAreEqual = false;
+                }
+
+                if (actualCell.DataType != expectedCell.DataType)
+                {
+                    messages.Add($"Cell data types are not equal starting from {actualCell.Address}");
+                    cellsAreEqual = false;
+                }
+
+                if (expectedCell.Style.ToString() != actualCell.Style.ToString())
+                {
+                    messages.Add($"Cell style are not equal starting from {actualCell.Address}");
+                    cellsAreEqual = false;
+                }
+
+                if (!cellsAreEqual)
+                    break; // we don't need thousands of messages
             }
+
+            if (expected.MergedRanges.Count() != actual.MergedRanges.Count())
+                messages.Add("Merged ranges counts differ");
+            else
+            {
+                var expectedRanges = expected.MergedRanges
+                    .OrderBy(r => r.RangeAddress.FirstAddress.ColumnNumber)
+                    .ThenBy(r => r.RangeAddress.FirstAddress.RowNumber)
+                    .ToList();
+                var actualRanges = actual.MergedRanges
+                    .OrderBy(r => r.RangeAddress.FirstAddress.ColumnNumber)
+                    .ThenBy(r => r.RangeAddress.FirstAddress.RowNumber)
+                    .ToList();
+                for (int i = 0; i < expectedRanges.Count(); i++)
+                {
+                    var expectedMr = expectedRanges.ElementAt(i);
+                    var actualMr = actualRanges.ElementAt(i);
+                    if (expectedMr.RangeAddress.ToString() != actualMr.RangeAddress.ToString())
+                    {
+                        messages.Add($"Merged ranges differ starting from {expectedMr.RangeAddress}");
+                        break;
+                    }
+                }
+            }
+
+            if (expected.ConditionalFormats.Count() != actual.ConditionalFormats.Count())
+                messages.Add("Conditional format counts differ");
+
+            for (int i = 0; i < expected.ConditionalFormats.Count(); i++)
+            {
+                var expectedCf = expected.ConditionalFormats.ElementAt(i);
+                var actualCf = actual.ConditionalFormats.ElementAt(i);
+
+                if (expectedCf.Range.RangeAddress.ToString() != actualCf.Range.RangeAddress.ToString())
+                    messages.Add($"Conditional formats at index {i} have different ranges");
+
+                if (expectedCf.Style.ToString() != actualCf.Style.ToString())
+                    messages.Add($"Conditional formats at index {i} have different styles");
+            }
+
+            return !messages.Any();
         }
     }
 }
