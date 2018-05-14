@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
     <LangVersion>7.1</LangVersion>
-    <Configurations>Debug;Release;</Configurations>
+    <Configurations>Debug;Release;Release.Signed</Configurations>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
@@ -31,6 +31,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Signed|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release.Signed\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
+    <DefineConstants>$(DefineConstants);STRONGNAME</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
