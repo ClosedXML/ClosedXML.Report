@@ -5,19 +5,21 @@ pull_requests:
 
 image: Visual Studio 2017
 
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-
 configuration:
 - Release
 - Release.Signed
 
 environment:
   AppVeyor: APPVEYOR
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
 
 before_build:
   - ps: if (Test-Path 'C:\Tools\NuGet43') { $nugetDir = 'C:\Tools\NuGet43' } else { $nugetDir = 'C:\Tools\NuGet' }

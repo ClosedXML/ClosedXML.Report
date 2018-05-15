@@ -3,14 +3,6 @@
     <TargetFrameworks>net45</TargetFrameworks>
     <LangVersion>7.1</LangVersion>
     <Configurations>Debug;Release;Release.Signed</Configurations>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <PackageLicenseUrl>https://github.com/ClosedXML/ClosedXML.Report/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>

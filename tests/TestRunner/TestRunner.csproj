@@ -4,14 +4,14 @@
     <LangVersion>7.1</LangVersion>
     <Configurations>Debug;Release;Release.Signed</Configurations>
     <OutputType>Exe</OutputType>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <PackageLicenseUrl>https://github.com/ClosedXML/ClosedXML.Report/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Alexey Rozhkov</Authors>
+    <Copyright>MIT</Copyright>
+    <Version>0.1.0.0</Version>
+    <Product>ClosedXML.Report.TestRunner</Product>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
