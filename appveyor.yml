@@ -1,0 +1,32 @@
+version: 0.1.0.{build}
+
+pull_requests:
+  do_not_increment_build_number: true
+
+image: Visual Studio 2017
+
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+
+configuration:
+- Release
+- Release.Signed
+
+environment:
+  AppVeyor: APPVEYOR
+
+before_build:
+  - ps: if (Test-Path 'C:\Tools\NuGet43') { $nugetDir = 'C:\Tools\NuGet43' } else { $nugetDir = 'C:\Tools\NuGet' }
+  - ps: (New-Object Net.WebClient).DownloadFile('https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe', "$nugetDir\NuGet.exe")
+  - cmd: nuget update -self
+  - nuget restore
+
+build:
+  verbosity: minimal
+
+artifacts:
+- path: ClosedXML.Report/bin/%CONFIGURATION%/net45/ClosedXML.Report.dll

@@ -1,4 +1,7 @@
 # ClosedXML.Report
+[![Build status](https://ci.appveyor.com/api/projects/status/y2ha69ggalbj1y47/branch/develop?svg=true)](https://ci.appveyor.com/project/ClosedXML/closedxml-report/branch/develop/artifacts)
+
+
 ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel.
 ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code. 
 
