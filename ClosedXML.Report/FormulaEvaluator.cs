@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
-using DynamicExpression = ClosedXML.Report.Utils.DynamicExpression;
-
-//using DynamicExpresso;
 
 namespace ClosedXML.Report
 {
@@ -57,7 +55,7 @@ namespace ClosedXML.Report
             if (!_lambdaCache.TryGetValue(expression, out lambda))
             {
                 var parameters = pars.Select(p=>p.ParameterExpression).ToArray();
-                lambda = DynamicExpression.ParseLambda(parameters, typeof(object), expression, _variables).Compile();
+                lambda = DynamicExpressionParser.ParseLambda(parameters, typeof(object), expression, _variables).Compile();
 
                 _lambdaCache.Add(expression, lambda);
             }

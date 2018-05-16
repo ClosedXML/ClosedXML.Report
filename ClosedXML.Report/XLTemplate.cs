@@ -68,7 +68,7 @@ namespace ClosedXML.Report
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
                 .Select(f => new { f.Name, val = f.GetValue(value), type = f.FieldType })
                 .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
-                    .Select(f => new { f.Name, val = f.GetValue(value), type = f.PropertyType }));
+                    .Select(f => new { f.Name, val = f.GetValue(value, new object[] { }), type = f.PropertyType }));
 
             foreach (var field in fields)
             {

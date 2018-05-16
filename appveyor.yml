@@ -28,4 +28,10 @@ build:
   verbosity: minimal
 
 artifacts:
-- path: ClosedXML.Report/bin/%CONFIGURATION%/net45/ClosedXML.Report.dll
+- path: ClosedXML.Report/bin/%CONFIGURATION%/netstandard2.0/ClosedXML.Report.dll
+- path: ClosedXML.Report/bin/%CONFIGURATION%/net40/ClosedXML.Report.dll
+- path: ClosedXML.Report/bin/%CONFIGURATION%/net46/ClosedXML.Report.dll
+
+- path: ClosedXML.Report/bin/%CONFIGURATION%/netstandard2.0/ClosedXML.Report.dll
+- path: ClosedXML.Report/bin/%CONFIGURATION%/net40/ClosedXML.Report.dll
+- path: ClosedXML.Report/bin/%CONFIGURATION%/net46/ClosedXML.Report.dll

@@ -1,8 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using ClosedXML.Report.Excel;
-using DynamicExpression = ClosedXML.Report.Utils.DynamicExpression;
-
-//using DynamicExpresso;
 
 namespace ClosedXML.Report.Options
 {
@@ -43,7 +41,7 @@ namespace ClosedXML.Report.Options
                 func.GetExpression = type =>
                 {
                     var par = Expression.Parameter(type, "item");
-                    return DynamicExpression.ParseLambda(new[] {par}, null, GetParameter("Over"));
+                    return DynamicExpressionParser.ParseLambda(new[] {par}, null, GetParameter("Over"));
                 };
             func.DataSource = DataSource;
             return func;

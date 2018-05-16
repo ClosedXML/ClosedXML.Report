@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using FluentAssertions;
 using Xunit;
-using DynamicExpression = ClosedXML.Report.Utils.DynamicExpression;
 
 namespace ClosedXML.Report.Tests
 {
@@ -30,8 +30,8 @@ namespace ClosedXML.Report.Tests
                 new Customer {Id = 2, Name = "Customer2"}
             }.AsEnumerable();
 
-            string query = "customers.Where(c => (c.Id = 1)).OrderBy(c=>(c.Name)).Select(c=>(c))";
-            var lambda = DynamicExpression.ParseLambda(new [] {Expression.Parameter(customers.GetType(), "customers")}, null, query);
+            string query = "customers.Where(c => c.Id == 1).OrderBy(c=> c.Name)";
+            var lambda = DynamicExpressionParser.ParseLambda(new [] {Expression.Parameter(customers.GetType(), "customers")}, null, query);
             var dlg = lambda.Compile();
             dlg.DynamicInvoke(customers).Should().BeAssignableTo<IEnumerable<Customer>>();
             ((IEnumerable<Customer>) dlg.DynamicInvoke(customers)).Should().HaveCount(1);

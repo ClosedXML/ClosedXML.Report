@@ -5,7 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Utils;
-using DynamicExpression = ClosedXML.Report.Utils.DynamicExpression;
 
 namespace ClosedXML.Report.Excel
 {

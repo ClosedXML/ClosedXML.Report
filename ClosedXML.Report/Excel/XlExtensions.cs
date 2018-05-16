@@ -298,8 +298,8 @@ namespace ClosedXML.Report.Excel
         public static void SetCalcEngineCacheExpressions(this IXLWorksheet worksheet, bool value)
         {
             var wsType = worksheet.GetType();
-            var calcEngine = wsType.GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(worksheet);
-            calcEngine.GetType().GetProperty("CacheExpressions").SetValue(calcEngine, value);
+            var calcEngine = wsType.GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(worksheet, new object[] { });
+            calcEngine.GetType().GetProperty("CacheExpressions").SetValue(calcEngine, value, new object[] { });
         }
 
         /* ClosedXML issue #686 */
