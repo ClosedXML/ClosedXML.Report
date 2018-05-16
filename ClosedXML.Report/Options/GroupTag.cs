@@ -9,6 +9,8 @@
                 "\Disablesubtotals" *
                 "\DisableOutline" *
                 "\PageBreaks" *
+                "\TotalLabel" *
+                "\GrandLabel" *
 -----------------------------------------------------------------------
  */
 
@@ -22,15 +24,17 @@ namespace ClosedXML.Report.Options
 {
     public class GroupTag : SortTag
     {
-        public override byte Priority { get { return 200; } }
+        public override byte Priority => 200;
 
-        public bool PageBreaks { get { return Parameters.ContainsKey("pagebreaks"); } }
-        public bool DisableSubtotals { get { return Parameters.ContainsKey("disablesubtotals"); } }
-        public bool Collapse { get { return Parameters.ContainsKey("collapse"); } }
-        public bool DisableOutLine { get { return Parameters.ContainsKey("disableoutline"); } }
-        public bool OutLine { get { return !Parameters.ContainsKey("disableoutline"); } }
-        public int LabelToColumn { get { return Parameters.ContainsKey("placetocolumn") ? Parameters["placetocolumn"].AsInt(1) : Column; } }
-        public string LabelFormat { get { return Parameters.ContainsKey("labelformat") ? Parameters["labelformat"] : null; } }
+        public bool PageBreaks => Parameters.ContainsKey("pagebreaks");
+        public bool DisableSubtotals => Parameters.ContainsKey("disablesubtotals");
+        public bool Collapse => Parameters.ContainsKey("collapse");
+        public bool DisableOutLine => Parameters.ContainsKey("disableoutline");
+        public bool OutLine => !Parameters.ContainsKey("disableoutline");
+        public int LabelToColumn => Parameters.ContainsKey("placetocolumn") ? Parameters["placetocolumn"].AsInt(1) : Column;
+        public string LabelFormat => Parameters.ContainsKey("labelformat") ? Parameters["labelformat"] : null;
+        public string TotalLabel => Parameters.ContainsKey("totallabel") ? Parameters["totallabel"] : null;
+        public string GrandLabel => Parameters.ContainsKey("grandlabel") ? Parameters["grandlabel"] : null;
         public int Level { get; set; }
 
         private MergeMode? _mergeLabels;
@@ -51,10 +55,7 @@ namespace ClosedXML.Report.Options
         }
 
         private bool? _isWithHeader;
-        public bool IsWithHeader
-        {
-            get { return (bool)(_isWithHeader ?? (_isWithHeader = Parameters.ContainsKey("withheader"))); }
-        }
+        public bool IsWithHeader => (bool)(_isWithHeader ?? (_isWithHeader = Parameters.ContainsKey("withheader")));
 
         public override void Execute(ProcessingContext context)
         {
@@ -88,6 +89,8 @@ namespace ClosedXML.Report.Options
 
             using (var subtotal = new Subtotal(r, summaryAbove))
             {
+                if (TotalLabel != null) subtotal.TotalLabel = TotalLabel;
+                if (GrandLabel != null) subtotal.GrandLabel = GrandLabel;
                 if (!disableGrandTotal)
                 {
                     var total = subtotal.AddGrandTotal(funcs);
