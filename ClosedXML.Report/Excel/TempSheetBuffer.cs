@@ -94,8 +94,28 @@ namespace ClosedXML.Report.Excel
         {
             var tempRng = _sheet.Range(_sheet.Cell(1, 1), _sheet.LastCellUsed()); //_sheet.Cell(_prevrow, _prevclmn));
 
-            range.InsertRowsBelow(tempRng.RowCount() - range.RowCount(), true);
-            range.InsertColumnsAfter(tempRng.ColumnCount() - range.ColumnCount(), true);
+            var rowDiff = tempRng.RowCount() - range.RowCount();
+            if (rowDiff > 0)
+                range.InsertRowsBelow(rowDiff, true);
+            else if (rowDiff < 0)
+                range.Worksheet.Range(
+                    range.LastRow().RowNumber() + 1,
+                    range.FirstColumn().ColumnNumber(),
+                    range.LastRow().RowNumber() + rowDiff,
+                    range.LastColumn().ColumnNumber())
+                .Delete(XLShiftDeletedCells.ShiftCellsUp);
+
+            var columnDiff = tempRng.ColumnCount() - range.ColumnCount();
+            if (columnDiff > 0)
+                range.InsertColumnsAfter(columnDiff, true);
+            else if (columnDiff < 0)
+                range.Worksheet.Range(
+                    range.FirstRow().RowNumber(),
+                    range.FirstColumn().ColumnNumber() + 1,
+                    range.LastRow().RowNumber(),
+                    range.LastColumn().ColumnNumber() + columnDiff)
+                .Delete(XLShiftDeletedCells.ShiftCellsLeft);
+
             tempRng.CopyTo(range.FirstCell());
 
             var tgtSheet = range.Worksheet;
