@@ -1,7 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using FluentAssertions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -149,6 +151,55 @@ namespace ClosedXML.Report.Tests
                     sheet.Cell("H11").GetValue<string>().Should().Be("should stay");
                 }
             );
+        }
+
+        [Fact]
+        public void RowWideRangesProcessedCorrectly()
+        {
+            var workbook = CreateWorkbook();
+            var sheet = workbook.Worksheets.First();
+            var items = GenerateItems();
+
+            sheet.Range("2:3").AddToNamed("Items");
+
+            var template = new XLTemplate(workbook);
+            template.AddVariable("Items", items);
+            template.Generate();
+
+            sheet.Cell("B2").Value.Should().Be("Alice");
+            sheet.Cell("B3").Value.Should().Be("Bob");
+            sheet.Cell("B4").Value.Should().Be("Carl");
+
+            sheet.Cell("C2").Value.Should().Be(20.0);
+            sheet.Cell("C3").Value.Should().Be(30.0);
+            sheet.Cell("C4").Value.Should().Be(38.0);
+
+            sheet.Cell("F2").Value.Should().Be("Placeholder");
+            sheet.Cell("F3").Value.Should().Be("Placeholder");
+            sheet.Cell("F4").Value.Should().Be("Placeholder");
+
+            XLWorkbook CreateWorkbook()
+            {
+                var wb = new XLWorkbook();
+                var ws = wb.AddWorksheet("Sheet1");
+                ws.Cell("B1").Value = "Name";
+                ws.Cell("C1").Value = "Age";
+                ws.Cell("B2").Value = "{{item.Name}}";
+                ws.Cell("C2").Value = "{{item.Age}}";
+
+                ws.Cell("F2").Value = "Placeholder";
+                return wb;
+            }
+
+            IEnumerable<dynamic> GenerateItems()
+            {
+                return new List<dynamic>
+                {
+                    new { Name = "Alice", Age = 20},
+                    new { Name = "Bob", Age = 30},
+                    new { Name = "Carl", Age = 38},
+                };
+            }
         }
     }
 }
