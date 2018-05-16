@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFrameworks>net452</TargetFrameworks>
     <LangVersion>7.1</LangVersion>
     <Configurations>Debug;Release;Release.Signed</Configurations>
     <PackageLicenseUrl>https://github.com/ClosedXML/ClosedXML.Report/blob/master/LICENSE</PackageLicenseUrl>
@@ -11,80 +11,42 @@
     <Copyright>MIT</Copyright>
     <Version>0.1.0.0</Version>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SAVE_OUTPUT;NET45</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Signed|AnyCPU'">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release.Signed'">
     <OutputPath>bin\Release.Signed\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
     <DefineConstants>$(DefineConstants);STRONGNAME</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D529A371-3AEA-4D02-9A0D-308A6276D411}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClosedXML.Report.Tests</RootNamespace>
-    <AssemblyName>ClosedXML.Report.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>c47a47d5</NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <Import Project="..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props" Condition="Exists('..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props')" />
+  
   <ItemGroup>
     <Compile Remove="FiledBuilderTests.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ClosedXML.Report\ClosedXML.Report.csproj" />
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.92.1" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.7.2" />
     <PackageReference Include="FluentAssertions" Version="4.18.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="NSubstitute" Version="1.10.0.0" />
     <PackageReference Include="linq2db" Version="1.0.7.1" />
     <PackageReference Include="linq2db.Access" Version="1.7.6" />
     <PackageReference Include="linq2db.t4models" Version="1.0.7.1" />
-    <PackageReference Include="NSubstitute" Version="1.10.0.0" />
-    <PackageReference Include="xunit" Version="2.1.0" />
-    <PackageReference Include="xunit.abstractions" Version="2.0.0" />
-    <PackageReference Include="xunit.assert" Version="2.1.0" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.1.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.abstractions" Version="2.0.1" />
+    <PackageReference Include="xunit.assert" Version="2.3.1" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
+
   <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ClosedXML.Report\ClosedXML.Report.csproj" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 </Project>
