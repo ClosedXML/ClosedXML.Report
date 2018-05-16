@@ -3,14 +3,13 @@
     <TargetFrameworks>net45</TargetFrameworks>
     <LangVersion>7.1</LangVersion>
     <Configurations>Debug;Release;Release.Signed</Configurations>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <PackageLicenseUrl>https://github.com/ClosedXML/ClosedXML.Report/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Alexey Rozhkov</Authors>
+    <Copyright>MIT</Copyright>
+    <Version>0.1.0.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +57,6 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <Import Project="..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props" Condition="Exists('..\..\packages\xunit.core.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.core.props')" />
-  <PropertyGroup />
   <ItemGroup>
     <Compile Remove="FiledBuilderTests.cs" />
   </ItemGroup>
