@@ -20,7 +20,11 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Tests accessing
+#if STRONGNAME
+[assembly: InternalsVisibleTo("ClosedXML.Report.Tests, PublicKey=00240000048000009400000006020000002400005253413100040000010001002b89cad160592ac2770c3651edc6b07038b8d00544858ab632e767ba4052afbdfb4c7fc18deb924b3aea7ecceca8b394e2b14cb9d98e780c8e6159dcb62da75d99f1e1e583ad078ac4836275c58c0cbb786ed317a9a6ac7fa70a9355a88bc41b9f8cf5d5547020c6f02eca4ecf01e1db5d84c6e6788b103064cdd78e14a3c0b2")]
+#else
 [assembly: InternalsVisibleTo("ClosedXML.Report.Tests")]
+#endif
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("fa0a7362-87d7-466e-a6ec-2e1ad0171880")]
