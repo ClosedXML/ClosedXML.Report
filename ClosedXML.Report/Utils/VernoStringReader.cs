@@ -354,6 +354,7 @@ namespace ClosedXML.Report.Utils
                 return failure != null ? failure(str) : DateTime.MinValue;
         }
 
+#if !NET40
         /// <summary>Асинхронно выполняет чтение строки символов из текущей строки и возвращает данные в виде строки.</summary>
         /// <returns>Задача, представляющая асинхронную операцию чтения.Значение параметра <paramref name="TResult" /> содержит следующую строку из средства чтения строк или значение null, если все знаки считаны.</returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">Количество символов в следующей строке больше <see cref="F:System.Int32.MaxValue" />.</exception>
@@ -419,6 +420,7 @@ namespace ClosedXML.Report.Utils
                 throw new ArgumentException("Argument invalid off len");
             return Task.FromResult(Read(buffer, index, count));
         }
+#endif
 
         internal static void ReaderClosed()
         {
