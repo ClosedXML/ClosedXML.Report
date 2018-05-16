@@ -118,11 +118,9 @@ namespace ClosedXML.Report
 
             foreach (var nr in innerRanges)
             {
+                Debug.Assert(_variables.ContainsKey(nr.Name), $"Variable with name '{nr.Name}' was not found.");
                 if (!_variables.ContainsKey(nr.Name))
-                {
-                    Debug.WriteLine(string.Format("Range {0} was skipped. Variable with that name was not found.", nr.Name));
                     continue;
-                }
 
                 var datas = _variables[nr.Name] as IEnumerable;
                 if (datas == null)

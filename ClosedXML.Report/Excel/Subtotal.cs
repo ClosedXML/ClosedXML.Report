@@ -257,7 +257,7 @@ namespace ClosedXML.Report.Excel
             }
 
             summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
-            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " Total";
+            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " Total"; // TODO "Total" string move to resources
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
 
             foreach (var summ in summaries)

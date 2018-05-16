@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
 using Xunit;
@@ -12,10 +9,8 @@ namespace ClosedXML.Report.Tests
 {
     public class GroupTagTests: XlsxTemplateTestsBase
     {
-        private readonly ITestOutputHelper _output;
         public GroupTagTests(ITestOutputHelper output) : base(output)
         {
-            _output = output;
         }
 
         [Fact]
@@ -32,9 +27,13 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\GroupTagTests_Simple.xlsx");
+#else
                     using (var ms = new MemoryStream())
                         wb.SaveAs(ms); // as conditional formats are consolidated on saving
-                    //wb.SaveAs("GroupTagTests_Simple.xlsx");
+#endif
+
                     CompareWithGauge(wb, "GroupTagTests_Simple.xlsx");
                 });
         }
@@ -53,9 +52,12 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\GroupTagTests_Collapse.xlsx");
+#else
                     using (var ms = new MemoryStream())
                         wb.SaveAs(ms); // as conditional formats are consolidated on saving
-                    //wb.SaveAs("GroupTagTests_Collapse.xlsx");
+#endif
                     CompareWithGauge(wb, "GroupTagTests_Collapse.xlsx");
                 });
         }
@@ -71,9 +73,12 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\GroupTagTests_WithHeader.xlsx");
+#else
                     using (var ms = new MemoryStream())
                         wb.SaveAs(ms); // as conditional formats are consolidated on saving
-                    //wb.SaveAs("GroupTagTests_WithHeader.xlsx");
+#endif
                     CompareWithGauge(wb, "GroupTagTests_WithHeader.xlsx");
                 });
         }
@@ -92,9 +97,12 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\tLists2_sum.xlsx");
+#else
                     using (var ms = new MemoryStream())
                         wb.SaveAs(ms); // as conditional formats are consolidated on saving
-                    //wb.SaveAs("tLists2_sum.xlsx");
+#endif
                     CompareWithGauge(wb, "tLists2_sum.xlsx");
                 });
         }

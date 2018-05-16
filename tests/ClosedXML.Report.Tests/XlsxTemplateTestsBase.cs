@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
-using ClosedXML.Report.Tests.TestModels;
-using ClosedXML.Report.Tests.Utils;
 using FluentAssertions;
 //using JetBrains.Profiler.Windows.Api;
 using Xunit.Abstractions;
@@ -13,10 +11,10 @@ namespace ClosedXML.Report.Tests
 {
     public class XlsxTemplateTestsBase
     {
-        private readonly ITestOutputHelper _output;
+        protected readonly ITestOutputHelper Output;
         public XlsxTemplateTestsBase(ITestOutputHelper output)
         {
-            _output = output;
+            Output = output;
             LinqToDB.Common.Configuration.Linq.AllowMultipleQuery = true;
         }
 
@@ -53,7 +51,7 @@ namespace ClosedXML.Report.Tests
                 // ACT
                 var start = DateTime.Now;
                 template.Generate();
-                _output.WriteLine(DateTime.Now.Subtract(start).ToString());
+                Output.WriteLine(DateTime.Now.Subtract(start).ToString());
                 //MemoryProfiler.Dump();
                 workbook.SaveAs(file);
                 //MemoryProfiler.Dump();
@@ -99,6 +97,22 @@ namespace ClosedXML.Report.Tests
 
             if (expected.Style.ToString() != actual.Style.ToString())
                 messages.Add("Worksheet styles differ");
+
+            if (!expected.PageSetup.RowBreaks.All(actual.PageSetup.RowBreaks.Contains)
+                || expected.PageSetup.RowBreaks.Count != actual.PageSetup.RowBreaks.Count)
+                messages.Add("PageBreaks differ");
+
+            if (expected.PageSetup.PagesTall != actual.PageSetup.PagesTall)
+                messages.Add("PagesTall differ");
+
+            if (expected.PageSetup.PagesWide != actual.PageSetup.PagesWide)
+                messages.Add("PagesWide differ");
+
+            if (expected.PageSetup.PageOrientation != actual.PageSetup.PageOrientation)
+                messages.Add("PageOrientation differ");
+
+            if (expected.PageSetup.PageOrder != actual.PageSetup.PageOrder)
+                messages.Add("PageOrder differ");
 
             foreach (var expectedCell in expected.CellsUsed())
             {

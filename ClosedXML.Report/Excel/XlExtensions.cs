@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -255,24 +254,11 @@ namespace ClosedXML.Report.Excel
 
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
-            var frmtRng = Intersection(format.Range, fromRange).Relative(fromRange, toRange);
+			var frmtRng = format.Range.Relative(fromRange, toRange);
             if (expand && toRange.RangeAddress.RowCount() != format.Range.RowCount())
                 frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount()).Unsubscribed();
             var newFrmt = frmtRng.AddConditionalFormat();
             newFrmt.CopyFrom(format);
-        }
-
-        internal static IXLRangeBase Intersection(IXLRangeBase range, IXLRangeBase crop)
-        {
-            var sheet = range.Worksheet;
-            using (var xlRange = sheet.Range(
-                Math.Max(range.RangeAddress.FirstAddress.RowNumber, crop.RangeAddress.FirstAddress.RowNumber),
-                Math.Max(range.RangeAddress.FirstAddress.ColumnNumber, crop.RangeAddress.FirstAddress.ColumnNumber),
-                Math.Min(range.RangeAddress.LastAddress.RowNumber, crop.RangeAddress.LastAddress.RowNumber),
-                Math.Min(range.RangeAddress.LastAddress.ColumnNumber, crop.RangeAddress.LastAddress.ColumnNumber)))
-            {
-                return sheet.Range(xlRange.RangeAddress);
-            }
         }
 
         internal static void CopyConditionalFormatsFrom(this IXLRangeBase targetRange, IXLRangeBase srcRange)

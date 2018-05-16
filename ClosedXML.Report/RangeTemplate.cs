@@ -97,7 +97,8 @@ namespace ClosedXML.Report
                     .ToArray();
                 var rs = prng.RangeAddress.FirstAddress.RowNumber;
                 result._condFormats = result._condFormats.Where(x => x.Range.RangeAddress.FirstAddress.RowNumber - rs + 1 <= result._rowCnt).ToArray();
-            }else
+            }
+            else
                 result._totalsCondFormats = new IXLConditionalFormat[0];
 
             result._subranges = innerRanges.Select(rng =>
