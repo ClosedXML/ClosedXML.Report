@@ -11,9 +11,11 @@ namespace ClosedXML.Report.Excel
         private readonly bool _summaryAbove;
         private bool _pageBreaks;
         private Func<string, string> _getGroupLabel;
-        private IXLWorksheet Sheet { get { return _range.Worksheet; } }
+        private IXLWorksheet Sheet => _range.Worksheet;
         private IXLWorksheet _tempSheet;
         private readonly List<SubtotalGroup> _groups = new List<SubtotalGroup>();
+        public string TotalLabel { get; set; } = "Total";
+        public string GrandLabel { get; set; } = "Grand";
 
         public Subtotal(IXLRange range) : this(range, false)
         {
@@ -46,13 +48,13 @@ namespace ClosedXML.Report.Excel
                 if (_summaryAbove)
                 {
                     Sheet.Row(_range.RangeAddress.FirstAddress.RowNumber).Unsubscribed().InsertRowsAbove(1).Dispose();
-                    gr = CreateGroup(Sheet.Range(_range.RangeAddress), 1, 1, "Общий", summaries, false);
+                    gr = CreateGroup(Sheet.Range(_range.RangeAddress), 1, 1, GrandLabel, summaries, false);
                     _range.ExtendRows(1, false);
                 }
                 else
                 {
                     Sheet.Row(_range.RangeAddress.LastAddress.RowNumber).Unsubscribed().InsertRowsBelow(1).Dispose();
-                    gr = CreateGroup(Sheet.Range(_range.RangeAddress), 1, 1, "Общий", summaries, false);
+                    gr = CreateGroup(Sheet.Range(_range.RangeAddress), 1, 1, GrandLabel, summaries, false);
                     _range.ExtendRows(1);
                 }
                 gr.Column = 0;
@@ -257,7 +259,7 @@ namespace ClosedXML.Report.Excel
             }
 
             summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
-            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " Total"; // TODO "Total" string move to resources
+            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " "+ TotalLabel;
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
 
             foreach (var summ in summaries)
