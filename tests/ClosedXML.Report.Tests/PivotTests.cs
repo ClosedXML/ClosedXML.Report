@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
-using LinqToDB;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,7 +27,9 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    //wb.SaveAs("tPivot1.xlsx");
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\tPivot1.xlsx");
+#endif
                     CompareWithGauge(wb, "tPivot1.xlsx");
                 });
         }
@@ -50,7 +49,9 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    //wb.SaveAs("tPivot5_Static.xlsx");
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\tPivot5_Static.xlsx");
+#endif
                     CompareWithGauge(wb, "tPivot5_Static.xlsx");
                 });
         }

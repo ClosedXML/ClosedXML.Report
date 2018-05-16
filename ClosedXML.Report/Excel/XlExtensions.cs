@@ -219,6 +219,13 @@ namespace ClosedXML.Report.Excel
             method.Invoke(sheet, new object[0]);
         }
 
+        public static void Consolidate(this IXLConditionalFormats formats)
+        {
+            var type = formats.GetType();
+            var method = type.GetMethod("Consolidate", BindingFlags.Instance | BindingFlags.NonPublic);
+            method.Invoke(formats, new object[0]);
+        }
+
         public static void ResumeEvents(this IXLWorksheet sheet)
         {
             var type = sheet.GetType();

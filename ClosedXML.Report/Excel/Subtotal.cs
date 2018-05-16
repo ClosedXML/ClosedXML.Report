@@ -234,7 +234,7 @@ namespace ClosedXML.Report.Excel
             _tempSheet.Cell(1, 1).Value = srcRng;
             Sheet.Range(moveData.TargetAddress).Unsubscribed().Clear();
             Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount()).Unsubscribed();
-            //TODO !!!Sheet.ConditionalFormats.Compress();
+            Sheet.ConditionalFormats.Consolidate();
         }
 
         private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SubtotalSummaryFunc[] summaries, bool pageBreaks)
@@ -257,7 +257,7 @@ namespace ClosedXML.Report.Excel
             }
 
             summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
-            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " Итог";
+            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " Total"; // TODO "Total" string move to resources
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
 
             foreach (var summ in summaries)

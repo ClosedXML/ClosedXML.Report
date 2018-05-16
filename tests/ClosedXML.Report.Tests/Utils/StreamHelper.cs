@@ -170,9 +170,9 @@ namespace ClosedXML.Report.Tests.Utils
                 var l = 40;
                 System.Diagnostics.Debug.WriteLine("Fonded differense: \n{0}>>>|<<<{1} \n{2}>>>|<<<{3}",
                     stringOne.Substring(Math.Max(0, idx - l), Math.Min(l, idx)),
-                    stringOne.Substring(idx, l),
+                    stringOne.Substring(idx, Math.Min(l, stringOne.Length - idx)),
                     stringOther.Substring(Math.Max(0, idx - l), Math.Min(l, idx)),
-                    stringOther.Substring(Math.Min(idx, stringOther.Length), l));
+                    stringOther.Substring(Math.Min(idx, stringOther.Length), Math.Min(l, stringOther.Length-idx)));
             }
         }
 

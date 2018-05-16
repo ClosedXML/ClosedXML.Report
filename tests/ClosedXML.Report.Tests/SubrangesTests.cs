@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
 using Xunit;
@@ -37,7 +38,12 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    //wb.SaveAs("Subranges_Simple_tMD1.xlsx");
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\Subranges_Simple_tMD1.xlsx");
+#else
+                    using (var ms = new MemoryStream())
+                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
+#endif
                     CompareWithGauge(wb, "Subranges_Simple_tMD1.xlsx");
                 });
         }
@@ -71,7 +77,12 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    //wb.SaveAs("Subranges_WithSubtotals_tMD2.xlsx");
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\Subranges_WithSubtotals_tMD2.xlsx");
+#else
+                    using (var ms = new MemoryStream())
+                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
+#endif
                     CompareWithGauge(wb, "Subranges_WithSubtotals_tMD2.xlsx");
                 });
         }
