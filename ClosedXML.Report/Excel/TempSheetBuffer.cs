@@ -92,7 +92,11 @@ namespace ClosedXML.Report.Excel
 
         public IXLRange CopyTo(IXLRange range)
         {
-            var tempRng = _sheet.Range(_sheet.Cell(1, 1), _sheet.LastCellUsed(true));
+            // LastCellUsed may produce the wrong result, see https://github.com/ClosedXML/ClosedXML/issues/339
+            var lastCell = _sheet.Cell(
+                _sheet.LastRowUsed(true).RowNumber(),
+                _sheet.LastColumnUsed(true).ColumnNumber());
+            var tempRng = _sheet.Range(_sheet.Cell(1, 1), lastCell);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)
