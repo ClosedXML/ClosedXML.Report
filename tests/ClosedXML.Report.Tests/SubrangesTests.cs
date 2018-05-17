@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
@@ -86,6 +87,78 @@ namespace ClosedXML.Report.Tests
                     CompareWithGauge(wb, "Subranges_WithSubtotals_tMD2.xlsx");
                 });
         }
+
+        [Fact]
+        public void MasterDetailWithEmptySubsetCorrectSum()
+        {
+            XlTemplateTest("Visitors.xlsx",
+                tpl =>
+                {
+                    tpl.AddVariable("Visitors", GenerateVisitors());
+                },
+                wb =>
+                {
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\MasterDetailWithEmptySubsetCorrectSum.xlsx");
+#endif
+                    CompareWithGauge(wb, "MasterDetailWithEmptySubset.xlsx");
+                });
+        }
+
+        [Fact]
+        public void MasterDetailWithSingleEmptySubsetCorrectSum()
+        {
+            XlTemplateTest("Visitors.xlsx",
+                tpl =>
+                {
+                    var visitors = new List<dynamic> { GenerateVisitors().First() };
+                    tpl.AddVariable("Visitors", visitors);
+                },
+                wb =>
+                {
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\MasterDetailWithSingleEmptySubsetCorrectSum.xlsx");
+#endif
+                    CompareWithGauge(wb, "MasterDetailWithSingleEmptySubset.xlsx");
+                });
+        }
+
+        [Fact]
+        public void SingleEmptySubsetCorrectSum()
+        {
+            XlTemplateTest("Visitor.xlsx",
+                tpl =>
+                {
+                    tpl.AddVariable(GenerateVisitors().First());
+                },
+                wb =>
+                {
+#if SAVE_OUTPUT
+                    wb.SaveAs("Output\\SingleEmptySubsetCorrectSum.xlsx");
+#endif
+                    CompareWithGauge(wb, "SingleEmptySubset.xlsx");
+                });
+        }
+
+        private IEnumerable<dynamic> GenerateVisitors()
+        {
+            return new List<dynamic>
+                {
+                    new { Name = "Alice", Attendance = new List<dynamic> { } },
+                    new { Name = "Bob", Attendance = new List<dynamic> {
+                        new { Month = "February", Visits = 2 },
+                        new { Month = "March", Visits = 3 },
+                        new { Month = "April", Visits = 7 },
+                    } },
+                    new { Name = "Carl", Attendance = new List<dynamic> {
+                        new { Month = "January", Visits = 5 },
+                        new { Month = "July", Visits = 8 },
+                        new { Month = "October", Visits = 6 },
+                    } },
+                    new { Name = "Daniel", Attendance = new List<dynamic> { } },
+                };
+        }
+
 
         public SubrangesTests(ITestOutputHelper output) : base(output)
         {
