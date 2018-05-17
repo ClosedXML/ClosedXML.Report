@@ -39,35 +39,38 @@ namespace ClosedXML.Report.Tests
             //MemoryProfiler.Dump();
 
             var fileName = Path.Combine(TestConstants.TemplatesFolder, tmplFileName);
-            var workbook = new XLWorkbook(fileName);
-            var template = new XLTemplate(workbook);
-
-            // ARRANGE
-            arrangeCallback(template);
-
-            using (var file = new MemoryStream())
+            using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                //MemoryProfiler.Dump();
-                // ACT
-                var start = DateTime.Now;
-                template.Generate();
-                Output.WriteLine(DateTime.Now.Subtract(start).ToString());
-                //MemoryProfiler.Dump();
-                workbook.SaveAs(file);
-                //MemoryProfiler.Dump();
-                file.Position = 0;
+                var workbook = new XLWorkbook(stream);
+                var template = new XLTemplate(workbook);
 
-                using (var wb = new XLWorkbook(file))
+                // ARRANGE
+                arrangeCallback(template);
+
+                using (var file = new MemoryStream())
                 {
-                    // ASSERT
-                    assertCallback(wb);
+                    //MemoryProfiler.Dump();
+                    // ACT
+                    var start = DateTime.Now;
+                    template.Generate();
+                    Output.WriteLine(DateTime.Now.Subtract(start).ToString());
+                    //MemoryProfiler.Dump();
+                    workbook.SaveAs(file);
+                    //MemoryProfiler.Dump();
+                    file.Position = 0;
+
+                    using (var wb = new XLWorkbook(file))
+                    {
+                        // ASSERT
+                        assertCallback(wb);
+                    }
                 }
+                workbook.Dispose();
+                workbook = null;
+                template = null;
+                GC.Collect();
+                //MemoryProfiler.Dump();
             }
-            workbook.Dispose();
-            workbook = null;
-            template = null;
-            GC.Collect();
-            //MemoryProfiler.Dump();
         }
 
         protected void CompareWithGauge(XLWorkbook actual, string fileExpected)
