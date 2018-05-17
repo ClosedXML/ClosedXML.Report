@@ -92,16 +92,16 @@ namespace ClosedXML.Report.Excel
 
         public IXLRange CopyTo(IXLRange range)
         {
-            var tempRng = _sheet.Range(_sheet.Cell(1, 1), _sheet.LastCellUsed()); //_sheet.Cell(_prevrow, _prevclmn));
+            var tempRng = _sheet.Range(_sheet.Cell(1, 1), _sheet.LastCellUsed(true));
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)
                 range.InsertRowsBelow(rowDiff, true);
             else if (rowDiff < 0)
                 range.Worksheet.Range(
-                    range.LastRow().RowNumber() + 1,
+                    range.LastRow().RowNumber() + rowDiff + 1,
                     range.FirstColumn().ColumnNumber(),
-                    range.LastRow().RowNumber() + rowDiff,
+                    range.LastRow().RowNumber(),
                     range.LastColumn().ColumnNumber())
                 .Delete(XLShiftDeletedCells.ShiftCellsUp);
 
@@ -111,9 +111,9 @@ namespace ClosedXML.Report.Excel
             else if (columnDiff < 0)
                 range.Worksheet.Range(
                     range.FirstRow().RowNumber(),
-                    range.FirstColumn().ColumnNumber() + 1,
+                    range.LastColumn().ColumnNumber() + columnDiff + 1,
                     range.LastRow().RowNumber(),
-                    range.LastColumn().ColumnNumber() + columnDiff)
+                    range.LastColumn().ColumnNumber())
                 .Delete(XLShiftDeletedCells.ShiftCellsLeft);
 
             tempRng.CopyTo(range.FirstCell());
