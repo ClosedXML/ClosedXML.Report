@@ -12,6 +12,7 @@ namespace ClosedXML.Report.Tests
     public class XlsxTemplateTestsBase
     {
         protected readonly ITestOutputHelper Output;
+
         public XlsxTemplateTestsBase(ITestOutputHelper output)
         {
             Output = output;
@@ -65,6 +66,7 @@ namespace ClosedXML.Report.Tests
                         assertCallback(wb);
                     }
                 }
+
                 workbook.Dispose();
                 workbook = null;
                 template = null;
@@ -176,17 +178,28 @@ namespace ClosedXML.Report.Tests
 
             if (expected.ConditionalFormats.Count() != actual.ConditionalFormats.Count())
                 messages.Add("Conditional format counts differ");
-
-            for (int i = 0; i < expected.ConditionalFormats.Count(); i++)
+            else
             {
-                var expectedCf = expected.ConditionalFormats.ElementAt(i);
-                var actualCf = actual.ConditionalFormats.ElementAt(i);
+                var expectedFormats = expected.ConditionalFormats
+                    .OrderBy(r => r.Range.RangeAddress.FirstAddress.ColumnNumber)
+                    .ThenBy(r => r.Range.RangeAddress.FirstAddress.RowNumber)
+                    .ToList();
+                var actualFormats = actual.ConditionalFormats
+                    .OrderBy(r => r.Range.RangeAddress.FirstAddress.ColumnNumber)
+                    .ThenBy(r => r.Range.RangeAddress.FirstAddress.RowNumber)
+                    .ToList();
 
-                if (expectedCf.Range.RangeAddress.ToString() != actualCf.Range.RangeAddress.ToString())
-                    messages.Add($"Conditional formats at index {i} have different ranges");
+                for (int i = 0; i < expectedFormats.Count(); i++)
+                {
+                    var expectedCf = expectedFormats.ElementAt(i);
+                    var actualCf = actualFormats.ElementAt(i);
 
-                if (expectedCf.Style.ToString() != actualCf.Style.ToString())
-                    messages.Add($"Conditional formats at index {i} have different styles");
+                    if (expectedCf.Range.RangeAddress.ToString() != actualCf.Range.RangeAddress.ToString())
+                        messages.Add($"Conditional formats at index {i} have different ranges");
+
+                    if (expectedCf.Style.ToString() != actualCf.Style.ToString())
+                        messages.Add($"Conditional formats at index {i} have different styles");
+                }
             }
 
             return !messages.Any();

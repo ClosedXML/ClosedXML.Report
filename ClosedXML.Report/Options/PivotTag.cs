@@ -63,6 +63,7 @@ namespace ClosedXML.Report.Options
                 var tag = (FieldPivotTag) optionTag;
                 var colName = GetColumnName(context, tag);
                 var field = pt.ReportFilters.Add(colName);
+                field.ShowBlankItems = false;
                 BuildFormatting(pivotTag, tag, field);
             }
 
@@ -71,6 +72,7 @@ namespace ClosedXML.Report.Options
                 var tag = (FieldPivotTag) optionTag;
                 var colName = GetColumnName(context, tag);
                 var field = pt.RowLabels.Add(colName);
+                field.ShowBlankItems = false;
                 BuildFormatting(pivotTag, tag, field);
             }
 
@@ -79,6 +81,7 @@ namespace ClosedXML.Report.Options
                 var tag = (FieldPivotTag) optionTag;
                 var colName = GetColumnName(context, tag);
                 var field = pt.ColumnLabels.Add(colName);
+                field.ShowBlankItems = false;
                 BuildFormatting(pivotTag, tag, field);
             }
 

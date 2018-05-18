@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using Xunit;
@@ -12,7 +14,7 @@ namespace ClosedXML.Report.Tests
         {
         }
 
-        [Fact(Skip = "Pivot support is limited")]
+        [Fact]
         public void Simple()
         {
             XlTemplateTest("tPivot1.xlsx",
@@ -34,7 +36,7 @@ namespace ClosedXML.Report.Tests
                 });
         }
 
-        [Fact(Skip = "Pivot support is limited")]
+        [Fact]
         public void Static()
         {
             XlTemplateTest("tPivot5_Static.xlsx",

@@ -25,6 +25,7 @@ namespace ClosedXML.Report
         private bool _optionsRowIsEmpty = true;
         private IXLConditionalFormat[] _condFormats;
         private IXLConditionalFormat[] _totalsCondFormats;
+        private bool _isSubrange;
 
         public string Source { get; private set; }
         public string Name { get; private set; }
@@ -105,6 +106,7 @@ namespace ClosedXML.Report
             {
                 var tpl = Parse(rng, buff, result);
                 tpl._buff = result._buff;
+                tpl._isSubrange = true;
                 return tpl;
             }).ToArray();
 
@@ -235,7 +237,8 @@ namespace ClosedXML.Report
                 }
 
                 //Perhaps, this should be removed to support Pivot tags
-                _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
+                if (_isSubrange)
+                    _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
             }
         }
 

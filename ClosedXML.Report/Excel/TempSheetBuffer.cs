@@ -109,6 +109,8 @@ namespace ClosedXML.Report.Excel
                     range.LastColumn().ColumnNumber())
                 .Delete(XLShiftDeletedCells.ShiftCellsUp);
 
+            range.Worksheet.ConditionalFormats.Remove(c => c.Range.Intersects(range));
+
             var columnDiff = tempRng.ColumnCount() - range.ColumnCount();
             if (columnDiff > 0)
                 range.InsertColumnsAfter(columnDiff, true);
