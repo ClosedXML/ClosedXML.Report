@@ -40,10 +40,10 @@ namespace ClosedXML.Report
         {
             var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
             var cells = from c in range.CellsUsed()
-                        let value = c.GetString()
                         where !c.HasFormula
-                            && (value.StartsWith("<<") || value.EndsWith(">>"))
-                            && !innerRanges.Any(nr => { using (var r = nr.Ranges) using (var cr = c.AsRange()) return r.Contains(cr);})
+                           && !innerRanges.Any(nr => { using (var r = nr.Ranges) using (var cr = c.AsRange()) return r.Contains(cr); })
+                        let value = c.GetString()
+                        where (value.StartsWith("<<") || value.EndsWith(">>"))
                         select c;
 
             if (!_tags.ContainsKey(rangeName))
