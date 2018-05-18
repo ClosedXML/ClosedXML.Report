@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -39,9 +38,13 @@ namespace ClosedXML.Report
         public void ParseTags(IXLRange range, string rangeName)
         {
             var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
-            var cells = from c in range.CellsUsed()
-                        where !c.HasFormula
-                           && !innerRanges.Any(nr => { using (var r = nr.Ranges) using (var cr = c.AsRange()) return r.Contains(cr); })
+            var cells = from c in range.CellsUsed(c => !c.HasFormula
+                                                    && !innerRanges.Any(nr =>
+                                                    {
+                                                           using (var r = nr.Ranges)
+                                                           using (var cr = c.AsRange())
+                                                               return r.Contains(cr);
+                                                    }))
                         let value = c.GetString()
                         where (value.StartsWith("<<") || value.EndsWith(">>"))
                         select c;
