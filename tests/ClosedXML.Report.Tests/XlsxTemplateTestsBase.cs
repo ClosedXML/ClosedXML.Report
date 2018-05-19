@@ -97,7 +97,9 @@ namespace ClosedXML.Report.Tests
             if (expected.Name != actual.Name)
                 messages.Add("Worksheet names differ");
 
-            if (expected.RangeUsed().RangeAddress.ToString() != actual.RangeUsed().RangeAddress.ToString())
+            var expectedRange = expected.RangeUsed();
+            var actualRange = actual.RangeUsed();
+            if (expectedRange != actualRange && expectedRange.RangeAddress.ToString() != actualRange.RangeAddress.ToString())
                 messages.Add("Used ranges differ");
 
             if (expected.Style.ToString() != actual.Style.ToString())
