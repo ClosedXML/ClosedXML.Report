@@ -39,12 +39,6 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-#if SAVE_OUTPUT
-                    wb.SaveAs("Output\\Subranges_Simple_tMD1.xlsx");
-#else
-                    using (var ms = new MemoryStream())
-                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
-#endif
                     CompareWithGauge(wb, "Subranges_Simple_tMD1.xlsx");
                 });
         }
@@ -78,12 +72,6 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-#if SAVE_OUTPUT
-                    wb.SaveAs("Output\\Subranges_WithSubtotals_tMD2.xlsx");
-#else
-                    using (var ms = new MemoryStream())
-                        wb.SaveAs(ms); // as conditional formats are consolidated on saving
-#endif
                     CompareWithGauge(wb, "Subranges_WithSubtotals_tMD2.xlsx");
                 });
         }
@@ -98,9 +86,6 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-#if SAVE_OUTPUT
-                    wb.SaveAs("Output\\MasterDetailWithEmptySubsetCorrectSum.xlsx");
-#endif
                     CompareWithGauge(wb, "MasterDetailWithEmptySubset.xlsx");
                 });
         }
@@ -116,9 +101,6 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-#if SAVE_OUTPUT
-                    wb.SaveAs("Output\\MasterDetailWithSingleEmptySubsetCorrectSum.xlsx");
-#endif
                     CompareWithGauge(wb, "MasterDetailWithSingleEmptySubset.xlsx");
                 });
         }
@@ -133,9 +115,6 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-#if SAVE_OUTPUT
-                    wb.SaveAs("Output\\SingleEmptySubsetCorrectSum.xlsx");
-#endif
                     CompareWithGauge(wb, "SingleEmptySubset.xlsx");
                 });
         }

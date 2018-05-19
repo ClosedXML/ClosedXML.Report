@@ -82,8 +82,12 @@ namespace ClosedXML.Report.Tests
 
                 for (int i = 0; i < actual.Worksheets.Count; i++)
                 {
-                    WorksheetsAreEqual(expected.Worksheets.ElementAt(i), actual.Worksheets.ElementAt(i), out var messages)
-                        .Should().BeTrue(string.Join("," + Environment.NewLine, messages));
+                    var areEqual = WorksheetsAreEqual(expected.Worksheets.ElementAt(i), actual.Worksheets.ElementAt(i), out var messages);
+
+                    if (!areEqual)
+                        actual.SaveAs(Path.Combine("Output", Path.GetFileName(fileExpected)));
+
+                    areEqual.Should().BeTrue(string.Join("," + Environment.NewLine, messages));
                 }
             }
         }

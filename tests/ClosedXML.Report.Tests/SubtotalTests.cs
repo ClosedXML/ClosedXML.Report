@@ -28,9 +28,6 @@ namespace ClosedXML.Report.Tests
             LoadTemplate("9_plaindata.xlsx");
             _rng.Subtotal(2, "sum", new[] { 5, 7 });
             _rng.Subtotal(3, "sum", new[] { 5, 7 }, false);
-#if SAVE_OUTPUT
-            _workbook.SaveAs("Output\\XlExtensions_Subtotals.xlsx");
-#endif
             CompareWithGauge(_workbook, "XlExtensions_Subtotals.xlsx");
         }
 
@@ -40,9 +37,6 @@ namespace ClosedXML.Report.Tests
             LoadTemplate("9_plaindata.xlsx");
             _rng.Subtotal(2, "sum", new[] { 5, 7 });
             _rng.Subtotal(3, "sum", new[] { 5, 7 });
-#if SAVE_OUTPUT
-            _workbook.SaveAs("Output\\XlExtensions_SubtotalsReplace.xlsx");
-#endif
             CompareWithGauge(_workbook, "XlExtensions_SubtotalsReplace.xlsx");
         }
 
@@ -52,9 +46,6 @@ namespace ClosedXML.Report.Tests
             LoadTemplate("9_plaindata.xlsx");
             _rng.Subtotal(2, "sum", new[] { 5, 7 }, summaryAbove: true);
             _rng.Subtotal(3, "sum", new[] { 5, 7 }, false, summaryAbove: true);
-#if SAVE_OUTPUT
-            _workbook.SaveAs("Output\\Subtotal_SummaryAbove.xlsx");
-#endif
             CompareWithGauge(_workbook, "Subtotal_SummaryAbove.xlsx");
         }
 
@@ -64,9 +55,6 @@ namespace ClosedXML.Report.Tests
             LoadTemplate("9_plaindata.xlsx");
             _rng.Subtotal(2, "sum", new[] { 5, 7 }, pageBreaks: true);
             _rng.Subtotal(3, "sum", new[] { 5, 7 }, false, true);
-#if SAVE_OUTPUT
-            _workbook.SaveAs("Output\\Subtotal_PageBreaks.xlsx");
-#endif
             CompareWithGauge(_workbook, "Subtotal_PageBreaks.xlsx");
         }
         
@@ -83,9 +71,6 @@ namespace ClosedXML.Report.Tests
                 subtotal.AddHeaders(2);
                 subtotal.AddHeaders(3);
             }
-#if SAVE_OUTPUT
-            _workbook.SaveAs("Output\\Subtotal_WithHeaders.xlsx");
-#endif
             CompareWithGauge(_workbook, "Subtotal_WithHeaders.xlsx");
         }
     }

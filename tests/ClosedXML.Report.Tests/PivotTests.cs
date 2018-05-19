@@ -27,9 +27,6 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-#if SAVE_OUTPUT
-                    wb.SaveAs("Output\\tPivot1.xlsx");
-#endif
                     CompareWithGauge(wb, "tPivot1.xlsx");
                 });
         }
@@ -49,9 +46,6 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-#if SAVE_OUTPUT
-                    wb.SaveAs("Output\\tPivot5_Static.xlsx");
-#endif
                     CompareWithGauge(wb, "tPivot5_Static.xlsx");
                 });
         }
