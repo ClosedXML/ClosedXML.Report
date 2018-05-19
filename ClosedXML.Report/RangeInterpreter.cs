@@ -135,7 +135,6 @@ namespace ClosedXML.Report
                     var trgtRng = buff.CopyTo(nrng);
                     nr.SetRefersTo(trgtRng);
                     
-                    //Apparently, this is needed for Pivot tags only
                     tplt.RangeTagsApply(trgtRng, items);
                 }
 

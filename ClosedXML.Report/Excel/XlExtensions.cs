@@ -264,15 +264,17 @@ namespace ClosedXML.Report.Excel
 
         internal static IXLRangeBase Intersection(IXLRangeBase range, IXLRangeBase crop)
         {
-            var sheet = range.Worksheet;
-            using (var xlRange = sheet.Range(
+            if (range == null)
+                throw new ArgumentNullException(nameof(range));
+
+            if (crop == null || !range.Intersects(crop))
+                return null;
+
+            return range.Worksheet.Range(
                 Math.Max(range.RangeAddress.FirstAddress.RowNumber, crop.RangeAddress.FirstAddress.RowNumber),
                 Math.Max(range.RangeAddress.FirstAddress.ColumnNumber, crop.RangeAddress.FirstAddress.ColumnNumber),
                 Math.Min(range.RangeAddress.LastAddress.RowNumber, crop.RangeAddress.LastAddress.RowNumber),
-                Math.Min(range.RangeAddress.LastAddress.ColumnNumber, crop.RangeAddress.LastAddress.ColumnNumber)))
-            {
-                return sheet.Range(xlRange.RangeAddress);
-            }
+                Math.Min(range.RangeAddress.LastAddress.ColumnNumber, crop.RangeAddress.LastAddress.ColumnNumber));
         }
 
         internal static void CopyConditionalFormatsFrom(this IXLRangeBase targetRange, IXLRangeBase srcRange)

@@ -97,9 +97,7 @@ namespace ClosedXML.Report.Tests
             if (expected.Name != actual.Name)
                 messages.Add("Worksheet names differ");
 
-            var expectedRange = expected.RangeUsed();
-            var actualRange = actual.RangeUsed();
-            if (expectedRange != actualRange && expectedRange.RangeAddress.ToString() != actualRange.RangeAddress.ToString())
+            if (expected.RangeUsed()?.RangeAddress?.ToString() != actual.RangeUsed()?.RangeAddress?.ToString())
                 messages.Add("Used ranges differ");
 
             if (expected.Style.ToString() != actual.Style.ToString())
@@ -197,10 +195,10 @@ namespace ClosedXML.Report.Tests
                     var actualCf = actualFormats.ElementAt(i);
 
                     if (expectedCf.Range.RangeAddress.ToString() != actualCf.Range.RangeAddress.ToString())
-                        messages.Add($"Conditional formats at index {i} have different ranges");
+                        messages.Add($"Conditional formats actual {actualCf.Range.RangeAddress}, but expected {expectedCf.Range.RangeAddress}.");
 
                     if (expectedCf.Style.ToString() != actualCf.Style.ToString())
-                        messages.Add($"Conditional formats at index {i} have different styles");
+                        messages.Add($"Conditional formats at {actualCf.Range.RangeAddress} have different styles");
                 }
             }
 

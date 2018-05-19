@@ -236,7 +236,6 @@ namespace ClosedXML.Report
                     _buff.AddConditionalFormats(_totalsCondFormats, _optionsRow, optionsRow);
                 }
 
-                //Perhaps, this should be removed to support Pivot tags
                 if (_isSubrange)
                     _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
             }
