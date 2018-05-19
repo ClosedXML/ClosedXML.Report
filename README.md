@@ -31,6 +31,7 @@ PM> Install-Package ClosedXML.Report -Version 0.1.0-beta1
 
 * Copying cell formatting
 * Propagation conditional formatting
+* Vertical and horizontal tables and subranges
 * Ability to implement Excel formulas
 * Using dynamically calculated formulas with the syntax of C # and Linq
 * Operations with tabular data: sorting, grouping, total functions.
@@ -50,9 +51,7 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 ```c#
     protected void Report()
     {
-        const string outputFile = @".\Output\report.xlsx";
-        var workbook = new XLWorkbook(@".\Templates\report.xlsx");
-        var template = new XLTemplate(workbook);
+        var template = new XLTemplate(@".\Templates\report.xlsx");
 
         using (var db = new DbDemos())
         {
@@ -61,7 +60,7 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
             template.Generate();
         }
 
-        workbook.SaveAs(outputFile);
+        template.SaveAs(@".\Output\report.xlsx");
 
         //Show report
         Process.Start(new ProcessStartInfo(outputFile) { UseShellExecute = true });
