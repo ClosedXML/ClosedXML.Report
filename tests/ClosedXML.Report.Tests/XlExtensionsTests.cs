@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
 {
-    public class XlExtensionsTests: XlsxTemplateTestsBase
+    public class XlExtensionsTests : XlsxTemplateTestsBase
     {
         public XlExtensionsTests(ITestOutputHelper output) : base(output)
         {
@@ -44,6 +44,24 @@ namespace ClosedXML.Report.Tests
                 pars[0].Value.ToStringRelative().Should().Be("I36:I38");
                 pars[1].Key.Should().Be("U32");
                 pars[1].Value.ToStringRelative().Should().Be("U32:U32");
+            }
+        }
+
+        [Fact]
+        public void Intersection()
+        {
+            using (var wb = new XLWorkbook())
+            {
+                var ws = wb.AddWorksheet("Sheet1");
+
+                XlExtensions.Intersection(ws.Range("B9:I11"), ws.Range("D4:G16")).RangeAddress.ToString().Should().Be("D9:G11");
+                XlExtensions.Intersection(ws.Range("E9:I11"), ws.Range("D4:G16")).RangeAddress.ToString().Should().Be("E9:G11");
+                XlExtensions.Intersection(ws.Cell("E9").AsRange(), ws.Range("D4:G16")).RangeAddress.ToString().Should().Be("E9:E9");
+                XlExtensions.Intersection(ws.Range("D4:G16"), ws.Cell("E9").AsRange()).RangeAddress.ToString().Should().Be("E9:E9");
+
+                XlExtensions.Intersection(ws.Range("A1:C3"), ws.Range("G7:I10")).Should().BeNull();
+                XlExtensions.Intersection(ws.Cell("A1").AsRange(), ws.Cell("C3").AsRange()).Should().BeNull();
+                XlExtensions.Intersection(ws.Range("A1:C3"), null).Should().BeNull();
             }
         }
     }

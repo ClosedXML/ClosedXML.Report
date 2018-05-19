@@ -15,7 +15,7 @@ namespace ClosedXML.Report.Tests
         {
         }
 
-        public void LoadTemplate(string fileTemplate)
+        private void LoadTemplate(string fileTemplate)
         {
             var fileName = Path.Combine(TestConstants.TemplatesFolder, fileTemplate);
             _workbook = new XLWorkbook(fileName);

@@ -30,7 +30,7 @@ namespace ClosedXML.Report.Tests
                 });
         }
 
-        //[Fact]
+        [Fact(Skip = "https://github.com/ClosedXML/ClosedXML/issues/137")]
         public void Variables_test()
         {
             XlTemplateTest("7_vars.xlsx",
