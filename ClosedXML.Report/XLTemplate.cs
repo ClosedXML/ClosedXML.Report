@@ -1,15 +1,19 @@
-﻿using System.Linq;
-using System.Reflection;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace ClosedXML.Report
 {
-    public class XLTemplate
+    public class XLTemplate : IDisposable
     {
-        private readonly XLWorkbook _workbook;
+        private readonly IXLWorkbook _workbook;
         private readonly RangeInterpreter _interpreter;
+
+        public IXLWorkbook Workbook => _workbook;
 
         static XLTemplate()
         {
@@ -46,15 +50,24 @@ namespace ClosedXML.Report
             TagsRegister.Add<SummaryFuncTag>("VARP");
         }
 
-        public XLTemplate(XLWorkbook workbook)
+        public XLTemplate(string fileName) : this(new XLWorkbook(fileName))
+        { }
+
+        public XLTemplate(Stream stream) : this(new XLWorkbook(stream))
+        { }
+
+        public XLTemplate(IXLWorkbook workbook)
         {
+            if (workbook == null)
+                throw new ArgumentNullException(nameof(workbook), "Workbook cannot be null");
+
             _workbook = workbook;
             _interpreter = new RangeInterpreter(null);
         }
 
         public void Generate()
         {
-            foreach (var ws in _workbook.Worksheets.Where(sh => sh.Visibility == XLWorksheetVisibility.Visible && !sh.PivotTables.Any()).ToArray())
+            foreach (var ws in Workbook.Worksheets.Where(sh => sh.Visibility == XLWorksheetVisibility.Visible && !sh.PivotTables.Any()).ToArray())
             {
                 ws.ReplaceCFFormulaeToR1C1();
                 _interpreter.Evaluate(ws.AsRange());
@@ -79,6 +92,21 @@ namespace ClosedXML.Report
         public void AddVariable(string alias, object value)
         {
             _interpreter.AddVariable(alias, value);
+        }
+
+        public void SaveAs(string file)
+        {
+            Workbook.SaveAs(file);
+        }
+
+        public void SaveAs(Stream stream)
+        {
+            Workbook.SaveAs(stream);
+        }
+
+        public void Dispose()
+        {
+            Workbook.Dispose();
         }
     }
 }

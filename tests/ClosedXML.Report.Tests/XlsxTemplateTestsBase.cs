@@ -41,10 +41,8 @@ namespace ClosedXML.Report.Tests
 
             var fileName = Path.Combine(TestConstants.TemplatesFolder, tmplFileName);
             using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var template = new XLTemplate(stream))
             {
-                var workbook = new XLWorkbook(stream);
-                var template = new XLTemplate(workbook);
-
                 // ARRANGE
                 arrangeCallback(template);
 
@@ -56,7 +54,7 @@ namespace ClosedXML.Report.Tests
                     template.Generate();
                     Output.WriteLine(DateTime.Now.Subtract(start).ToString());
                     //MemoryProfiler.Dump();
-                    workbook.SaveAs(file);
+                    template.SaveAs(file);
                     //MemoryProfiler.Dump();
                     file.Position = 0;
 
@@ -66,13 +64,10 @@ namespace ClosedXML.Report.Tests
                         assertCallback(wb);
                     }
                 }
-
-                workbook.Dispose();
-                workbook = null;
-                template = null;
-                GC.Collect();
-                //MemoryProfiler.Dump();
             }
+
+            GC.Collect();
+            //MemoryProfiler.Dump();
         }
 
         protected void CompareWithGauge(XLWorkbook actual, string fileExpected)

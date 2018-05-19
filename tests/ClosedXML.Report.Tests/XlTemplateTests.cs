@@ -1,8 +1,10 @@
 ﻿using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using FluentAssertions;
+using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -200,6 +202,50 @@ namespace ClosedXML.Report.Tests
                     new { Name = "Carl", Age = 38},
                 };
             }
+        }
+
+        [Fact]
+        public void XLTemplateWithNoWorkbookFails()
+        {
+            IXLWorkbook wb = null;
+            Assert.Throws<ArgumentNullException>(() => new XLTemplate(wb));
+        }
+
+        [Fact]
+        public void XLTemplateOpenFromFile()
+        {
+            var fileName = Path.Combine(TestConstants.TemplatesFolder, "1.xlsx");
+            using (var template = new XLTemplate(fileName))
+            {
+                template.Workbook.Should().NotBeNull();
+                template.Workbook.Worksheets.First().FirstCell().Value.Should().Be("{{TestValue1}}");
+            }
+        }
+
+        [Fact]
+        public void XLTemplateOpenFromStream()
+        {
+            var fileName = Path.Combine(TestConstants.TemplatesFolder, "1.xlsx");
+            using (var stream = File.Open(fileName, FileMode.Open))
+            {
+                var template = new XLTemplate(stream);
+
+                template.Workbook.Should().NotBeNull();
+                template.Workbook.Worksheets.First().FirstCell().Value.Should().Be("{{TestValue1}}");
+            }
+        }
+
+        [Fact]
+        public void WorkbookDisposedWithTemplate()
+        {
+            var disposed = false;
+            var wb = Substitute.For<IXLWorkbook>();
+            wb.When(w => w.Dispose()).Do(w => disposed = true);
+
+            var template = new XLTemplate(wb);
+
+            template.Dispose();
+            disposed.Should().BeTrue("Workbook expected to be disposed");
         }
     }
 }
