@@ -51,6 +51,7 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 ```c#
     protected void Report()
     {
+        const string outputFile = @".\Output\report.xlsx";
         var template = new XLTemplate(@".\Templates\report.xlsx");
 
         using (var db = new DbDemos())
@@ -60,7 +61,7 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
             template.Generate();
         }
 
-        template.SaveAs(@".\Output\report.xlsx");
+        template.SaveAs(outputFile);
 
         //Show report
         Process.Start(new ProcessStartInfo(outputFile) { UseShellExecute = true });
