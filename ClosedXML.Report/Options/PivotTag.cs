@@ -1,32 +1,25 @@
 ﻿/*
-XL Report PivotTable Options Package
-=======================================================================
-OPTION          PARAMS                OBJECTS      RNG     Priority
-=======================================================================
-"Pivot"          "\Name="             Range        r       Highest
-                 "\Dst="
-                 "\RowGrand"
-                 "\ColumnGrand"
-                 "\NoPreserveFormatting"
-                 "\CaptionNoFormatting"
-                 "\MergeLabels"
-                 "\ShowButtons"
-                 "\TreeLayout"
-                 "\AutofitColumns"
-                 "\NoSort"
+PivotTable Options Package
+================================================
+OPTION          PARAMS                OBJECTS   
+================================================
+"Pivot"          "Name="              Range     
+                 "Dst="
+                 "RowGrand"
+                 "ColumnGrand"
+                 "NoPreserveFormatting"
+                 "CaptionNoFormatting"
+                 "MergeLabels"
+                 "ShowButtons"
+                 "TreeLayout"
+                 "AutofitColumns"
+                 "NoSort"
 
-"Data"                                Column       r       Normal
-"Row"                                 Column       r       Normal
-"Column"                              Column       r       Normal
-"Page"                                Column       r       Normal
-=======================================================================
-Note:
-  * - new in version 4.0
-  RNG:
-    r - range
-    t - root range
-    m - master range
-    d - detail range
+"Data"                                Column    
+"Row"                                 Column    
+"Column"                              Column    
+"Page"                                Column    
+================================================
 */
 
 using System;
@@ -137,7 +130,7 @@ namespace ClosedXML.Report.Options
             }
             // TODO pivot value formatting
             /*
-              '    If (Args(14) = True) And (Args(17) = True) Then' + vbCR +
+              '    If (Args(14) = True) And (!HasParameter("CaptionNoFormatting")) Then' + vbCR +
               '      On Error Resume Next' + vbCR +
               '      For i = 1 To DataFieldsCount' + vbCR +
               '        V = Datas(i)' + vbCR +
@@ -153,7 +146,7 @@ namespace ClosedXML.Report.Options
               '        PF.DataRange.Font.FontStyle = FmtRange.Font.FontStyle' + vbCR +
               '        PF.DataRange.HorizontalAlignment = FmtRange.HorizontalAlignment' + vbCR +
               '        PF.DataRange.VerticalAlignment = FmtRange.VerticalAlignment' + vbCR +
-              '        If Args(17) = True Then' + vbCR +
+              '        if (!HasParameter("CaptionNoFormatting"))' + vbCR +
               '          Set CaptionRange = SrcRange.Cells(1, V(1) - 1)' + vbCR +
               '          PF.LabelRange.Interior.ColorIndex = CaptionRange.Interior.ColorIndex' + vbCR +
               '          PF.LabelRange.Font.Name = CaptionRange.Font.Name' + vbCR +
