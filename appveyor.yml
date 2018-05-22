@@ -1,3 +1,5 @@
+# common configuration for ALL branches
+
 version: 0.1.0.{build}
 
 pull_requests:
@@ -5,21 +7,40 @@ pull_requests:
 
 image: Visual Studio 2017
 
-configuration:
-- Release
-- Release.Signed
-
 environment:
   AppVeyor: APPVEYOR
+
+init:
+
+- ps: >-
+    if ($env:APPVEYOR_REPO_TAG -eq 'true')
+    {
+      $env:fileVersion = $env:APPVEYOR_REPO_TAG_NAME -replace '(\d+)\.(\d+)\.(\d+)(-.+)?', '$1.$2.$3'
+      if ($env:fileVersion -eq $env:APPVEYOR_REPO_TAG_NAME) { $env:fileVersion = $($env:fileVersion + '.0') }
+      else { $env:fileVersion = $($env:fileVersion + '.' + $env:APPVEYOR_BUILD_NUMBER) }
+      $env:productVersion = $env:APPVEYOR_REPO_TAG_NAME
+    }
+    else
+    {
+      $env:fileVersion = $env:APPVEYOR_BUILD_VERSION -replace '(\d+)\.(\d+)\.([^.]+)\.(\d+)', '$1.$2.999.$4'
+      $env:productVersion = $env:fileVersion
+    }
+    
+    Update-AppveyorBuild -Version $env:fileVersion
+    
+    Write-Host $env:fileVersion $env:productVersion
+    
+    Write-Host $env:APPVEYOR_REPO_TAG $env:APPVEYOR_REPO_TAG_NAME
+    
 
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}'
+  version: '$(productVersion)'
+  package_version: '$(productVersion)'
+  assembly_version: '$(fileVersion)'
+  file_version: '$(fileVersion)'
+  informational_version: '$(productVersion)'
 
 before_build:
   - nuget restore
@@ -27,11 +48,10 @@ before_build:
 build:
   verbosity: minimal
 
-artifacts:
-- path: ClosedXML.Report/bin/%CONFIGURATION%/netstandard2.0/ClosedXML.Report.dll
-- path: ClosedXML.Report/bin/%CONFIGURATION%/net40/ClosedXML.Report.dll
-- path: ClosedXML.Report/bin/%CONFIGURATION%/net46/ClosedXML.Report.dll
+configuration:
+- Release
+- Release.Signed
 
-- path: ClosedXML.Report/bin/%CONFIGURATION%/netstandard2.0/ClosedXML.Report.dll
-- path: ClosedXML.Report/bin/%CONFIGURATION%/net40/ClosedXML.Report.dll
-- path: ClosedXML.Report/bin/%CONFIGURATION%/net46/ClosedXML.Report.dll
+artifacts:
+- path: ClosedXML.Report/bin/%CONFIGURATION%/*.nupkg
+- path: ClosedXML.Report/bin/%CONFIGURATION%/*/ClosedXML.Report.dll

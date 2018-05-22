@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/ClosedXML/ClosedXML.Report/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ClosedXML/ClosedXML.Report</projectUrl>
+    <copyright>MIT</copyright>
+    <language>en-US</language>
+    <tags>ClosedXML Report</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\net40\ClosedXML.Report.dll" target="lib\net40\ClosedXML.Report.dll" />
+    <file src="bin\Release\net46\ClosedXML.Report.dll" target="lib\net46\ClosedXML.Report.dll" />
+    <file src="bin\Release\netstandard2.0\ClosedXML.Report.dll" target="lib\netstandard2.0\ClosedXML.Report.dll" />
+  </files>
+</package>
