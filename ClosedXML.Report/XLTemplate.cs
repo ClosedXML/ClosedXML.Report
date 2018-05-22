@@ -10,10 +10,12 @@ namespace ClosedXML.Report
 {
     public class XLTemplate : IDisposable
     {
-        private readonly IXLWorkbook _workbook;
         private readonly RangeInterpreter _interpreter;
+        private bool _disposeWorkbookWithTemplate;
 
-        public IXLWorkbook Workbook => _workbook;
+        public bool IsDisposed { get; private set; }
+
+        public IXLWorkbook Workbook { get; private set; }
 
         static XLTemplate()
         {
@@ -51,22 +53,24 @@ namespace ClosedXML.Report
         }
 
         public XLTemplate(string fileName) : this(new XLWorkbook(fileName))
-        { }
+        {
+            _disposeWorkbookWithTemplate = true;
+        }
 
         public XLTemplate(Stream stream) : this(new XLWorkbook(stream))
-        { }
+        {
+            _disposeWorkbookWithTemplate = true;
+        }
 
         public XLTemplate(IXLWorkbook workbook)
         {
-            if (workbook == null)
-                throw new ArgumentNullException(nameof(workbook), "Workbook cannot be null");
-
-            _workbook = workbook;
+            Workbook = workbook ?? throw new ArgumentNullException(nameof(workbook), "Workbook cannot be null");
             _interpreter = new RangeInterpreter(null);
         }
 
         public void Generate()
         {
+            CheckIsDisposed();
             foreach (var ws in Workbook.Worksheets.Where(sh => sh.Visibility == XLWorksheetVisibility.Visible && !sh.PivotTables.Any()).ToArray())
             {
                 ws.ReplaceCFFormulaeToR1C1();
@@ -77,6 +81,7 @@ namespace ClosedXML.Report
 
         public void AddVariable(object value)
         {
+            CheckIsDisposed();
             var type = value.GetType();
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
                 .Select(f => new { f.Name, val = f.GetValue(value), type = f.FieldType })
@@ -91,22 +96,37 @@ namespace ClosedXML.Report
 
         public void AddVariable(string alias, object value)
         {
+            CheckIsDisposed();
             _interpreter.AddVariable(alias, value);
         }
 
         public void SaveAs(string file)
         {
+            CheckIsDisposed();
             Workbook.SaveAs(file);
         }
 
         public void SaveAs(Stream stream)
         {
+            CheckIsDisposed();
             Workbook.SaveAs(stream);
         }
 
         public void Dispose()
         {
-            Workbook.Dispose();
+            if (IsDisposed)
+                return;
+
+            if (_disposeWorkbookWithTemplate)
+                Workbook.Dispose();
+            Workbook = null;
+            IsDisposed = true;
+        }
+
+        private void CheckIsDisposed()
+        {
+            if (IsDisposed)
+                throw new ObjectDisposedException("Template has been disposed");
         }
     }
 }

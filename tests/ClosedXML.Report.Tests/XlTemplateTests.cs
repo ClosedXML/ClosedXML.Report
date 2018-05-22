@@ -236,7 +236,7 @@ namespace ClosedXML.Report.Tests
         }
 
         [Fact]
-        public void WorkbookDisposedWithTemplate()
+        public void AutoCreatedWorkbookDisposedWithTemplate()
         {
             var disposed = false;
             var wb = Substitute.For<IXLWorkbook>();
@@ -245,7 +245,41 @@ namespace ClosedXML.Report.Tests
             var template = new XLTemplate(wb);
 
             template.Dispose();
+            disposed.Should().BeFalse("Workbook specified in the constructor should not be disposed");
+        }
+
+        [Fact]
+        public void WorkbookNotDisposedWithTemplate()
+        {
+            var disposed = false;
+            var wb = Substitute.For<IXLWorkbook>();
+            wb.When(w => w.Dispose()).Do(w => disposed = true);
+
+            var fileName = Path.Combine(TestConstants.TemplatesFolder, "1.xlsx");
+            var template = new XLTemplate(fileName);
+            ReplaceWorkbookWithMock(template, wb);
+
+            template.Dispose();
+
             disposed.Should().BeTrue("Workbook expected to be disposed");
+        }
+
+        [Fact]
+        public void AccessToDisposedTemplateThrows()
+        {
+            var fileName = Path.Combine(TestConstants.TemplatesFolder, "1.xlsx");
+            var template = new XLTemplate(fileName);
+
+            template.Dispose();
+
+            Assert.Throws<ObjectDisposedException>(() => template.AddVariable("Test", "test"));
+            Assert.Throws<ObjectDisposedException>(() => template.Generate());
+        }
+
+        private void ReplaceWorkbookWithMock(XLTemplate template, IXLWorkbook mock)
+        {
+            var property = template.GetType().GetProperty("Workbook");
+            property.SetValue(template, mock);
         }
     }
 }
