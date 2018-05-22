@@ -21,9 +21,10 @@
     <PackageId>ClosedXML.Report.Signed</PackageId>
     <OutputPath>bin\Release.Signed\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Optimize>true</Optimize>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);STRONGNAME</DefineConstants>
+    <DefineConstants>$(DefineConstants);RELEASE;STRONGNAME</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
