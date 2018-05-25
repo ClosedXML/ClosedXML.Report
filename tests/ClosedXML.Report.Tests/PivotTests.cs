@@ -14,10 +14,12 @@ namespace ClosedXML.Report.Tests
         {
         }
 
-        [Fact]
-        public void Simple()
+        [Theory,
+         InlineData("tPivot1.xlsx"),
+         InlineData("tPivot5_Static.xlsx")]
+        public void Simple(string templateFile)
         {
-            XlTemplateTest("tPivot1.xlsx",
+            XlTemplateTest(templateFile,
                 tpl =>
                 {
                     using (var db = new DbDemos())
@@ -29,26 +31,7 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    CompareWithGauge(wb, "tPivot1.xlsx");
-                });
-        }
-
-        [Fact]
-        public void Static()
-        {
-            XlTemplateTest("tPivot5_Static.xlsx",
-                tpl =>
-                {
-                    using (var db = new DbDemos())
-                    {
-                        var rows = from o in db.orders
-                            select new {o.Customer.Company, o.PaymentMethod, OrderNo = o.OrderNo.ToString(), o.ShipDate, o.ItemsTotal, o.TaxRate, o.AmountPaid};
-                        tpl.AddVariable("Orders", rows);
-                    }
-                },
-                wb =>
-                {
-                    CompareWithGauge(wb, "tPivot5_Static.xlsx");
+                    CompareWithGauge(wb, templateFile);
                 });
         }
 

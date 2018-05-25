@@ -7,34 +7,20 @@ using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
 {
-    public class GroupTagTests: XlsxTemplateTestsBase
+    public class GroupTagTests : XlsxTemplateTestsBase
     {
         public GroupTagTests(ITestOutputHelper output) : base(output)
         {
         }
 
-        [Fact]
-        public void Simple()
+        [Theory,
+         InlineData("GroupTagTests_Simple.xlsx"),
+         InlineData("GroupTagTests_Collapse.xlsx"),
+         InlineData("tLists2_sum.xlsx"),
+        ]
+        public void Simple(string templateFile)
         {
-            XlTemplateTest("GroupTagTests_Simple.xlsx",
-                tpl =>
-                {
-                    using (var db = new DbDemos())
-                    {
-                        var cust = db.customers.LoadWith(x=>x.Orders).OrderBy(c=>c.CustNo).First();
-                        tpl.AddVariable(cust);
-                    }
-                },
-                wb =>
-                {
-                    CompareWithGauge(wb, "GroupTagTests_Simple.xlsx");
-                });
-        }
-
-        [Fact]
-        public void WithCollapseOption()
-        {
-            XlTemplateTest("GroupTagTests_Collapse.xlsx",
+            XlTemplateTest(templateFile,
                 tpl =>
                 {
                     using (var db = new DbDemos())
@@ -45,7 +31,7 @@ namespace ClosedXML.Report.Tests
                 },
                 wb =>
                 {
-                    CompareWithGauge(wb, "GroupTagTests_Collapse.xlsx");
+                    CompareWithGauge(wb, templateFile);
                 });
         }
 
@@ -56,29 +42,11 @@ namespace ClosedXML.Report.Tests
                 tpl =>
                 {
                     using (var db = new DbDemos())
-                        tpl.AddVariable("Orders", db.orders.LoadWith(x=>x.Customer).OrderBy(c => c.OrderNo).ToArray());
+                        tpl.AddVariable("Orders", db.orders.LoadWith(x => x.Customer).OrderBy(c => c.OrderNo).ToArray());
                 },
                 wb =>
                 {
                     CompareWithGauge(wb, "GroupTagTests_WithHeader.xlsx");
-                });
-        }
-
-        [Fact]
-        public void SumWithoutGroup()
-        {
-            XlTemplateTest("tLists2_sum.xlsx",
-                tpl =>
-                {
-                    using (var db = new DbDemos())
-                    {
-                        var cust = db.customers.LoadWith(x => x.Orders).OrderBy(c => c.CustNo).First();
-                        tpl.AddVariable(cust);
-                    }
-                },
-                wb =>
-                {
-                    CompareWithGauge(wb, "tLists2_sum.xlsx");
                 });
         }
     }
