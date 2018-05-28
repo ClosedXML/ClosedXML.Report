@@ -38,6 +38,16 @@ namespace ClosedXML.Report.Tests
             ((IEnumerable<Customer>) dlg.DynamicInvoke(customers)).First().Id.Should().Be(1);
         }
 
+        [Fact]
+        public void MultipleExpressionsWithNullResult()
+        {
+            var eval = new FormulaEvaluator();
+            eval.AddVariable("a", null);
+            eval.AddVariable("b", 1);
+            eval.Evaluate("{{a}}{{b}}").Should().Be(1);
+            eval.Evaluate("{{b}}{{a}}").Should().Be("1");
+        }
+
         class Customer
         {
             public int Id { get; set; }
