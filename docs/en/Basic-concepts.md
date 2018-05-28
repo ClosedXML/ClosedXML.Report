@@ -15,7 +15,7 @@ Example: `template.AddVariable(cust);`.
 ### Expressions 
 Expressions are enclosed in double braces {{ }}. A syntax similar to C # is used. Lambda expressions are supported.
 
-Example: `{{item.Product.Price * item.Product.Quantity}}`.
+Example: ```{{item.Product.Price * item.Product.Quantity}}```.
 
 ### Tags
 ClosedXML.Report имеет ряд встроенных возможностей, которые позволяют спрятать лист, отсортировать полученную область, получить итоги по ее колонкам, сгруппировать область и др. Эти дополнительные действия можно вызвать, дополнив книгу-шаблон тэгами листа, области или столбцов. Тэг – это строковое значение, заключённое в двойные угловые скобки и понятное анализатору ClosedXML.Report. Эти опции помогут вам получить промежуточные итоги, включить автофильтр, создать сводные таблицы по области и др. Теги могут иметь параметры.
