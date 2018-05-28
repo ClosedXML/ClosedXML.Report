@@ -40,7 +40,7 @@ namespace ClosedXML.Report
                 return ((DateTime)val).ToOADate().ToString(CultureInfo.InvariantCulture);
 
             var formattable = val as IFormattable;
-            return formattable != null ? formattable.ToString(null, CultureInfo.InvariantCulture) : val.ToString();
+            return formattable != null ? formattable.ToString(null, CultureInfo.InvariantCulture) : val?.ToString();
         }
 
         private IEnumerable<string> GetExpressions(string cellValue)
