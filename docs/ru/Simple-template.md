@@ -1,6 +1,8 @@
 ---
-title: Simple Template
+title: Простой шаблон
 ---
+
+# Простой шаблон
 
 You can use _expressions_ with braces {{ }} in any cell of any sheet of the _template_
 workbook and Excel will find their values at run-time. How? ClosedXML.Report adds a hidden worksheet in a report

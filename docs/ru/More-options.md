@@ -1,4 +1,7 @@
 ---
-title: More Options
+title: Дополнительные возможности
 ---
+
+# Дополнительные возможности
+
 Under construction

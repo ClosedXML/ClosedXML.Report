@@ -1,6 +1,8 @@
 ---
-title: ClosedXML.Report
+title: Contents
 ---
+
+# Contents
 
 Welcome to the ClosedXML.Report wiki!
 

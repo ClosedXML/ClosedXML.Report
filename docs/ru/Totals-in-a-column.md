@@ -1,4 +1,7 @@
 ---
-title: Totals in a Column
+title: Итоги по столбцам
 ---
-Under construction
+
+# Итоги по столбцам
+
+В разработке

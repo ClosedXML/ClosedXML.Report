@@ -1,10 +1,9 @@
 ---
 layout: default
-title: Quick Start
+title: Быстрый старт
 ---
 
-# ClosedXML.Report
-[![Build status](https://ci.appveyor.com/api/projects/status/y2ha69ggalbj1y47/branch/develop?svg=true)](https://ci.appveyor.com/project/ClosedXML/closedxml-report/branch/develop/artifacts)
+# Быстрый старт
 
 
 ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel.

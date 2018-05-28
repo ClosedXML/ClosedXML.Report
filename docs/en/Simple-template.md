@@ -2,6 +2,8 @@
 title: Simple Template
 ---
 
+# Simple Template
+
 You can use _expressions_ with braces {{ }} in any cell of any sheet of the _template_
 workbook and Excel will find their values at run-time. How? ClosedXML.Report adds a hidden worksheet in a report
 workbook and transfers values of all fields for the current record. Then it names all these data cells.

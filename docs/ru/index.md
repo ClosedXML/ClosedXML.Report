@@ -1,6 +1,8 @@
 ---
-title: ClosedXML.Report
+title: Оглавление
 ---
+
+# Оглавление
 
 Welcome to the ClosedXML.Report wiki!
 

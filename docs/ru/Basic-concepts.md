@@ -1,6 +1,8 @@
 ---
-title: Basic Concepts
+title: Базовые сущности
 ---
+
+# Базовые сущности
 
 ### Templates
 All work on creating a report is built on templates (XLSX-templates) - Excel books that contain a description of the report form, as well as options for books, sheets and report areas. Special field formulas and data areas describe the data in the report structure that you want to transfer to Excel. ClosedXML.Report will call the template and fill the report cells with data from the specified sets.
