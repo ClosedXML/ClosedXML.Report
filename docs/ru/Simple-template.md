@@ -12,7 +12,7 @@ Cells with field formulas can be formatted by any known way, including condition
 
 Take a simple example:
 
-![simpletemplate](../../images/35029927-31d53e8a-fb6e-11e7-8e9d-0bbeae351b1b.png)
+![simpletemplate](../../images/simple-template-01.png)
 
 ```c#
 ...
