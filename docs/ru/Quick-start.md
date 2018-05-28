@@ -1,7 +1,9 @@
 ---
 layout: default
+title: Quick Start
 ---
-# ClosedXML.Report - РУССКАЯ ВЕРСИЯ
+
+# ClosedXML.Report
 [![Build status](https://ci.appveyor.com/api/projects/status/y2ha69ggalbj1y47/branch/develop?svg=true)](https://ci.appveyor.com/project/ClosedXML/closedxml-report/branch/develop/artifacts)
 
 

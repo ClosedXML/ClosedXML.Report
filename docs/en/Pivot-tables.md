@@ -1,3 +1,7 @@
+---
+title: Pivot Tables
+---
+
 Для построения сводных таблиц достаточно указать в области данных тэги сводной таблицы. После этого эта область становится источником данных для сводной таблицы. Тэг `<<pivot>>` – это первый тэг, на который обращает внимание ClosedXML.Report при анализе ячеек области данных. Этот тэг может иметь несколько аргументов. Вот синтаксис:
 
 `<<pivot Name=PivotTableName [Dst=Destination] [RowGrand] [ColumnGrand] [NoPreserveFormatting] [CaptionNoFormatting] [MergeLabels] [ShowButtons] [TreeLayout] [AutofitColumns] [NoSort]>>`

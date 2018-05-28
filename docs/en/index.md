@@ -1,3 +1,7 @@
+---
+title: ClosedXML.Report
+---
+
 Welcome to the ClosedXML.Report wiki!
 
 [What is ClosedXML.Report?](What-is-ClosedXML.Report)
