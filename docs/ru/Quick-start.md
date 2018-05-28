@@ -48,7 +48,7 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 
 **Template**
 
-![template1](../../images/33486458-3161eb92-d6bb-11e7-8833-d500461b18a5.png)
+![template1](../../images/quick-start-01.png)
 
 **Code**
 
@@ -74,6 +74,6 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 
 **Result**
 
-![result1](../../images/33486460-31a02542-d6bb-11e7-8899-8694157ee9dd.png)
+![result1](../../images/quick-start-02.png)
 
 [For more information see the wiki](https://github.com/closedxml/closedxml.report/wiki) and [tests](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
