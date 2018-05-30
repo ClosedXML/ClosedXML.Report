@@ -20,7 +20,7 @@ OR
 
 
 ### Expressions 
-Expressions are enclosed in double braces {{ }} and utilize the syntax similar to C#. Lambda expressions are supported.
+Expressions are enclosed in double braces {% raw %}{{ }}{% endraw %} and utilize the syntax similar to C#. Lambda expressions are supported.
 
 Examples: 
 
