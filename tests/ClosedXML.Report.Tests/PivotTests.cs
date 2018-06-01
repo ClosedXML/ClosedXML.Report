@@ -59,7 +59,7 @@ namespace ClosedXML.Report.Tests
                     var ptSheet = workbook.Worksheets.Add("PivotTable");
 
                     // Create the pivot table, using the data from the "PastrySalesData" table
-                    var pt = ptSheet.PivotTables.AddNew("PivotTable", ptSheet.Cell(8, 2), dataRange);
+                    var pt = ptSheet.PivotTables.Add("PivotTable", ptSheet.Cell(8, 2), dataRange);
                     pt.MergeAndCenterWithLabels = true;
                     pt.ShowExpandCollapseButtons = false;
                     pt.ClassicPivotTableLayout = true;

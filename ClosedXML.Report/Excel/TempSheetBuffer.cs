@@ -126,26 +126,26 @@ namespace ClosedXML.Report.Excel
 
             var tgtSheet = range.Worksheet;
             var tgtStartRow = range.RangeAddress.FirstAddress.RowNumber;
-            using (var srcRows = _sheet.Rows(tempRng.RangeAddress.FirstAddress.RowNumber, tempRng.RangeAddress.LastAddress.RowNumber))
-                foreach (var row in srcRows)
-                {
-                    var xlRow = tgtSheet.Row(row.RowNumber() + tgtStartRow-1);
-                    xlRow.OutlineLevel = row.OutlineLevel;
-                    if (row.IsHidden)
-                        xlRow.Collapse();
-                    else
-                        xlRow.Expand();
-                }
+            var srcRows = _sheet.Rows(tempRng.RangeAddress.FirstAddress.RowNumber, tempRng.RangeAddress.LastAddress.RowNumber);
+            foreach (var row in srcRows)
+            {
+                var xlRow = tgtSheet.Row(row.RowNumber() + tgtStartRow-1);
+                xlRow.OutlineLevel = row.OutlineLevel;
+                if (row.IsHidden)
+                    xlRow.Collapse();
+                else
+                    xlRow.Expand();
+            }
             return range;
         }
 
         public void Clear()
         {
-            using (var srcRows = _sheet.RowsUsed(true))
-                foreach (var row in srcRows)
-                {
-                    row.OutlineLevel = 0;
-                }
+            var srcRows = _sheet.RowsUsed(true);
+            foreach (var row in srcRows)
+            {
+                row.OutlineLevel = 0;
+            }
             _sheet.Clear();
         }
 

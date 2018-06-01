@@ -41,12 +41,8 @@ namespace ClosedXML.Report
         {
             var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
             var cells = from c in range.CellsUsed(c => !c.HasFormula
-                                                    && !innerRanges.Any(nr =>
-                                                    {
-                                                           using (var r = nr.Ranges)
-                                                           using (var cr = c.AsRange())
-                                                               return r.Contains(cr);
-                                                    }))
+                                                    && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange()))
+                                                 )
                         let value = c.GetString()
                         where (value.StartsWith("<<") || value.EndsWith(">>"))
                         select c;

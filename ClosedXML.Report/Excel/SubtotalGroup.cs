@@ -3,7 +3,7 @@ using ClosedXML.Excel;
 
 namespace ClosedXML.Report.Excel
 {
-    public class SubtotalGroup : IDisposable
+    public class SubtotalGroup
     {
         public int Level { get; private set; }
         public int Column { get; set; }
@@ -21,12 +21,6 @@ namespace ClosedXML.Report.Excel
             Level = level;
             GroupTitle = groupTitle;
             Range = range;
-        }
-
-        public void Dispose()
-        {
-            Range?.Dispose();
-            SummaryRow?.Dispose();
         }
     }
 }

@@ -57,15 +57,18 @@ namespace ClosedXML.Report.Excel
 
         internal static void ShiftRows(this IXLRangeBase range, int rowCount)
         {
-            var firstAddress = range.RangeAddress.FirstAddress;
+            return; //TODO
+            /*var firstAddress = range.RangeAddress.FirstAddress;
             var lastAddress = range.RangeAddress.LastAddress;
             range.RangeAddress.FirstAddress = range.Worksheet.Cell(firstAddress.RowNumber + rowCount, firstAddress.ColumnNumber).Address;
             range.RangeAddress.LastAddress = range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address;
+            */
         }
 
         internal static void ExtendRows(this IXLRangeBase range, int rowCount, bool down = true)
         {
-            if (down)
+            return; // TODO
+            /*if (down)
             {
                 var lastAddress = range.RangeAddress.LastAddress;
                 range.RangeAddress.LastAddress = range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address;
@@ -74,7 +77,7 @@ namespace ClosedXML.Report.Excel
             {
                 var firstAddress = range.RangeAddress.FirstAddress;
                 range.RangeAddress.FirstAddress = range.Worksheet.Cell(firstAddress.RowNumber - rowCount, firstAddress.ColumnNumber).Address;
-            }
+            }*/
         }
 
         internal static KeyValuePair<string, IXLRangeAddress>[] GetRangeParameters(this IXLWorksheet ws, string formulaA1)
@@ -123,12 +126,12 @@ namespace ClosedXML.Report.Excel
         /// <param name="baseAddr">Reference system. Coordinates are calculated relative to this range.</param>
         public static IXLRangeAddress Relative(this IXLRangeAddress range, IXLRangeAddress baseAddr)
         {
-            using (var xlRange = baseAddr.Worksheet.Range(
+            return baseAddr.Worksheet.Range(
                 range.FirstAddress.RowNumber - baseAddr.FirstAddress.RowNumber + 1,
                 range.FirstAddress.ColumnNumber - baseAddr.FirstAddress.ColumnNumber + 1,
                 range.LastAddress.RowNumber - baseAddr.FirstAddress.RowNumber + 1,
-                range.LastAddress.ColumnNumber - baseAddr.FirstAddress.ColumnNumber + 1))
-                return xlRange.RangeAddress;
+                range.LastAddress.ColumnNumber - baseAddr.FirstAddress.ColumnNumber + 1)
+                .RangeAddress;
         }
 
         /// <summary>
@@ -152,17 +155,15 @@ namespace ClosedXML.Report.Excel
         /// <param name="targetBase"></param>
         public static IXLRange Relative(this IXLRangeBase range, IXLRangeBase baseRange, IXLRangeBase targetBase)
         {
-            using (var xlRange = targetBase.Worksheet.Range(
+            var xlRange = targetBase.Worksheet.Range(
                 range.RangeAddress.FirstAddress.RowNumber - baseRange.RangeAddress.FirstAddress.RowNumber + 1,
                 range.RangeAddress.FirstAddress.ColumnNumber - baseRange.RangeAddress.FirstAddress.ColumnNumber + 1,
                 range.RangeAddress.LastAddress.RowNumber - baseRange.RangeAddress.FirstAddress.RowNumber + 1,
-                range.RangeAddress.LastAddress.ColumnNumber - baseRange.RangeAddress.FirstAddress.ColumnNumber + 1))
-            {
-                var type = targetBase.GetType();
-                var method = type.GetMethod("Range", new[] {typeof(IXLRangeAddress)});
-                return (IXLRange)method.Invoke(targetBase, new object[] { xlRange.RangeAddress });
-                //return targetBase.Range(xlRange.RangeAddress);
-            }
+                range.RangeAddress.LastAddress.ColumnNumber - baseRange.RangeAddress.FirstAddress.ColumnNumber + 1);
+            var type = targetBase.GetType();
+            var method = type.GetMethod("Range", new[] {typeof(IXLRangeAddress)});
+            return (IXLRange)method.Invoke(targetBase, new object[] { xlRange.RangeAddress });
+            //return targetBase.Range(xlRange.RangeAddress);
         }
         public static void Subtotal(this IXLRange range, int groupBy, string function, int[] totalList, bool replace = true, bool pageBreaks = false, bool summaryAbove = false)
         {
@@ -188,7 +189,7 @@ namespace ClosedXML.Report.Excel
 
         public static T Unsubscribed<T>(this T range) where T : IXLRangeBase
         {
-            range.Dispose();
+            //TODO delete method
             return range;
         }
 
