@@ -4,35 +4,41 @@ title: Flat Tables
 
 # Flat Tables
 
-Переменные и их поля типа IEnumerable могут быть связаны с областью (плоская таблица). Для вывода всех значений IEnumerable необходимо выделить область и дать ему имя переменной. ClosedXML.Report находит именованные области и пытается выполнить отображение на связанные переменные. Для доступа к полям строк списка можно использовать имя item. 
+Variables or their properties of type `IEnumerable` may be bounded to regions (_flat tables_). To output all values from `IEnumerable` you should create a named range with the same name as variable. ClosedXML.Report searches named ranges and maps variables to them. To establish binding to properties of collection elements use built-in name `item`.
 
-При этом область имеет строгий формат:
-* Область может быть только прямоугольной формы.
-* Область должна быть непрерывной.
-* Ячейки области могут содержать формулы полей, обычные формулы Excel экранированные с `&`.
-* Ячейки могут быть пустыми.
+There are certain limitations on range configuration:
+* Range can only be rectangular
+* Range must not have gaps
+* Cells in ranges may store normal text, ClosedXML.Report _expressions_ (in double curly braces), standard Excel formulas, and formulas escaped with `&` character
+* Cells in ranges may be empty
 
-### Именование областей
-При построении документа ClosedXML.Report находит все именованные области и по их имени определяет источник данных. Имя области должно иметь имя переменной, из которой будут браться данные. Для вложенных таблиц имя области задаётся через подчёркивание '_'. Например, для списка Customers[].Orders[].Items[] имя области должно быть Customers_Orders_Items. Данный пример можно найти в [примере шаблона](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx).
 
-## Вертикальные области
-**Главное требование формата вертикальных областей ClosedXML.Report.** Любая горизонтальная область должна включать минимум два столбца и две строки. Крайний левый столбец и нижняя строка области рассматриваются как служебные и обрабатываются особым образом. После построения отчета все значения в ячейках служебного столбца очищаются, а служебная строка в зависимости от использованных опций уничтожается.
+### Range names
 
-При работе с областями этого типа ClosedXML.Report придерживается четкой схемы:
-* В область вставляется необходимое для переносимых записей количество строк. Обратите внимание, что при этом происходит вставка ячеек в область, а не строк в лист. Т.е. ячейки правее и левее области не будут опускаться вниз.
-* На вставленные строки накладываются форматы шаблонных ячеек.
-* Затем шаблонные ячейки удаляются.
-* В случае если в служебных ячейках (нижняя служебная строка области) не описаны какие-либо дополнительные действия (опции) удаляется служебная строка.
-* Если в служебной строке указаны дополнительные опции, то они обрабатываются, а затем в зависимости от набора указанных опций эта строка либо удаляется, либо в ней очищаются ячейки с опциями.
+While building a document ClosedXML.Report finds all named ranges and determines a data sources by their names. Range name should coincide with the name of the variable serving a data source for this range. For nested tables, range name is built using underscore (`_`). E.g. to output values from `Customers[].Orders[].Items[]` the range name must be `Customers_Orders_Items`. This example may be found in the [sample template]({{ site.github.repository_url }}/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx).
 
-Возьмём для рассмотрения шаблон с [главной страницы](https://github.com/ClosedXML/ClosedXML.Report). На рисунке
-показано, что область называется Orders и содержит только одну строку с формулами полей и служебные строку и
-столбец.
+
+## Vertical tables
+
+**Requirements for vertical tables**
+
+Each range specifying the vertical table must have at least two columns and two rows. The leftmost column and the bottom row serve to configuration purposes and are treated the special way. After the report is built the service column is cleared, and the service row is deleted if it is empty.
+
+When dealing with vertical tables CLosedXML.Report acts this way:
+* The required number of rows is inserted in the region. Pay attention that cells are added to the range only, not to the entire worksheet. That means, regions located to the right or left of the table won't be affected.
+* Contents of the added cells are filled with data according to template (static text, formulas or _expressions_).
+* Styles from the template are applied to the inserted cells.
+* Template cells are deleted.
+* If the service row does not contain any options it is deleted too.
+* If there are options defined in the service row they are processed accordingly, and then the row is either cleared or deleted.
+
+Take a look into example from the [start page]({{ site.github.repository_url }}). As you can see on the picture, there is a range named `Orders` including a single row with _expressions_, a service row and a service column.
 
 ![template](../../images/flat-tables-01.png)
 
-Мы применили различное форматирование ячеек в области. В том числе, мы задали формат даты для ячеек с формулами полей SaleDate и ShipDate. Формат числа с разделителями мы указали для полей Items total и Amount paid. Задали условное форматирование для Payment method. 
-Что бы из шаблона сгенерировать документ, нужно выполнить такой код:
+We applied custom styles to the cells in the range, i.e. we specified date formats for cells `SaleDate` and `ShipDate` and number formats with separators for cells `Items total` и `Amount paid`. In addition, we applied a conditional format to the `Payment method` cell.
+
+To build a report from the template you simply have to run this code:
 ```
 ...
         var template = new XLTemplate('template.xslx');
@@ -61,30 +67,34 @@ public class order
 	public double? AmountPaid { get; set; } // Double
 }
 ```
-На рисунке ниже вы видите полученный по этому шаблону готовый отчет. Обратите внимание на выделение области Orders в готовом отчете. Теперь эта область содержит перенесенные в отчет данные. В готовом отчете вы можете обращаться по имени области к этим данным.
+
+On the picture below you see the report produced from the specified template. Note that selected area now contains the data and is named `Orders`. You can use this name to access data in the result report.
 
 ![result](../../images/flat-tables-02.png)
 
-## Горизонтальные области
-Для горизонтальных областей нет таких строгих требований, как к вертикальным. При этом если область состоит только из одной строки (т.е. область не содержит строки опций), то она считается горизонтальной. Для горизонтальной области так же отсутствует требование иметь столбец опций. Т.е. горизонтальная область может состоять только из одной ячейки. Для строгого определения области как горизонтальной, в любой ячейке области должен быть определён тег Range с опцией horizontal: `<<Range horizontal>>`. Пример шаблона, использующего горизонтальные области можно найти в тестах тут [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/4.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/4.xlsx).
+## Horizontal tables
 
-В этом шаблоне мы можем найти две горизонтальных области, которые называются dates и PlanData_Hours. Каждая область состоит из одной ячейки. ClosedXML.Report такие области автоматически определяет как горизонтальные.
+Horizontal tables do not have such strict requirements as vertical tables do. The named range consisting of a single row (in other words, does not contain an options row) it is assumed to be a horizontal. The horizontal one does not need to have a service column either. In fact, the horizontal table may be defined by a single cell. To explicitly define a range as a horizontal table definition put a special tag `<<Range horizontal>>` into any cell inside the range. You may find the example using the horizontal range [on the GitHub]({{ site.github.repository_url }}/blob/develop/tests/Templates/4.xlsx).
+
+There two ranges in that template - `dates` and `PlanData_Hours`. Each of these ranges consist of one cell. As has been said, ClosedXML.Report treats such ranges as horizontal table definitions.
+
 ![horizontal template](../../images/flat-tables-03.png)
 
-Сгенерированный документ:
+The result report:
 
 ![horizontal result](../../images/flat-tables-04.png)
 
 
-## Служебная строка
-ClosedXML.Report имеет ряд встроенных возможностей, которые позволяют сортировать полученную область, получать итоги по ее колонкам, группировать область и др. Эти дополнительные действия над областью можно вызвать, дополнив книгу-шаблон тэгами области или столбцов. Тэг – это строковое значение, заключённое в двойные угловые скобки и понятное анализатору ClosedXML.Report. Для табличных областей ClosedXML.Report все действия производит по указанию какого-либо тэга в служебной строке. В следующих разделах, мы подробно расскажем обо всех тэгах области. С помощью этих тэгов в служебной строке вы сможете указывать, какие действия необходимо произвести как над областью в целом (тэги области), так и над конкретным столбцом области (тэги столбца). Эти опции помогут вам получить промежуточные итоги, включить автофильтр, создать сводные таблицы по области и др.
+## Service row
 
-Для примера рассмотрим следующий шаблон. 
+ClosedXML.Report offers nice features for data post-processing on building report: it sort the data, calculate totals by columns, apply grouping, etc. Which actions to perform may be defined by putting special _tags_ to the template. _Tag_ is a keyword put into double angle brackets along with configuration options. Tags controlling data in tables should be placed in the service row of the table template. Some of the tags are aplied to the range as a whole, the others affect only a column they are put in.
+
+We will give detailed information on tags usage in the next chapters.
+
+Now consider the following template. 
 
 ![simple template](../../images/flat-tables-05.png)
 
-В ячейке шаблона под формулой поля Amount paid вписана строка `<<sum>>`. Для этой ячейки мы указали числовой формат с разделителями и "полужирный" шрифт. В соседней слева ячейке мы написали “Итого”. Когда мы запустим отчет, то снизу на месте тэга `<<sum>>` появится сумма по столбцу Amount paid с форматированием ячейки-шаблона. Тэг `<<sum>>` относится к
-тэгам столбцов. Такие тэги позволяют описать действия только над столбцом, под которым они указаны. Чаще всего вы
-будете использовать тэги, создающие итоги по столбцу (или промежуточные итоги). Но с помощью тэгов столбцов вы
-можете также произвести сортировку данных или сгруппировать данные.
-Действия над областью в целом описывают тэги области. Они указываются в крайней левой ячейке служебной строки. Откройте этот же шаблон, впишите в эту ячейку тэг `<<Autofilter>>` и тэг `<<OnlyValues>>`, сохраните и закройте шаблон. В построенном по этому шаблону отчете вы увидите включенный для этой области автофильтр. Назначение тэга `<<Autofilter>>` после построения отчета вам, наверняка, уже понятно. Что же происходит в области после использования тэга `<<OnlyValues>>`? Этот тэг позволяет убрать из области все формулы, заменив их значениями, полученными в результате вычислений по этим формулам. Обратите внимание на сумму по столбцу “Amount paid”. Теперь в этой ячейке формула “=ПРОМЕЖУТОЧНЫЕ.ИТОГИ(9; ...” преобразована в результат этой формулы. 
+The cell in the service row in the `Amount paid` column contains the tag `<<sum>>`. The cell next to it contains a static text "Total". After the report is built the tag `<<sum>>` will be replaced with a formula calculating the sum of the amounts of the entire column. Tag `<<sum>>` belongs to the "column" tags. Such tags are applied to the column they are put in. Other examples of the "column" tags are `<<sort>>` that defines the ordering of the data set by the specified column, or `<<group>>` configuring grouping by the specified field.
+
+Actions that must be performed on the whole range are defined with "range" tags. They are defined in the first (leftmost) cell of the service row. You may experiment a little with the described template. Try to open it and write tags `<<Autofilter>> <<OnlyValues>>` into the first cell of the service row. After you saved the template and rebuilt the report you may see that now it has the auto-filter turned on, and the formula `=SUBTOTAL(9, ...` in the `Amount paid` column has been replaced with the static value.

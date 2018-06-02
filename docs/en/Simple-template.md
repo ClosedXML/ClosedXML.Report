@@ -8,7 +8,9 @@ You can use _expressions_ with braces {% raw %}{{ }}{% endraw %} in any cell of 
 workbook and Excel will find their values at run-time. How? ClosedXML.Report adds a hidden worksheet in a report
 workbook and transfers values of all fields for the current record. Then it names all these data cells.
 
-Excel formulas, in which _variables_ are added, must be escaped `&`. As an example: `&=CONCATENATE(Addr1;" "; Addr2)`
+Excel formulas, in which _variables_ are added, must be escaped `&`. As an example: {% raw %}`&=CONCATENATE({{Addr1}}, " ", {{Addr2}})`{% endraw %}. 
+Pay attention that escaped formulas must follow international, non-localized syntax which includes English names of functions, comma as a value separator, etc. 
+For example, in Russian version of Excel you could use formula `=СУММ(A1:B2; E1:F2)` for ordinary cells, but escaped formula should be `&=SUM(A1:B2, E1:F2)`.
 
 Cells with field formulas can be formatted by any known way, including conditional formatting.
 
