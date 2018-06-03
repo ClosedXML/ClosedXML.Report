@@ -20,7 +20,7 @@ Welcome to the ClosedXML.Report wiki!
 
 [Pivot tables](Pivot-tables)
 
-[Nested ranges — Master-detail reports](Nested-ranges-—-Master-detail-reports)
+[Nested ranges: Master-detail reports](Nested-ranges_-Master-detail-reports)
 
 ## Options
 [Sorting a list range](Sorting)

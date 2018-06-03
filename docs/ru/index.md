@@ -4,31 +4,34 @@ title: Оглавление
 
 # Оглавление
 
-Welcome to the ClosedXML.Report wiki!
+Добро пожаловать в справочное руководство по ClosedXML.Report!
 
-[What is ClosedXML.Report?](What-is-ClosedXML.Report)
+[Что такое ClosedXML.Report?](What-is-ClosedXML.Report)
 
-[Basic concepts](Basic-concepts)
+[Базовые сущности](Basic-concepts)
 
-## Let's go 
-[Simple template](Simple-template)
+## Начало работы
 
-[Quick start](Quick-start)
+[Простой шаблон](Simple-template)
 
-## Templates
-[Flat tables](Flat-tables)
+[Быстрый старт](Quick-start)
 
-[Pivot tables](Pivot-tables)
+## Шаблоны
 
-[Nested ranges — Master-detail reports](Nested-ranges-—-Master-detail-reports)
+[Плоские таблицы](Flat-tables)
 
-## Options
-[Sorting a list range](Sorting)
+[Сводные таблицы](Pivot-tables)
 
-[Totals in a column](Totals-in-a-column)
+[Вложенные области: отчет с детализацией](Nested-ranges_-Master-detail-reports)
 
-[Grouping](Grouping)
+## Дополнительные опции
 
-[More options](More-options)
+[Сортировка данных](Sorting)
 
-[Adding custom tags](Adding-custom-tags)
+[Подытоги по столбцам](Totals-in-a-column)
+
+[Группировка](Grouping)
+
+[Другие возможности](More-options)
+
+[Добавление нестандартных тегов](Adding-custom-tags)
