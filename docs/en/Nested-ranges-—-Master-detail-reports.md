@@ -4,38 +4,45 @@ title: Nested Ranges: Master-detail Report
 
 # Nested Ranges: Master-detail Report
 
-ClosedXML.Report позволяет создавать сложно-структурированные отчеты. Это достигается размещением одной области внутри другой, что отражает отношение «один-ко-многим» между двумя наборами данных. 
+ClosedXML.Report makes possible creating reports with a comprehensive structure. This can be achieved by placing one range inside the other which corresponds to "one-to-many" relation between two sets of data.
 
-Разберём пример. Мы должны спроектировать шаблон таким образом, чтобы область таблицы Items была вложена в область Orders, а та, в свою очередь, в область таблицы Customer. Исходя из этих соображений и из того факта, что основная информация содержится именно в этой таблице, мы начали с проектирования области Items. На рисунке вы видите то, что у нас получилось. 
+Consider the example. We want to desing a report in such a way that table `Items` were nested into table `Orders`, which in its turn would be nested in `Customer` table. Given that, and because the main information belongs to the table `Items` let's get started from it. On the picture you see the table `Items` definition.
 
 ![step 1](../../images/nested-ranges-01.png)
 
-Как вы видите, мы назвали область Customers_Orders_Items. Об именовании областей мы говорили в разделе [Flat tables#Именование областей](https://github.com/ClosedXML/ClosedXML.Report/wiki/Flat-tables#%D0%98%D0%BC%D0%B5%D0%BD%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B5%D0%B9). 
-Из рисунка также видно, что над областью мы поместили заголовок таблицы и оставили несколько ячеек слева пустыми. Последнее мы сделали только из-за желания сделать привлекательным и легко читаемым будущий отчет. Вы же можете не делать этого. Спроектированная область Customers_Orders_Items должна быть вложена в область Customers_Orders. 
+As you can see, we named the range Customers_Orders_Items. Rules for assigning names to the ranges were explained in the section "[Flat tables#Range names](Flat-tables#Range%20names)". You also can see that we put a title above the table and left some place to the left of it, but that's just the matter of appearance, you don't have to do it if it's not what need.
+
+Then, the range `Customers_Orders_Items` must be placed inside the range `Customers_Orders`.
 
 ![step 2](../../images/nested-ranges-02.png)
 
-Мы вставили пустую строку над заголовком таблицы, указали в ней несколько формул полей из таблицы Orders и выделили область, включающую все строки области Customers_Orders_Items, строку с заголовком этой области, и строку под ней, подразумевая, что нижняя строка области является служебной. После мы добавили еще и заголовок над областью Customers_Orders. После этого мы приступили к формированию области для таблицы Customers.
+We inserted an empty string before the range, put a couple of _expressions_ here, and defined a new named range covering entire range `Customers_Orders_Items`, plus the row with captions for this table, plus the row below the table, assuming this row to be a service row for our new range. We also added another row to hold captions for `Orders` table ("Order no", "Sale date", etc.)
+
+
+Finally, we started to build `Customers` table.
 
 ![step 3](../../images/nested-ranges-03.png)
 
-Сильно не мудрствуя, мы вставили строку над заголовком области Customers_Orders и указали в ней формулы двух полей таблицы Customer (CustNo и Company). Памятуя о служебной строке области и о том, что необходимо этой последней областью охватить все предыдущие мы выделили область от строки с только что введенными формулами полей до строки, расположенной ниже области Customers_Orders. Эту выделенную область мы поименовали как Customers. Кроме того, из тех соображений, что пользователи благосклонно относятся только к красивым и легко читаемым отчетам, мы придали лоск будущему отчету, облагородив его различными цветами фона, границ и шрифтов. Из рисунка видно, что многие ячейки слева у вложенных областей оставлены пустыми. Повторим, что это сделано только из соображений дизайна. В своих отчетах вы можете не следовать этому примеру, памятуя только о том, что крайний левый столбец всегда считается служебным.
+This time we did the very same steps: insert the row, define the _expressions_ ({% raw %}`{{CustNo}}` and `{{Company}}`{% endraw %}), apply styles we like and define a named range `Customers` covering the nested ranges, plus a service row.
 
-[Полученный шаблон](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx)
+You can download the template file from [the GitHub]({{ site.github.repository_url }}/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx)
 
-Все это мы проделали, следуя нескольким несложным правилам, которым должны подчиняться вложенные области. Вот они:
-* все вложенные области должны соблюдать описанные выше правила непрерывности;
-* все области должны иметь служебную строку;
-* все области должны быть одной ширины и их левая и правая границы должны совпадать;
-* крайний левый столбец всех областей является служебным;
-* в область может быть вложено любое количество других областей;
-* глубина вложенности областей и их размеры ограничиваются только размером листа с учетом размеров готового отчета;
-* вложенная область может располагаться между любыми строками охватывающей ее области;
-* каждая область в иерархии вложенности рассматривается как единой целое за вычетом всех вложенных в нее областей, которые были описаны в предыдущих главах.
+To conclude, the rules to follow when creating a report with nested ranges are these:
 
-## Подитоги в отчётах "один-ко-многим"
-Здесь мы воспользуемся возможностями ClosedXML.Report по подведению итогов по столбцам области. Для демонстрации этих возможностей просуммируем поля в области Customers_Orders_Items и Customers_Orders, воспользовавшись тэгом итогов `<<sum>>`.
+* All nested areas must be continuous. 
+* Each range must have its own service row.
+* All ranges must have the same left and right boundaries; thus their widths must be equal too.
+* The leftmost column of all ranges is a "service" one.
+* One range may have any number of nested ranges.
+* The maximum depth of nested ranges is only limited by a worksheet capacity, when the data is specified.
+* The nested range may be places between any two rows of the outer range.
+* Each range in the hierarchy is treated as a whole, excluding the nested ranges, as described in the previous chapters.
+
+
+## Subtotals in Master-Detail Reports
+
+ClosedXML.Report supports calculating subtotals  for columns in a range. Here we use tag `<<sum>>` in both ranges `Customers_Orders_Items` and `Customers_Orders`.
 
 ![totals](../../images/nested-ranges-04.png)
 
-[Итоговый шаблон](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/Subranges_WithSubtotals_tMD2.xlsx)
+The resulting template may be found on [the GitHub]({{ site.github.repository_url }}/blob/develop/tests/Templates/Subranges_WithSubtotals_tMD2.xlsx)
