@@ -361,11 +361,11 @@ namespace ClosedXML.Report.Excel
             var firstCol = _range.RangeAddress.FirstAddress.ColumnNumber;
             var lastCol = _range.RangeAddress.LastAddress.ColumnNumber;
 
-            var rIdx = 0; //groups.First().SourceAddress.FirstAddress.RowNumber - firstRow;
+            var rIdx = 0;
             foreach (var gr in groups)
             {
                 if (gr.Type == RangeType.DataRange && _summaryAbove)
-                    rIdx ++;
+                    rIdx++;
                 var grRowCnt = gr.SourceAddress.LastAddress.RowNumber - gr.SourceAddress.FirstAddress.RowNumber + 1;
                 var trgtRng = Sheet.Range(firstRow + rIdx, firstCol, firstRow + grRowCnt + rIdx - 1, lastCol).Unsubscribed();
                 gr.TargetAddress = trgtRng.RangeAddress;
