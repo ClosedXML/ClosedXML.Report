@@ -15,6 +15,8 @@ Welcome to the ClosedXML.Report wiki!
 
 [Quick start](Quick-start)
 
+[Template examples](Examples)
+
 ## Templates
 [Flat tables](Flat-tables)
 
