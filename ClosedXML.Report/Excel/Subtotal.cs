@@ -293,6 +293,7 @@ namespace ClosedXML.Report.Excel
             IXLRangeRow lastRow = null;
             string prevVal = null;
             int groupStart = 0;
+            bool chgParent = false;
             List<MoveData> groups = new List<MoveData>();
 
             using (var rows = _range.Rows())
@@ -305,15 +306,22 @@ namespace ClosedXML.Report.Excel
                     var isSummaryRow = row.IsSummary();
 
                     if (string.IsNullOrEmpty(val) && !isSummaryRow)
+                    {
+                        if (groupStart > 0)
+                        {
+                            groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().Unsubscribed().LastCell(), RangeType.DataRange));
+                        }
+                        groups.Add(CreateMoveTask(groupBy, "", row.FirstCell(), row.LastCell(), RangeType.HeaderRow));
+                        prevVal = null;
+                        groupStart = 0;
                         continue;
+                    }
 
                     if (val != prevVal)
                     {
                         if (groupStart > 0)
                         {
-                            var groupRng = _range.Range(_range.Cell(groupStart, 1), row.RowAbove().Unsubscribed().LastCell()).Unsubscribed();
-                            var level = Sheet.Row(_range.RangeAddress.FirstAddress.RowNumber + groupStart).Unsubscribed().OutlineLevel;
-                            groups.Add(new MoveData(groupRng.RangeAddress, RangeType.DataRange, prevVal, level) { GroupColumn = groupBy });
+                            groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().Unsubscribed().LastCell(), RangeType.DataRange));
                         }
                         prevVal = val;
                         groupStart = !isSummaryRow ? row.RangeAddress.Relative(_range.RangeAddress).FirstAddress.RowNumber : 0;
@@ -328,7 +336,7 @@ namespace ClosedXML.Report.Excel
                 if (lastRow != null && groupStart > 0)
                 {
                     using (var groupRng = _range.Range(_range.Cell(groupStart, 1), lastRow.LastCell()))
-                        groups.Add(new MoveData(groupRng.RangeAddress, RangeType.DataRange, prevVal, Sheet.Row(groupStart).Unsubscribed().OutlineLevel));
+                        groups.Add(new MoveData(groupRng.RangeAddress, RangeType.DataRange, prevVal, Sheet.Row(groupStart).Unsubscribed().OutlineLevel) { GroupColumn = groupBy });
                 }
             }
 
@@ -336,17 +344,28 @@ namespace ClosedXML.Report.Excel
             return groups.ToArray();
         }
 
+        private MoveData CreateMoveTask(int groupColumn, string title, IXLCell firstCell, IXLCell lastCell, RangeType rangeType)
+        {
+            var groupRng = _range.Range(firstCell, lastCell).Unsubscribed();
+            var level = firstCell.WorksheetRow().Unsubscribed().OutlineLevel;
+            var group = new MoveData(groupRng.RangeAddress, rangeType, title, level) {GroupColumn = groupColumn};
+            return @group;
+        }
+
         private void CalculateAddresses(MoveData[] groups)
         {
+            if (!groups.Any())
+                return;
+
             var firstRow = _range.RangeAddress.FirstAddress.RowNumber;
             var firstCol = _range.RangeAddress.FirstAddress.ColumnNumber;
             var lastCol = _range.RangeAddress.LastAddress.ColumnNumber;
 
-            var rIdx = 0;
+            var rIdx = 0; //groups.First().SourceAddress.FirstAddress.RowNumber - firstRow;
             foreach (var gr in groups)
             {
                 if (gr.Type == RangeType.DataRange && _summaryAbove)
-                    rIdx++;
+                    rIdx ++;
                 var grRowCnt = gr.SourceAddress.LastAddress.RowNumber - gr.SourceAddress.FirstAddress.RowNumber + 1;
                 var trgtRng = Sheet.Range(firstRow + rIdx, firstCol, firstRow + grRowCnt + rIdx - 1, lastCol).Unsubscribed();
                 gr.TargetAddress = trgtRng.RangeAddress;
@@ -427,7 +446,7 @@ namespace ClosedXML.Report.Excel
                     .ForEach(g =>
                     {
                         g.Range.ExtendRows(1);
-                        g.SummaryRow.ShiftRows(1);
+                        if (!_summaryAbove) g.SummaryRow.ShiftRows(1);
                     });
             }
         }

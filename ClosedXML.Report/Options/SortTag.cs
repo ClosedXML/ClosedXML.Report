@@ -27,7 +27,7 @@ namespace ClosedXML.Report.Options
         public override void Execute(ProcessingContext context)
         {
             var fields = List.GetAll<SortTag>().ToArray();
-            foreach (var tag in fields.OrderBy(x => x.Num))
+            foreach (var tag in fields.OrderBy(x => x.Num).ThenBy(x => x.Column))
             {
                 context.Range.SortColumns.Add(tag.Column, tag.Order);
             }
@@ -39,7 +39,7 @@ namespace ClosedXML.Report.Options
             }
         }
 
-        public override byte Priority { get { return 128; } }
+        public override byte Priority => 128;
     }
 
     public class DescTag : SortTag

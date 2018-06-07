@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
 using Xunit;
@@ -16,7 +15,11 @@ namespace ClosedXML.Report.Tests
         [Theory,
          InlineData("GroupTagTests_Simple.xlsx"),
          InlineData("GroupTagTests_Collapse.xlsx"),
+         InlineData("tLists1_sort.xlsx"),
          InlineData("tLists2_sum.xlsx"),
+         InlineData("tLists3_options.xlsx"),
+         InlineData("tLists4_complexRange.xlsx"),
+         InlineData("tPage1_options.xlsx"),
         ]
         public void Simple(string templateFile)
         {
@@ -25,8 +28,33 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var cust = db.customers.LoadWith(x => x.Orders).OrderBy(c => c.CustNo).First();
+                        var cust = db.customers.LoadWith(x => x.Orders).OrderBy(c => c.CustNo).First(x=>x.CustNo == 1356);
                         tpl.AddVariable(cust);
+                    }
+                },
+                wb =>
+                {
+                    CompareWithGauge(wb, templateFile);
+                });
+        }
+
+        [Theory,
+         InlineData("GroupTagTests_SummaryAbove.xlsx"),
+         InlineData("GroupTagTests_MergeLabels.xlsx"),
+         InlineData("GroupTagTests_MergeLabels2.xlsx"),
+         InlineData("GroupTagTests_PlaceToColumn.xlsx"),
+         InlineData("GroupTagTests_NestedGroups.xlsx"),
+         InlineData("GroupTagTests_DisableOutline.xlsx"),
+        ]
+        public void Customers(string templateFile)
+        {
+            XlTemplateTest(templateFile,
+                tpl =>
+                {
+                    using (var db = new DbDemos())
+                    {
+                        var orders = db.orders.LoadWith(x => x.Customer);
+                        tpl.AddVariable("Orders", orders);
                     }
                 },
                 wb =>

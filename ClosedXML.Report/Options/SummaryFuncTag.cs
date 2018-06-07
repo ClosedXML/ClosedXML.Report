@@ -6,10 +6,7 @@ namespace ClosedXML.Report.Options
 {
     public class SummaryFuncTag : OptionTag
     {
-        public override byte Priority
-        {
-            get { return 50; }
-        }
+        public override byte Priority => 50;
 
         internal DataSource DataSource { get; set; }
 

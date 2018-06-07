@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Linq.Dynamic.Core.Exceptions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
@@ -182,7 +184,7 @@ namespace ClosedXML.Report
                         row++;
                         rowEnd = _buff.PrevAddress;
                         _buff.NewRow();
-                        if (row == _rowCnt)
+                        if (row > _rowCnt)
                             break;
                     }
                     else
@@ -243,9 +245,19 @@ namespace ClosedXML.Report
 
         private void RenderCell(FormulaEvaluator evaluator, TemplateCell cell, params Parameter[] pars)
         {
-            var value = cell.IsCalculated
-                ? evaluator.Evaluate(cell.GetString(), pars)
-                : cell.CellType == TemplateCellType.Formula ? cell.Formula : cell.Value;
+            object value;
+            try
+            {
+                value = cell.IsCalculated
+                    ? evaluator.Evaluate(cell.GetString(), pars)
+                    : cell.CellType == TemplateCellType.Formula ? cell.Formula : cell.Value;
+            }
+            catch (ParseException ex)
+            {
+                _buff.WriteValue(ex.Message, cell.Style);
+                Debug.WriteLine("Cell value evaluation exception (cell '{1}'): {0}", ex.Message, cell.XLCell.Address);
+                return;
+            }
 
             if (cell.CellType == TemplateCellType.Formula)
             {

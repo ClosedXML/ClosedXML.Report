@@ -36,6 +36,7 @@ namespace ClosedXML.Report
 
         private string ObjToString(object val)
         {
+            if (val == null) val = "";
             if (val is DateTime)
                 return ((DateTime)val).ToOADate().ToString(CultureInfo.InvariantCulture);
 

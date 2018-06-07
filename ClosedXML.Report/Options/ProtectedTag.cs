@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+Protected Option
+================================================
+OPTION          PARAMS                OBJECTS   
+================================================
+"Protected"      "Password="          Workbook, Worksheet, Range, Cell, Range Column
+================================================
+*/
+using System;
+using System.Collections;
+using ClosedXML.Excel;
+using ClosedXML.Report.Excel;
 
 namespace ClosedXML.Report.Options
 {
@@ -8,8 +19,7 @@ namespace ClosedXML.Report.Options
         {
             var xlCell = Cell.GetXlCell(context.Range);
             var cellAddr = xlCell.Address.ToStringRelative(false);
-            var cellRow = xlCell.WorksheetRow().RowNumber();
-            var cellClmn = xlCell.WorksheetColumn().ColumnNumber();
+            var xlAddress = xlCell.Relative(Range.RangeAddress.FirstAddress);
             var ws = Range.Worksheet;
             
             // whole workbook
@@ -20,21 +30,41 @@ namespace ClosedXML.Report.Options
             // whole worksheet
             else if (cellAddr == "A2")
             {
-                var passw = GetParameter("Password");
-                if (string.IsNullOrEmpty(passw))
-                    passw = Guid.NewGuid().ToString();
-                ws.Protect(passw);
+                ProtectSheet(ws);
             }
             // whole range
-            else if (cellRow == Range.LastRow().RowNumber() && cellClmn == 1)
+            else if (xlCell.Address.RowNumber == Range.RangeAddress.LastAddress.RowNumber && xlAddress.ColumnNumber == 1)
             {
-                Range.Style.Protection.Locked = true;
+                ws.Cells().ForEach(c => { c.Style.Protection.Locked = false; });
+                context.Range.Cells().ForEach(c => { c.Style.Protection.Locked = true; });
+                ProtectSheet(ws);
             }
             else
             {
-                xlCell.Style.Protection.Locked = true;
+                ws.Cells().ForEach(c => { c.Style.Protection.Locked = false; });
+
+                if (context.Value is DataSource)
+                {
+                    context.Range.Column(xlAddress.ColumnNumber).Cells()
+                        .ForEach(c => { c.Style.Protection.Locked = true; });
+                }
+                else
+                {
+                    xlCell.Style.Protection.Locked = true;
+                }
+
+                ProtectSheet(ws);
             }
         }
+
+        private void ProtectSheet(IXLWorksheet ws)
+        {
+            var passw = GetParameter("Password");
+            if (string.IsNullOrEmpty(passw))
+                passw = Guid.NewGuid().ToString();
+            ws.Protect(passw);
+        }
+
         public override byte Priority { get { return 0; } }
     }
 }

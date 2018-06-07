@@ -73,6 +73,12 @@ namespace ClosedXML.Report.Tests
         protected void CompareWithGauge(XLWorkbook actual, string fileExpected)
         {
             fileExpected = Path.Combine(TestConstants.GaugesFolder, fileExpected);
+            if (!File.Exists(fileExpected))
+            {
+                actual.SaveAs(Path.Combine("Output", Path.GetFileName(fileExpected)));
+                throw new FileNotFoundException("Gauge file not found.", fileExpected);
+            }
+
             using (var expected = new XLWorkbook(fileExpected))
             {
                 actual.Worksheets.Count.ShouldBeEquivalentTo(expected.Worksheets.Count, $"Count of worksheets must be {expected.Worksheets.Count}");
@@ -118,32 +124,36 @@ namespace ClosedXML.Report.Tests
             if (expected.PageSetup.PageOrder != actual.PageSetup.PageOrder)
                 messages.Add("PageOrder differ");
 
-            foreach (var expectedCell in expected.CellsUsed())
+            var usedCells = expected.CellsUsed(true).Select(c => c.Address)
+                .Concat(actual.CellsUsed(true).Select(c => c.Address))
+                .Distinct();
+            foreach (var address in usedCells)
             {
-                var actualCell = actual.Cell(expectedCell.Address);
+                var expectedCell = expected.Cell(address);
+                var actualCell = actual.Cell(address);
                 bool cellsAreEqual = true;
 
                 if (actualCell.Value?.ToString() != expectedCell.Value?.ToString())
                 {
-                    messages.Add($"Cell values are not equal starting from {actualCell.Address}");
+                    messages.Add($"Cell values are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (!string.Equals(actualCell.FormulaA1, expectedCell.FormulaA1, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    messages.Add($"Cell formulae are not equal starting from {actualCell.Address}");
+                    messages.Add($"Cell formulae are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (actualCell.DataType != expectedCell.DataType)
                 {
-                    messages.Add($"Cell data types are not equal starting from {actualCell.Address}");
+                    messages.Add($"Cell data types are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (expectedCell.Style.ToString() != actualCell.Style.ToString())
                 {
-                    messages.Add($"Cell style are not equal starting from {actualCell.Address}");
+                    messages.Add($"Cell style are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 

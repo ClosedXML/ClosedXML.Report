@@ -18,6 +18,6 @@ namespace ClosedXML.Report.Options
                         .ForEach(c => c.Value = c.Value);
             }
         }
-        public override byte Priority { get { return 255; } }
+        public override byte Priority => 40;
     }
 }
