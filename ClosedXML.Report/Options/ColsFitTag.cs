@@ -31,7 +31,7 @@
                 ws.Columns(cellClmn, cellClmn).AdjustToContents(ws.FirstRowUsed().RowNumber(), ws.LastRowUsed().RowNumber());
             }
             // whole range
-            else if (cellRow == Range.RangeAddress.LastAddress.RowNumber - itemsCnt + 1 && cellClmn == 1)
+            else if (cellRow == Range.RangeAddress.LastAddress.RowNumber && cellClmn == 1)
             {
                 ws.Columns(xlRange.FirstColumnUsed().ColumnNumber(), xlRange.LastColumnUsed().ColumnNumber())
                     .AdjustToContents(xlRange.FirstRowUsed().RowNumber()-1, xlRange.LastRowUsed().RowNumber());
