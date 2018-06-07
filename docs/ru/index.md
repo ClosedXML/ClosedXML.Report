@@ -28,7 +28,7 @@ title: Оглавление
 
 [Сортировка данных](Sorting)
 
-[Подытоги по столбцам](Totals-in-a-column)
+[Подитоги по столбцам](Totals-in-a-column)
 
 [Группировка](Grouping)
 
