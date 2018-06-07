@@ -76,13 +76,6 @@ title: Примеры шаблонов
 
 Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_mergelabels2.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_mergelabels2.xlsx)
 
-### Группировка с заголовками
-![grouptagtests_withheader](https://user-images.githubusercontent.com/1150085/41095315-b4ec70a4-6a59-11e8-99e3-327f123570a9.png)
-
-Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx)
-
-Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx)
-
 ### Отключенное схлопывание групп
 ![grouptagtests_disableoutline](https://user-images.githubusercontent.com/1150085/41095303-b39ac3ea-6a59-11e8-8548-802c8369cf1a.png)
 
@@ -103,6 +96,13 @@ title: Примеры шаблонов
 Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_placetocolumn.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_placetocolumn.xlsx)
 
 Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_placetocolumn.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_placetocolumn.xlsx)
+
+### Группировка с заголовками
+![grouptagtests_withheader](https://user-images.githubusercontent.com/1150085/41095315-b4ec70a4-6a59-11e8-99e3-327f123570a9.png)
+
+Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx)
+
+Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx)
 
 ### Поддиапазоны
 ![subranges_simple_tmd1](https://user-images.githubusercontent.com/1150085/41095301-b34dcc84-6a59-11e8-8252-b45e23419e1d.png)
