@@ -62,20 +62,6 @@ title: Примеры шаблонов
 
 Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_summaryabove.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_summaryabove.xlsx)
 
-### Группировка с заголовками
-![grouptagtests_withheader](https://user-images.githubusercontent.com/1150085/41095315-b4ec70a4-6a59-11e8-99e3-327f123570a9.png)
-
-Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx)
-
-Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx)
-
-### Отключенное схлопывание групп
-![grouptagtests_disableoutline](https://user-images.githubusercontent.com/1150085/41095303-b39ac3ea-6a59-11e8-8548-802c8369cf1a.png)
-
-Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_disableoutline.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_disableoutline.xlsx)
-
-Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_disableoutline.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_disableoutline.xlsx)
-
 ### Объединение заголовков (вариант 1)
 ![grouptagtests_mergelabels](https://user-images.githubusercontent.com/1150085/41095305-b3c1891c-6a59-11e8-8b64-295ae87c7df1.png)
 
@@ -89,6 +75,20 @@ title: Примеры шаблонов
 Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_mergelabels2.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_mergelabels2.xlsx)
 
 Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_mergelabels2.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_mergelabels2.xlsx)
+
+### Группировка с заголовками
+![grouptagtests_withheader](https://user-images.githubusercontent.com/1150085/41095315-b4ec70a4-6a59-11e8-99e3-327f123570a9.png)
+
+Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_withheader.xlsx)
+
+Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_withheader.xlsx)
+
+### Отключенное схлопывание групп
+![grouptagtests_disableoutline](https://user-images.githubusercontent.com/1150085/41095303-b39ac3ea-6a59-11e8-8548-802c8369cf1a.png)
+
+Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_disableoutline.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_disableoutline.xlsx)
+
+Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_disableoutline.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_disableoutline.xlsx)
 
 ### Вложенные группы
 ![grouptagtests_nestedgroups](https://user-images.githubusercontent.com/1150085/41095310-b44b4968-6a59-11e8-94e6-4c7e13477a38.png)
