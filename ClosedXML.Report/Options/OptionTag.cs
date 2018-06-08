@@ -15,6 +15,7 @@ namespace ClosedXML.Report.Options
         public string Name { get; set; }
         public bool Enabled { get; set; }
         public abstract byte Priority { get; }
+        public IXLRangeRow RangeOptionsRow { get; internal set; }
 
         private int _column;
         public int Column
@@ -42,6 +43,19 @@ namespace ClosedXML.Report.Options
         protected virtual void SetRange(IXLRange value)
         {
             _range = value;
+        }
+
+        protected bool IsSpecialRangeCell(IXLCell cell)
+        {
+            var cellRow = cell.WorksheetRow().RowNumber();
+            var cellClmn = cell.WorksheetColumn().ColumnNumber();
+            var optRow = RangeOptionsRow?.RangeAddress;
+            return cellRow == optRow?.LastAddress.RowNumber && cellClmn == optRow.FirstAddress.ColumnNumber;
+        }
+
+        protected bool IsSpecialRangeRow(IXLCell cell)
+        {
+            return cell.Address.RowNumber == RangeOptionsRow?.RangeAddress.LastAddress.RowNumber;
         }
 
         public virtual void Execute(ProcessingContext context)

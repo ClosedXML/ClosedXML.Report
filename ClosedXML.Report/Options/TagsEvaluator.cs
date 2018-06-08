@@ -26,6 +26,10 @@ namespace ClosedXML.Report.Options
                     continue;
                 optionTag.Cell = cell;
                 optionTag.Range = range;
+                if (cell.XLCell.Address.RowNumber != cell.Row) // is range tag
+                {
+                    optionTag.RangeOptionsRow = range.LastRow();
+                }
                 result.Add(optionTag);
                 value = value.Replace(expr, "");
             }
