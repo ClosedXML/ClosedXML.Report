@@ -63,7 +63,7 @@ namespace ClosedXML.Report.Tests.TestModels
     public partial class customer
     {
         [PrimaryKey, Identity]
-        public double CustNo { get; set; } // Double
+        public int CustNo { get; set; } // int
         [Column, Nullable]
         public string Company { get; set; } // text(30)
         [Column, Nullable]

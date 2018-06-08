@@ -12,7 +12,9 @@ namespace ClosedXML.Report.Tests
     {
         [Theory,
         InlineData("Subranges_Simple_tMD1.xlsx"),
-        InlineData("Subranges_WithSubtotals_tMD2.xlsx")]
+        InlineData("Subranges_WithSubtotals_tMD2.xlsx"),
+        InlineData("Subranges_WithSort_tMD3.xlsx"),
+        ]
         public void Simple(string templateFile)
         {
             XlTemplateTest(templateFile,

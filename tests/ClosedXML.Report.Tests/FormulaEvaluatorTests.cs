@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core.Exceptions;
 using System.Linq.Expressions;
 using FluentAssertions;
 using Xunit;
@@ -46,6 +47,14 @@ namespace ClosedXML.Report.Tests
             eval.AddVariable("b", 1);
             eval.Evaluate("{{a}}{{b}}").Should().Be(1);
             eval.Evaluate("{{b}}{{a}}").Should().Be("1");
+        }
+
+        [Fact]
+        public void ParseExceptionMessageShouldBeUnknownIdentifier()
+        {
+            var eval = new FormulaEvaluator();
+            Assert.Throws<ParseException>(() => eval.Evaluate("{{item.id}}"))
+                .Message.Should().Be("Unknown identifier 'item'");
         }
 
         class Customer

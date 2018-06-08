@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Linq.Expressions;
-using ClosedXML.Excel;
 using ClosedXML.Report.Utils;
 
 namespace ClosedXML.Report.Excel

@@ -171,7 +171,7 @@ namespace ClosedXML.Report.Utils
             FieldInfo[] fieldInfo = enumType.GetFields(BindingFlags.Static | BindingFlags.Public);
             return (from field in fieldInfo
                     let attr = (DescriptionAttribute)Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute))
-                    where checkPredicate(attr.Description) || checkPredicate(field.Name)
+                    where (attr != null && checkPredicate(attr.Description)) || checkPredicate(field.Name)
                     select field.GetValue(null)).ToArray();
         }
     }

@@ -28,6 +28,9 @@ namespace ClosedXML.Report
             TagsRegister.Add<PageOptionsTag>("PageOptions");
             TagsRegister.Add<ProtectedTag>("Protected");
             TagsRegister.Add<RangeOptionTag>("Range");
+            TagsRegister.Add<RangeOptionTag>("SummaryAbove");
+            TagsRegister.Add<RangeOptionTag>("DisableGrandTotal");
+            TagsRegister.Add<DeleteTag>("Delete");
             TagsRegister.Add<SortTag>("Sort");
             TagsRegister.Add<SortTag>("Asc");
             TagsRegister.Add<DescTag>("Desc");

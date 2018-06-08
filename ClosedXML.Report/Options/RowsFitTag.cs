@@ -29,13 +29,13 @@
                 ws.Rows(cellRow, cellRow).AdjustToContents(ws.FirstColumnUsed().ColumnNumber(), ws.LastColumnUsed().ColumnNumber());
             }
             // whole range
-            else if (cellRow == context.Range.LastRow().RowNumber() && cellClmn == 1)
+            else if (cellRow == context.Range.RangeAddress.LastAddress.RowNumber && cellClmn == context.Range.RangeAddress.FirstAddress.ColumnNumber)
             {
                 ws.Rows(context.Range.FirstRowUsed().RowNumber(), context.Range.LastRowUsed().RowNumber())
                     .AdjustToContents(context.Range.FirstColumnUsed().ColumnNumber(), context.Range.LastColumnUsed().ColumnNumber());
             }
             // range row
-            if (cellClmn == context.Range.FirstColumn().ColumnNumber())
+            if (cellClmn == context.Range.RangeAddress.FirstAddress.ColumnNumber)
             {
                 ws.Rows(cellRow, cellRow).AdjustToContents(context.Range.FirstColumnUsed().ColumnNumber(), context.Range.LastColumnUsed().ColumnNumber());
             }

@@ -32,7 +32,7 @@ namespace ClosedXML.Report
             var rangeName = range.RangeAddress.ToStringRelative(true);
             ParseTags(range, rangeName);
             EvaluateValues(range);
-            TagsPostprocessing(rangeName, null);
+            TagsPostprocessing(rangeName, new ProcessingContext(range, null));
         }
 
         public void ParseTags(IXLRange range, string rangeName)
@@ -116,7 +116,15 @@ namespace ClosedXML.Report
                 }
                 catch (ParseException ex)
                 {
-                    Debug.WriteLine("Cell value evaluation exception (range '{1}'): {0}", ex.Message, range.RangeAddress);
+                    if (ex.Message == "Unknown identifier 'item'" && pars.Length == 0)
+                    {
+                        var firstCell = cell.CellAbove().WorksheetRow().FirstCell();
+                        firstCell.Value = "The range does not meet the requirements of the list ranges. For details, see the documentation.";
+                        firstCell.Style.Font.FontColor = XLColor.Red;
+                    }
+                    cell.Value = ex.Message;
+                    cell.Style.Font.FontColor = XLColor.Red;
+                    Debug.WriteLine("Cell value evaluation exception (cell '{1}'): {0}", ex.Message, cell.Address);
                 }
             }
 

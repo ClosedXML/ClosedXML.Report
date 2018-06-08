@@ -17,7 +17,7 @@
                 ws.Hide();
             }
             // whole range
-            else if (cellRow == range.LastRow().RowNumber() && cellClmn == 1)
+            else if (cellRow == range.RangeAddress.LastAddress.RowNumber && cellClmn == 1)
             {
                 range.Worksheet.Hide();
             }
