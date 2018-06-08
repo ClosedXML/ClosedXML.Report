@@ -28,8 +28,8 @@ namespace ClosedXML.Report.Options
             // range column
             else if (RangeOptionsRow != null)
             {
-                var addrInRange = xlCell.Relative(Range.RangeAddress.FirstAddress);
-                context.Range.Column(addrInRange.ColumnNumber)
+                var cmln = xlCell.Address.ColumnNumber - Range.RangeAddress.FirstAddress.ColumnNumber + 1;
+                context.Range.Column(cmln)
                     .CellsUsed(i => i.HasFormula)
                     .ForEach(c => c.Value = c.Value);
             }
