@@ -18,7 +18,12 @@ namespace ClosedXML.Report.Options
         private string _rangeOptionsRow;
         public IXLRangeAddress RangeOptionsRow
         {
-            get { return Cell.XLCell.Worksheet.Range(_rangeOptionsRow).Unsubscribed().RangeAddress; }
+            get
+            {
+                return _rangeOptionsRow == null
+                    ? null
+                    : Cell.XLCell.Worksheet.Range(_rangeOptionsRow).Unsubscribed().RangeAddress;
+            }
             set { _rangeOptionsRow = value.ToString(); }
         }
 
