@@ -26,6 +26,7 @@ OPTION          PARAMS                OBJECTS      RNG     Priority
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
@@ -70,7 +71,17 @@ namespace ClosedXML.Report.Options
         public override void Execute(ProcessingContext context)
         {
             if (!(context.Value is DataSource))
+            {
+#if !DEBUG
+                var xlCell = Cell.GetXlCell(context.Range);
+                xlCell.Value = "The GROUP tag can't be used outside the named range.";
+                xlCell.Style.Font.FontColor = XLColor.Red;
+                Debug.WriteLine("Cell value evaluation exception (cell '{1}'): {0}", ex.Message, cell.Address);
+                return;
+#else
                 throw new ArgumentException("The GROUP tag can't be used outside the named range.");
+#endif
+            }
 
             var fields = List.GetAll<GroupTag>()
                 .OrderBy(x => context.Range.Cell(x.Cell.Row, x.Cell.Column).WorksheetColumn().ColumnNumber()).ToArray();
