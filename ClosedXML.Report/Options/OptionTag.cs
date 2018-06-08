@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using ClosedXML.Excel;
+using ClosedXML.Report.Excel;
 
 namespace ClosedXML.Report.Options
 {
     public abstract class OptionTag
     {
-        private IXLRange _range;
-
         internal byte PriorityKey { get; set; }
 
         public Dictionary<string, string> Parameters { get; set; }
@@ -15,7 +14,13 @@ namespace ClosedXML.Report.Options
         public string Name { get; set; }
         public bool Enabled { get; set; }
         public abstract byte Priority { get; }
-        public IXLRangeRow RangeOptionsRow { get; internal set; }
+
+        private string _rangeOptionsRow;
+        public IXLRangeAddress RangeOptionsRow
+        {
+            get { return Cell.XLCell.Worksheet.Range(_rangeOptionsRow).Unsubscribed().RangeAddress; }
+            set { _rangeOptionsRow = value.ToString(); }
+        }
 
         private int _column;
         public int Column
@@ -30,6 +35,7 @@ namespace ClosedXML.Report.Options
             Parameters = new Dictionary<string, string>();
         }
 
+        private IXLRange _range;
         public IXLRange Range
         {
             get { return _range; }
@@ -49,13 +55,12 @@ namespace ClosedXML.Report.Options
         {
             var cellRow = cell.WorksheetRow().RowNumber();
             var cellClmn = cell.WorksheetColumn().ColumnNumber();
-            var optRow = RangeOptionsRow?.RangeAddress;
-            return cellRow == optRow?.LastAddress.RowNumber && cellClmn == optRow.FirstAddress.ColumnNumber;
+            return cellRow == RangeOptionsRow?.LastAddress.RowNumber && cellClmn == RangeOptionsRow.FirstAddress.ColumnNumber;
         }
 
         protected bool IsSpecialRangeRow(IXLCell cell)
         {
-            return cell.Address.RowNumber == RangeOptionsRow?.RangeAddress.LastAddress.RowNumber;
+            return cell.Address.RowNumber == RangeOptionsRow?.LastAddress.RowNumber;
         }
 
         public virtual void Execute(ProcessingContext context)

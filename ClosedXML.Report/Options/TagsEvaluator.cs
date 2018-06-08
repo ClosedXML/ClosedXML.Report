@@ -28,7 +28,7 @@ namespace ClosedXML.Report.Options
                 optionTag.Range = range;
                 if (cell.XLCell.Address.RowNumber != cell.Row) // is range tag
                 {
-                    optionTag.RangeOptionsRow = range.LastRow();
+                    optionTag.RangeOptionsRow = range.LastRow().RangeAddress;
                 }
                 result.Add(optionTag);
                 value = value.Replace(expr, "");

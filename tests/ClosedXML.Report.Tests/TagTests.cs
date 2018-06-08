@@ -23,7 +23,7 @@ namespace ClosedXML.Report.Tests
             {
                 Cell = new TemplateCell(relAddr.RowNumber, relAddr.ColumnNumber, cell),
                 Range = rng,
-                RangeOptionsRow = rng.LastRow(),
+                RangeOptionsRow = rng.LastRow().RangeAddress,
             };
             return tag;
         }
