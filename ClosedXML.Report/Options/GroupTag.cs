@@ -76,7 +76,7 @@ namespace ClosedXML.Report.Options
                 var xlCell = Cell.GetXlCell(context.Range);
                 xlCell.Value = "The GROUP tag can't be used outside the named range.";
                 xlCell.Style.Font.FontColor = XLColor.Red;
-                Debug.WriteLine("Cell value evaluation exception (cell '{1}'): {0}", ex.Message, cell.Address);
+                Debug.WriteLine($"The GROUP tag can't be used outside the named range {xlCell.Address}.");
                 return;
 #else
                 throw new ArgumentException("The GROUP tag can't be used outside the named range.");
