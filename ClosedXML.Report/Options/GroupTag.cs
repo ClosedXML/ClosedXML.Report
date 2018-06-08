@@ -69,6 +69,9 @@ namespace ClosedXML.Report.Options
 
         public override void Execute(ProcessingContext context)
         {
+            if (!(context.Value is DataSource))
+                throw new ArgumentException("The GROUP tag can't be used outside the named range.");
+
             var fields = List.GetAll<GroupTag>()
                 .OrderBy(x => context.Range.Cell(x.Cell.Row, x.Cell.Column).WorksheetColumn().ColumnNumber()).ToArray();
 

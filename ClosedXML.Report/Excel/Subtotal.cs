@@ -293,7 +293,6 @@ namespace ClosedXML.Report.Excel
             IXLRangeRow lastRow = null;
             string prevVal = null;
             int groupStart = 0;
-            bool chgParent = false;
             List<MoveData> groups = new List<MoveData>();
 
             using (var rows = _range.Rows())

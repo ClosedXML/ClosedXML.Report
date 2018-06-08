@@ -12,7 +12,7 @@
             var ws = xlRange.Worksheet;
             var itemsCnt = context?.Value is DataSource ds ? ds.GetAll().Length : 0;
 
-                // whole workbook
+            // whole workbook
             if (cellAddr == "A1")
             {
                 foreach (var worksheet in ws.Workbook.Worksheets)

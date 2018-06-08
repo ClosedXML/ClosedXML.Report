@@ -1,4 +1,12 @@
-﻿using ClosedXML.Excel;
+﻿/*
+================================================
+OPTION          OBJECTS   
+================================================
+"DELETE"        Worksheet, Worksheet Row/Column, Range Column
+================================================
+*/
+
+using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 
 namespace ClosedXML.Report.Options
