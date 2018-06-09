@@ -55,29 +55,35 @@ namespace ClosedXML.Report.Excel
             return rangeAddress.Contains(address.FirstAddress) && rangeAddress.Contains(address.LastAddress);
         }
 
-        internal static void ShiftRows(this IXLRangeBase range, int rowCount)
+        internal static IXLRange ShiftRows(this IXLRangeBase range, int rowCount)
         {
-            return; //TODO
-            /*var firstAddress = range.RangeAddress.FirstAddress;
+            var firstAddress = range.RangeAddress.FirstAddress;
             var lastAddress = range.RangeAddress.LastAddress;
-            range.RangeAddress.FirstAddress = range.Worksheet.Cell(firstAddress.RowNumber + rowCount, firstAddress.ColumnNumber).Address;
-            range.RangeAddress.LastAddress = range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address;
-            */
+
+            return range.Worksheet.Range(
+                firstAddress.RowNumber + rowCount,
+                firstAddress.ColumnNumber,
+                lastAddress.RowNumber + rowCount,
+                lastAddress.ColumnNumber);
         }
 
-        internal static void ExtendRows(this IXLRangeBase range, int rowCount, bool down = true)
+        internal static IXLRange ExtendRows(this IXLRangeBase range, int rowCount, bool down = true)
         {
-            return; // TODO
-            /*if (down)
+            if (down)
             {
                 var lastAddress = range.RangeAddress.LastAddress;
-                range.RangeAddress.LastAddress = range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address;
+                return range.Worksheet.Range(
+                    range.RangeAddress.FirstAddress,
+                    range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address
+                    );
             }
             else
             {
                 var firstAddress = range.RangeAddress.FirstAddress;
-                range.RangeAddress.FirstAddress = range.Worksheet.Cell(firstAddress.RowNumber - rowCount, firstAddress.ColumnNumber).Address;
-            }*/
+                return range.Worksheet.Range(
+                    range.Worksheet.Cell(firstAddress.RowNumber - rowCount, firstAddress.ColumnNumber).Address,
+                    range.RangeAddress.LastAddress);
+            }
         }
 
         internal static KeyValuePair<string, IXLRangeAddress>[] GetRangeParameters(this IXLWorksheet ws, string formulaA1)
@@ -146,25 +152,6 @@ namespace ClosedXML.Report.Excel
                 cell.Address.ColumnNumber - baseAddr.ColumnNumber + 1).Address;
         }
 
-
-        /// <summary>
-        /// Get range relative to another range.
-        /// </summary>
-        /// <param name="range">range</param>
-        /// <param name="baseRange">Coordinate system. Coordinates are calculated relative to this range.</param>
-        /// <param name="targetBase"></param>
-        public static IXLRange Relative(this IXLRangeBase range, IXLRangeBase baseRange, IXLRangeBase targetBase)
-        {
-            var xlRange = targetBase.Worksheet.Range(
-                range.RangeAddress.FirstAddress.RowNumber - baseRange.RangeAddress.FirstAddress.RowNumber + 1,
-                range.RangeAddress.FirstAddress.ColumnNumber - baseRange.RangeAddress.FirstAddress.ColumnNumber + 1,
-                range.RangeAddress.LastAddress.RowNumber - baseRange.RangeAddress.FirstAddress.RowNumber + 1,
-                range.RangeAddress.LastAddress.ColumnNumber - baseRange.RangeAddress.FirstAddress.ColumnNumber + 1);
-            var type = targetBase.GetType();
-            var method = type.GetMethod("Range", new[] {typeof(IXLRangeAddress)});
-            return (IXLRange)method.Invoke(targetBase, new object[] { xlRange.RangeAddress });
-            //return targetBase.Range(xlRange.RangeAddress);
-        }
         public static void Subtotal(this IXLRange range, int groupBy, string function, int[] totalList, bool replace = true, bool pageBreaks = false, bool summaryAbove = false)
         {
             using (var subtotal = new Subtotal(range, summaryAbove))
@@ -216,9 +203,10 @@ namespace ClosedXML.Report.Excel
 
         public static void SuspendEvents(this IXLWorksheet sheet)
         {
-            var type = sheet.GetType();
+            return; //TODO remove method
+            /*var type = sheet.GetType();
             var method = type.GetMethod("SuspendEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);
+            method.Invoke(sheet, new object[0]);*/
         }
 
         public static void Consolidate(this IXLConditionalFormats formats)
@@ -230,9 +218,10 @@ namespace ClosedXML.Report.Excel
 
         public static void ResumeEvents(this IXLWorksheet sheet)
         {
-            var type = sheet.GetType();
+            return; //TODO remove method
+            /*var type = sheet.GetType();
             var method = type.GetMethod("ResumeEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);
+            method.Invoke(sheet, new object[0]);*/
         }
 
         public static int RowCount(this IXLRangeAddress address)
@@ -256,11 +245,16 @@ namespace ClosedXML.Report.Excel
 
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
-            var frmtRng = Intersection(format.Range, fromRange).Relative(fromRange, toRange);
-            if (expand && toRange.RangeAddress.RowCount() != format.Range.RowCount())
-                frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount()).Unsubscribed();
-            var newFrmt = frmtRng.AddConditionalFormat();
-            newFrmt.CopyFrom(format);
+            foreach (var sourceFmtRange in format.Ranges)
+            {
+                var frmtRng = Intersection(sourceFmtRange, fromRange)
+                        .Relative(fromRange, toRange)
+                        as IXLRange;
+                if (expand && toRange.RangeAddress.RowCount() != sourceFmtRange.RowCount())
+                    frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount()).Unsubscribed();
+                var newFrmt = frmtRng.AddConditionalFormat();
+                newFrmt.CopyFrom(format);
+            }
         }
 
         internal static IXLRangeBase Intersection(IXLRangeBase range, IXLRangeBase crop)

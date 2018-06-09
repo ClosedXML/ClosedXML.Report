@@ -43,12 +43,21 @@ namespace ClosedXML.Report.Excel
             _maxRow = _prevrow = 1;
             _maxClmn = _prevclmn = 1;
             Clear();
+            _sheet.Style = _wb.Worksheets.First().Style;
         }
 
         public void WriteValue(object value, IXLStyle cellStyle)
         {
             var xlCell = _sheet.Cell(_row, _clmn);
-            xlCell.SetValue(value);
+            try
+            {
+                xlCell.SetValue(value);
+            }
+            catch (ArgumentException)
+            {
+                xlCell.SetValue(value?.ToString());
+            }
+
             xlCell.Style = cellStyle ?? _wb.Style;
             _maxClmn = Math.Max(_maxClmn, _clmn);
             _maxRow = Math.Max(_maxRow, _row);
@@ -92,11 +101,9 @@ namespace ClosedXML.Report.Excel
 
         public IXLRange CopyTo(IXLRange range)
         {
-            // LastCellUsed may produce the wrong result, see https://github.com/ClosedXML/ClosedXML/issues/339
-            var lastCell = _sheet.Cell(
-                _sheet.LastRowUsed(true)?.RowNumber() ?? 1,
-                _sheet.LastColumnUsed(true)?.ColumnNumber()?? 1);
-            var tempRng = _sheet.Range(_sheet.Cell(1, 1), lastCell);
+            var firstCell = _sheet.Cell(1, 1);
+            var lastCell = _sheet.LastCellUsed(includeFormats:true) ?? firstCell;
+            var tempRng = _sheet.Range(firstCell, lastCell);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)

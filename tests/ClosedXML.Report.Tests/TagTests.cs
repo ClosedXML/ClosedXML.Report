@@ -40,7 +40,6 @@ namespace ClosedXML.Report.Tests
 
         public void Dispose()
         {
-            _ws?.Dispose();
             _wb?.Dispose();
         }
     }

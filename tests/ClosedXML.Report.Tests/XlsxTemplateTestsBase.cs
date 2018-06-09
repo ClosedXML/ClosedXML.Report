@@ -145,7 +145,7 @@ namespace ClosedXML.Report.Tests
                     cellsAreEqual = false;
                 }
 
-                if (actualCell.DataType != expectedCell.DataType)
+                if (!expectedCell.HasFormula && actualCell.DataType != expectedCell.DataType)
                 {
                     messages.Add($"Cell data types are not equal starting from {address}");
                     cellsAreEqual = false;
