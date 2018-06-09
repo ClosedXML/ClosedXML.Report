@@ -146,6 +146,18 @@ ClosedXML.Report реализует тэг SUMMARYABOVE. Он помещает �
 
 Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_placetocolumn.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_placetocolumn.xlsx)
 
+### Формулы в строке группы
+![grouptagtests_formulasingrouprow](https://user-images.githubusercontent.com/1150085/41189540-28daca7c-6bd8-11e8-9ef6-a848fea727c3.png)
+
+ClosedXML.Report сохраняет весь текст в ячейках строки параметров, если он не распознаёт его тэгом. Используйте эту возможность для размещения формул Excel в строке параметров. 
+В примере выполняется группировка по полю Company и Payment method. В ячейке опций столбца Amount Paid есть формула Excel.
+
+Подробнее смотрите раздел [Группировка](Grouping)
+
+Шаблон: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_formulasingrouprow.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Templates/grouptagtests_formulasingrouprow.xlsx)
+
+Результат: [https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_formulasingrouprow.xlsx](https://github.com/ClosedXML/ClosedXML.Report/blob/develop/tests/Gauges/grouptagtests_formulasingrouprow.xlsx)
+
 ### Группировка с заголовками
 ![grouptagtests_withheader](https://user-images.githubusercontent.com/1150085/41095315-b4ec70a4-6a59-11e8-99e3-327f123570a9.png)
 
