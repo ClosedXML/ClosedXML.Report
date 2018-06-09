@@ -1,15 +1,18 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
 {
-    public class SubtotalTests: XlsxTemplateTestsBase
+    public class SubtotalTests: XlsxTemplateTestsBase, IDisposable
     {
         private IXLRange _rng;
         private XLWorkbook _workbook;
+        private FileStream _stream;
 
         public SubtotalTests(ITestOutputHelper output) : base(output)
         {
@@ -18,7 +21,8 @@ namespace ClosedXML.Report.Tests
         private void LoadTemplate(string fileTemplate)
         {
             var fileName = Path.Combine(TestConstants.TemplatesFolder, fileTemplate);
-            _workbook = new XLWorkbook(fileName);
+            _stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            _workbook = new XLWorkbook(_stream);
             _rng = _workbook.Range("range1");
         }
 
@@ -50,6 +54,27 @@ namespace ClosedXML.Report.Tests
         }
 
         [Fact]
+        public void ScanForGroupsTest()
+        {
+            LoadTemplate("9_plaindata.xlsx");
+
+            SubtotalGroup[] groups;
+            using (var subtotal = new Subtotal(_rng))
+                groups = subtotal.ScanForGroups(2);
+
+            groups.Length.Should().Be(3);
+            groups[0].Range.RangeAddress.ToString().Should().Be("C3:I26");
+            groups[0].Level.Should().Be(1);
+            groups[0].GroupTitle.Should().Be("Central");
+            groups[1].Range.RangeAddress.ToString().Should().Be("C27:I38");
+            groups[1].Level.Should().Be(1);
+            groups[1].GroupTitle.Should().Be("East");
+            groups[2].Range.RangeAddress.ToString().Should().Be("C39:I44");
+            groups[2].Level.Should().Be(1);
+            groups[2].GroupTitle.Should().Be("West");
+        }
+
+        [Fact]
         public void PageBreaks()
         { 
             LoadTemplate("9_plaindata.xlsx");
@@ -72,6 +97,13 @@ namespace ClosedXML.Report.Tests
                 subtotal.AddHeaders(3);
             }
             CompareWithGauge(_workbook, "Subtotal_WithHeaders.xlsx");
+        }
+
+        public void Dispose()
+        {
+            _rng?.Dispose();
+            _workbook?.Dispose();
+            _stream?.Dispose();
         }
     }
 }
