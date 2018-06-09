@@ -200,7 +200,7 @@ namespace ClosedXML.Report.Options
                 sheet.CollapseRows(grData.Level);
             }
 
-            if (grData.DisableOutLine || grData.MergeLabels == MergeMode.Merge2)
+            if (grData.DisableOutLine)
             {
                 using (var rows = sheet.Rows(subGroup.Range.RangeAddress.FirstAddress.RowNumber, subGroup.Range.RangeAddress.LastAddress.RowNumber))
                 {
