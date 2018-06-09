@@ -29,7 +29,7 @@
                 ws.Rows(cellRow, cellRow).AdjustToContents(ws.FirstColumnUsed().ColumnNumber(), ws.LastColumnUsed().ColumnNumber());
             }
             // whole range
-            else if (cellRow == context.Range.RangeAddress.LastAddress.RowNumber && cellClmn == context.Range.RangeAddress.FirstAddress.ColumnNumber)
+            else if (IsSpecialRangeCell(xlCell))
             {
                 ws.Rows(context.Range.FirstRowUsed().RowNumber(), context.Range.LastRowUsed().RowNumber())
                     .AdjustToContents(context.Range.FirstColumnUsed().ColumnNumber(), context.Range.LastColumnUsed().ColumnNumber());

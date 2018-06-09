@@ -25,17 +25,17 @@ namespace ClosedXML.Report.Options
                 ws.Workbook.Worksheets.Delete(ws.Name);
             }
             // whole column
-            if (xlCell.Address.RowNumber == 1)
+            else if (xlCell.Address.RowNumber == 1)
             {
                 ws.Column(xlCell.Address.ColumnNumber).Delete();
             }
             // whole row
-            if (xlCell.Address.ColumnNumber == 1)
+            else if (xlCell.Address.ColumnNumber == 1)
             {
                 ws.Row(xlCell.Address.RowNumber).Delete();
             }
             // range column
-            if (xlCell.Address.RowNumber == Range.RangeAddress.LastAddress.RowNumber)
+            else if (IsSpecialRangeRow(xlCell))
             {
                 var addrInRange = xlCell.Relative(Range.RangeAddress.FirstAddress);
                 context.Range.Column(addrInRange.ColumnNumber).Delete(XLShiftDeletedCells.ShiftCellsLeft);

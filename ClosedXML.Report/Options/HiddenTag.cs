@@ -1,27 +1,26 @@
-﻿namespace ClosedXML.Report.Options
+﻿using ClosedXML.Excel;
+
+namespace ClosedXML.Report.Options
 {
     public class HiddenTag: OptionTag
     {
         public override void Execute(ProcessingContext context)
         {
-            var range = context != null ? context.Range : Range;
-            var xlCell = Cell.GetXlCell(range);
+            var xlCell = Cell.GetXlCell(context.Range);
             var cellAddr = xlCell.Address.ToStringRelative(false);
-            var cellRow = xlCell.WorksheetRow().RowNumber();
-            var cellClmn = xlCell.WorksheetColumn().ColumnNumber();
-            var ws = range.Worksheet;
 
             // worksheet
             if (cellAddr == "A2")
             {
-                ws.Hide();
+                context.Range.Worksheet.Hide();
             }
             // whole range
-            else if (cellRow == range.RangeAddress.LastAddress.RowNumber && cellClmn == 1)
+            else if (IsSpecialRangeCell(xlCell))
             {
-                range.Worksheet.Hide();
+                context.Range.Rows().ForEach(r => r.WorksheetRow().Hide());
             }
         }
+
         public override byte Priority { get { return 0; } }
     }
 }
