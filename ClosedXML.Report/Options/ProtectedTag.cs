@@ -19,7 +19,6 @@ namespace ClosedXML.Report.Options
         {
             var xlCell = Cell.GetXlCell(context.Range);
             var cellAddr = xlCell.Address.ToStringRelative(false);
-            var xlAddress = xlCell.Relative(Range.RangeAddress.FirstAddress);
             var ws = Range.Worksheet;
             
             // whole workbook
@@ -33,7 +32,7 @@ namespace ClosedXML.Report.Options
                 ProtectSheet(ws);
             }
             // whole range
-            else if (xlCell.Address.RowNumber == Range.RangeAddress.LastAddress.RowNumber && xlAddress.ColumnNumber == 1)
+            else if (IsSpecialRangeCell(xlCell))
             {
                 ws.Cells().ForEach(c => { c.Style.Protection.Locked = false; });
                 context.Range.Cells().ForEach(c => { c.Style.Protection.Locked = true; });
@@ -45,6 +44,7 @@ namespace ClosedXML.Report.Options
 
                 if (context.Value is DataSource)
                 {
+                    var xlAddress = xlCell.Relative(Range.RangeAddress.FirstAddress);
                     context.Range.Column(xlAddress.ColumnNumber).Cells()
                         .ForEach(c => { c.Style.Protection.Locked = true; });
                 }
