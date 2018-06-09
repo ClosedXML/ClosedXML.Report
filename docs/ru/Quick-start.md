@@ -7,7 +7,7 @@ title: Быстрый старт
 
 
 ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel.
-ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code. With ClosedXML.Report, you can easily export any data from your .NET classes to Excel using the XLSX-template.
+It is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code. With ClosedXML.Report, you can easily export any data from your .NET classes to Excel using the XLSX-template.
 
 Excel is an excellent alternative to common report generators, and using Excel’s built-in features
 can make your reports much more responsive.
@@ -18,8 +18,6 @@ millisecond – so you waste less time on routine report programming and get sur
 to master such a versatile tool as Excel – ClosedXML.Report is an excellent choice.
 Furthermore, ClosedXML.Report doesn’t operate with the usual concepts of band-oriented report tools: Footer, Header,
 and Detail. So you get a much greater degree of freedom in report construction and design, and the easiest possible integration of .NET and Microsoft Excel. 
-
-[For more information see the wiki](https://github.com/closedxml/closedxml.report/wiki)
 
 ### Install ClosedXML.Report via NuGet
 
