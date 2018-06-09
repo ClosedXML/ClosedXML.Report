@@ -25,8 +25,8 @@ namespace ClosedXML.Report.Excel
 
         public void Dispose()
         {
-            if (Range != null) Range.Dispose();
-            if (SummaryRow != null) SummaryRow.Dispose();
+            Range?.Dispose();
+            SummaryRow?.Dispose();
         }
     }
 }

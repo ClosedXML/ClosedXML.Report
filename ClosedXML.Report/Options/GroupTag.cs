@@ -127,13 +127,16 @@ namespace ClosedXML.Report.Options
                     level++;
                 }
 
-                foreach (var g in groups.OrderBy(x=>x.Column))
+                foreach (var g in groups.OrderBy(x => x.Column))
                 {
                     Func<string, string> labFormat = null;
                     if (!string.IsNullOrEmpty(g.LabelFormat))
                         labFormat = title => string.Format(LabelFormat, title);
 
-                    subtotal.GroupBy(g.Column, g.DisableSubtotals ? new SubtotalSummaryFunc[0] : funcs, g.PageBreaks, labFormat);
+                    if (g.MergeLabels == MergeMode.Merge2 && funcs.Length == 0)
+                        subtotal.ScanForGroups(g.Column);
+                    else
+                        subtotal.GroupBy(g.Column, g.DisableSubtotals ? new SubtotalSummaryFunc[0] : funcs, g.PageBreaks, labFormat);
 
                     g.Level = ++level;
                 }
@@ -174,13 +177,18 @@ namespace ClosedXML.Report.Options
                 subGroup.HeaderRow.CopyConditionalFormatsFrom(groupRow);
 
             }
-            foreach (var cell in groupRow.Cells(c => c.HasFormula))
+
+            if (subGroup.SummaryRow != null)
             {
-                subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell;
+                foreach (var cell in groupRow.Cells(c => c.HasFormula))
+                {
+                    subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell;
+                }
+
+                subGroup.SummaryRow.Clear(XLClearOptions.AllFormats);
+                subGroup.SummaryRow.CopyStylesFrom(groupRow);
+                subGroup.SummaryRow.CopyConditionalFormatsFrom(groupRow);
             }
-            subGroup.SummaryRow.Clear(XLClearOptions.AllFormats);
-            subGroup.SummaryRow.CopyStylesFrom(groupRow);
-            subGroup.SummaryRow.CopyConditionalFormatsFrom(groupRow);
         }
 
         protected virtual void GroupRender(SubtotalGroup subGroup, GroupTag grData)
@@ -192,7 +200,7 @@ namespace ClosedXML.Report.Options
                 sheet.CollapseRows(grData.Level);
             }
 
-            if (grData.DisableOutLine || grData.MergeLabels == MergeMode.Merge2)
+            if (grData.DisableOutLine)
             {
                 using (var rows = sheet.Rows(subGroup.Range.RangeAddress.FirstAddress.RowNumber, subGroup.Range.RangeAddress.LastAddress.RowNumber))
                 {
@@ -200,15 +208,10 @@ namespace ClosedXML.Report.Options
                 }
             }
 
-            if (grData.MergeLabels == MergeMode.Merge2)
-            {
-                subGroup.SummaryRow.Delete(XLShiftDeletedCells.ShiftCellsUp);
-            }
-
             if (subGroup.Column <= 0)
                 return;
 
-            if (grData.LabelToColumn != subGroup.Column)
+            if (grData.LabelToColumn != subGroup.Column && subGroup.SummaryRow != null)
                 subGroup.SummaryRow.Cell(grData.LabelToColumn).Value = subGroup.SummaryRow.Cell(subGroup.Column).Value;
 
             if (grData.MergeLabels > 0)

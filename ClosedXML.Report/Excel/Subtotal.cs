@@ -99,10 +99,13 @@ namespace ClosedXML.Report.Excel
         {
             var grRanges = _groups
                 .Where(x => x.Column <= column)
-                .SelectMany(x => new[]
+                .SelectMany(x =>
                 {
-                    new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) {GroupColumn = x.Column},
-                    new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level-1)
+                    var datas = new List<MoveData>();
+                    datas.Add(new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) {GroupColumn = x.Column});
+                    if (x.SummaryRow != null)
+                        datas.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
+                    return datas;
                 })
                 .Where(x => x.Type == RangeType.SummaryRow || x.GroupColumn >= column)
                 .Union(_groups.Where(x => x.HeaderRow != null).Select(x => new MoveData(x.HeaderRow.RangeAddress, RangeType.HeaderRow, "", x.Level - 1)))
@@ -129,10 +132,13 @@ namespace ClosedXML.Report.Excel
             ArrangePageBreaks(Groups, new MoveData[0]);
 
             SetOutlineLevels(
-                _groups.SelectMany(x => new[]
+                _groups.SelectMany(x =>
                 {
-                    new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) {GroupColumn = x.Column},
-                    new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1)
+                    var datas = new List<MoveData>();
+                    datas.Add(new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) { GroupColumn = x.Column});
+                    if (x.SummaryRow != null)
+                        datas.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
+                    return datas;
                 })
                 .Union(_groups.Where(x => x.HeaderRow != null).Select(x => new MoveData(x.HeaderRow.RangeAddress, RangeType.HeaderRow, "", x.Level - 1)))
                 .ToArray()
@@ -202,10 +208,12 @@ namespace ClosedXML.Report.Excel
 
             pageBreak.AddRange(
                 groups.Where(x => x.PageBreaks)
-                    .Select(x => _summaryAbove ? x.Range.RangeAddress.LastAddress.RowNumber : x.SummaryRow.RangeAddress.LastAddress.RowNumber)
+                    .Select(x => _summaryAbove || x.SummaryRow == null
+                        ? x.Range.RangeAddress.LastAddress.RowNumber
+                        : x.SummaryRow.RangeAddress.LastAddress.RowNumber)
                     .Union(
-                    scannedGroups.Where(x=>x.PageBreak)
-                    .Select(x => x.TargetAddress.FirstAddress.RowNumber - (_summaryAbove ? 1 : 0))
+                        scannedGroups.Where(x => x.PageBreak)
+                            .Select(x => x.TargetAddress.FirstAddress.RowNumber - (_summaryAbove ? 1 : 0))
                     )
                     .Distinct());
         }
@@ -285,6 +293,30 @@ namespace ClosedXML.Report.Excel
             }
 
             return new SubtotalGroup(level, groupClmn, title, groupRng, summRow, pageBreaks);
+        }
+
+        public SubtotalGroup[] ScanForGroups(int groupBy)
+        {
+            var grRanges = ScanRange(groupBy);
+            var result = new List<SubtotalGroup>(grRanges.Length);
+            int level;
+            using (var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber))
+            {
+                level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
+            }
+
+            foreach (var moveData in grRanges)
+            {
+                if (moveData.Type == RangeType.DataRange)
+                {
+                    var groupRng = Sheet.Range(moveData.SourceAddress);
+                    var gr = new SubtotalGroup(level, groupBy, moveData.GroupTitle, groupRng, null, false);
+                    result.Add(gr);
+                }
+            }
+
+            _groups.AddRange(result);
+            return result.ToArray();
         }
 
         private MoveData[] ScanRange(int groupBy)
@@ -420,9 +452,9 @@ namespace ClosedXML.Report.Excel
                         .Where(g => g.Column > gr.GroupColumn && gr.SourceAddress.Contains(g.Range.RangeAddress))
                         .ForEach(g =>
                         {
-                            if (g.HeaderRow != null) g.HeaderRow.ShiftRows(1);
+                            g.HeaderRow?.ShiftRows(1);
                             g.Range.ShiftRows(1);
-                            g.SummaryRow.ShiftRows(1);
+                            g.SummaryRow?.ShiftRows(1);
                         });
 
                 _groups
@@ -430,22 +462,22 @@ namespace ClosedXML.Report.Excel
                     .ForEach(g =>
                     {
                         g.Range.ShiftRows(1);
-                        g.SummaryRow.ShiftRows(1);
+                        g.SummaryRow?.ShiftRows(1);
                     });
                 _groups
                     .Where(g => g.Range.RangeAddress.FirstAddress.RowNumber > gr.SourceAddress.LastAddress.RowNumber)
                     .ForEach(g =>
                     {
-                        if (g.HeaderRow != null) g.HeaderRow.ShiftRows(1);
+                        g.HeaderRow?.ShiftRows(1);
                         g.Range.ShiftRows(1);
-                        g.SummaryRow.ShiftRows(1);
+                        g.SummaryRow?.ShiftRows(1);
                     });
                 _groups
                     .Where(g => g.Column < gr.GroupColumn && g.Range.RangeAddress.Contains(gr.SourceAddress))
                     .ForEach(g =>
                     {
                         g.Range.ExtendRows(1);
-                        if (!_summaryAbove) g.SummaryRow.ShiftRows(1);
+                        if (!_summaryAbove) g.SummaryRow?.ShiftRows(1);
                     });
             }
         }
