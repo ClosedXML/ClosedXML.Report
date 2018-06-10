@@ -28,6 +28,10 @@ To install ClosedXML.Report, run the following command in the Package Manager Co
 ```
 PM> Install-Package ClosedXML.Report -Version 0.1.0-beta2
 ```
+or if you have a signed assembly, then use:
+```
+PM> Install-Package ClosedXML.Report.Signed -Version 0.1.0-beta2
+```
 
 ## Features
 
