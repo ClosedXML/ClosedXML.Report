@@ -27,7 +27,7 @@ title: Итоги по столбцам
 ![tlists4_complexrange_tpl](https://user-images.githubusercontent.com/1150085/41203364-6e9ff36e-6cde-11e8-8551-671c787f7a10.png)
 
 ```
-<<sum over="item.Amount paid">>
+<<sum over="item.AmountPaid">>
 ```
 
 Эта функция является очень полезной и для вычислений подитогов в master-detail отчётах. Пример вы можете посмотреть в разделе [Примеры отчётов](Examples#Вложенные-области-с-итогами)
