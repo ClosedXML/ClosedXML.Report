@@ -4,15 +4,13 @@ title: Простой шаблон
 
 # Простой шаблон
 
-You can use _expressions_ with braces {% raw %}{{ }}{% endraw %}  in any cell of any sheet of the _template_
-workbook and Excel will find their values at run-time. How? ClosedXML.Report adds a hidden worksheet in a report
-workbook and transfers values of all fields for the current record. Then it names all these data cells.
+Вы можете использовать _выражения_ с фигурными скобками `{{}}` в любой ячейке любого листа _шаблона_ и Excel найдёт эти значения во время выполнения. Как? Чтобы обеспечить работу этого механизма ClosedXML.Report добавляет в книгу шаблона невидимый лист, куда переносит значения всех полей набора данных из текущей записи. Затем ячейки со значениями именуются. 
 
-Excel formulas, in which _variables_ are added, must be escaped `&`. As an example: `&=CONCATENATE(Addr1;" "; Addr2)`
+Формулы Excel, в которые добавлены _переменные_, должны быть экранированы `&`. В качестве примера: `&=CONCATENATE({{Addr1}};" "; {{Addr2}})`
 
-Cells with field formulas can be formatted by any known way, including conditional formatting.
+Ячейки с формулами полей могут быть отформатированы любым известным способом, включая условное форматирование.
 
-Take a simple example:
+Простой пример:
 
 ![simpletemplate](../../images/simple-template-01.png)
 
