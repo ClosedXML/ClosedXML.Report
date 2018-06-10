@@ -17,6 +17,10 @@ ClosedXML.Report - это инструмент для создания отче�
 ```
 PM> Install-Package ClosedXML.Report -Version 0.1.0-beta2
 ```
+или если у вас подписанная сборка то:
+```
+PM> Install-Package ClosedXML.Report.Signed -Version 0.1.0-beta2
+```
 
 ## Особенности
 
