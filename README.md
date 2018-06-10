@@ -26,7 +26,7 @@ If you want to include ClosedXML.Report in your project, you can [install it dir
 To install ClosedXML.Report, run the following command in the Package Manager Console
 
 ```
-PM> Install-Package ClosedXML.Report -Version 0.1.0-beta1
+PM> Install-Package ClosedXML.Report -Version 0.1.0-beta2
 ```
 
 ## Features
