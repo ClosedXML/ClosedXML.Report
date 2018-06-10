@@ -6,43 +6,33 @@ title: Быстрый старт
 # Быстрый старт
 
 
-ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel.
-It is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code. With ClosedXML.Report, you can easily export any data from your .NET classes to Excel using the XLSX-template.
+ClosedXML.Report - это инструмент для создания отчетов и анализа данных в приложениях .NET с использованием Microsoft Excel. Это .NET-библиотека для создания отчетов Microsoft Excel, не требующая установки Excel на машине, на которой выполняется код. С помощью ClosedXML.Report вы можете легко экспортировать любые данные из ваших классов .NET в Excel с помощью XLSX-шаблона.
 
-Excel is an excellent alternative to common report generators, and using Excel’s built-in features
-can make your reports much more responsive.
-Use ClosedXML.Report as a tool for generating files of Excel. Then use Excel visual instruments: formatting (including
-conditional formatting), AutoFilter, Pivot tables to construct a versatile data analysis system. With ClosedXML.Report, you can move a lot of report programming
-and tuning into Excel. ClosedXML.Report templates are simple and our algorithms are fast – we carefully count every
-millisecond – so you waste less time on routine report programming and get surprisingly fast results. If you want
-to master such a versatile tool as Excel – ClosedXML.Report is an excellent choice.
-Furthermore, ClosedXML.Report doesn’t operate with the usual concepts of band-oriented report tools: Footer, Header,
-and Detail. So you get a much greater degree of freedom in report construction and design, and the easiest possible integration of .NET and Microsoft Excel. 
+### Установка ClosedXML.Report через NuGet
 
-### Install ClosedXML.Report via NuGet
+Если вы хотите включить ClosedXML.Report в свой проект, вы можете [установить его непосредственно из NuGet](https://www.nuget.org/packages/ClosedXML.Report/)
 
-If you want to include ClosedXML.Report in your project, you can [install it directly from NuGet](https://www.nuget.org/packages/ClosedXML.Report/)
-
-To install ClosedXML.Report, run the following command in the Package Manager Console
+Чтобы установить ClosedXML.Report, запустите следующую команду в консоли диспетчера пакетов
 
 ```
-PM> Install-Package ClosedXML.Report -Version 0.1.0-beta1
+PM> Install-Package ClosedXML.Report -Version 0.1.0-beta2
 ```
 
-## Features
+## Особенности
 
-* Copying cell formatting
-* Propagation conditional formatting
-* Vertical and horizontal tables and subranges
-* Ability to implement Excel formulas
-* Using dynamically calculated formulas with the syntax of C # and Linq
-* Operations with tabular data: sorting, grouping, total functions.
-* Pivot tables
-* Subranges
+* Копирование форматирования ячеек 
+* Копирование условного форматирования
+* Вертикальные и горизонтальные таблицы
+* Возможность применения формул Excel 
+* Использование динамически рассчитываемых формул с синтаксисом C# и Linq 
+* Операции с табличными данными: сортировка, группировка, общие функции. 
+* Сводные таблицы 
+* Контроль за построением отчёта с помощью управляющих тэгов
+* Вложенные области (master-detail) 
 
-## How to use?
-To create a report you must first create a report template. You can apply any formatting to any workbook cells, insert pictures, and modify any of the parameters of the workbook itself. In this example, we have turned off the zero values display and hidden the 
-gridlines. ClosedXML.Report will preserve all changes to the template. 
+## Как использовать?
+Чтобы создать отчет, вы должны сначала создать шаблон отчета. Вы можете применить любое форматирование к ячейкам рабочей книги, вставить изображения и изменить любой из параметров самой книги. В этом примере мы отключили отображение нулевых значений и спрятали линии сетки. ClosedXML.Report сохранит все изменения в шаблоне.
+ 
 
 **Template**
 
@@ -74,4 +64,4 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 
 ![result1](../../images/quick-start-02.png)
 
-For more information see [the documentation](index) and [tests](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
+Для получения дополнительной информации см. [Документация](index) и [Тесты](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
