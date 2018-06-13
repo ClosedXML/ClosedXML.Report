@@ -30,7 +30,7 @@ title: Оглавление
 
 [Сортировка данных](Sorting)
 
-[Подитоги по столбцам](Totals-in-a-column)
+[Подытоги по столбцам](Totals-in-a-column)
 
 [Группировка](Grouping)
 
