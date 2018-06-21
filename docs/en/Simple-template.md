@@ -20,7 +20,7 @@ Take a simple example:
 
 ```c#
 ...
-        var template = new XLTemplate(workbook);
+        var template = XLWorkbook.OpenFromTemplate(workbook);
         var cust = db.Customers.GetById(10);
 
         template.AddVariable(cust);
