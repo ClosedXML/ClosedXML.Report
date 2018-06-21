@@ -48,7 +48,7 @@ PM> Install-Package ClosedXML.Report.Signed -Version 0.1.0-beta2
     protected void Report()
     {
         const string outputFile = @".\Output\report.xlsx";
-        var template = new XLTemplate(@".\Templates\report.xlsx");
+        var template = XLWorkbook.OpenFromTemplate(@".\Templates\report.xlsx");
 
         using (var db = new DbDemos())
         {
