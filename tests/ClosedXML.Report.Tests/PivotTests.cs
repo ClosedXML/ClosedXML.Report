@@ -88,7 +88,7 @@ namespace ClosedXML.Report.Tests
 
                     workbook.SaveAs("pivot_example.xlsx");
                 }
-                using (var wb = new XLWorkbook("pivot_example.xlsx"))
+                using (var wb = XLWorkbook.OpenFromTemplate("pivot_example.xlsx"))
                 {
                     wb.SaveAs("pivot_example1.xlsx");
                 }

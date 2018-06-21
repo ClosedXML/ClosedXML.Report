@@ -8,12 +8,12 @@ namespace ClosedXML.Report.Options
     {
         internal byte PriorityKey { get; set; }
 
-        public Dictionary<string, string> Parameters { get; set; }
-        public TemplateCell Cell { get; set; }
-        public TagsList List { get; set; }
-        public string Name { get; set; }
+        public Dictionary<string, string> Parameters { get; internal set; }
+        public TemplateCell Cell { get; internal set; }
+        public TagsList List { get; internal set; }
+        public string Name { get; internal set; }
         public bool Enabled { get; set; }
-        public abstract byte Priority { get; }
+        public byte Priority { get; internal set; }
 
         private string _rangeOptionsRow;
         public IXLRangeAddress RangeOptionsRow
@@ -75,10 +75,7 @@ namespace ClosedXML.Report.Options
 
         public string GetParameter(string name)
         {
-            string val;
-            if (Parameters.TryGetValue(name.ToLower(), out val))
-                return val;
-            else return null;
+            return Parameters.TryGetValue(name.ToLower(), out var val) ? val : null;
         }
 
         public bool HasParameter(string name)

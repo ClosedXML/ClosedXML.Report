@@ -39,6 +39,5 @@ namespace ClosedXML.Report.Options
                 xlCell.Value = xlCell.Value;
             }
         }
-        public override byte Priority => 40;
     }
 }

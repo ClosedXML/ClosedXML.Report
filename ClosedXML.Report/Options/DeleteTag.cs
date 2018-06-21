@@ -41,6 +41,5 @@ namespace ClosedXML.Report.Options
                 context.Range.Column(addrInRange.ColumnNumber).Delete(XLShiftDeletedCells.ShiftCellsLeft);
             }
         }
-        public override byte Priority => 0;
     }
 }

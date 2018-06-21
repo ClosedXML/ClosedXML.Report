@@ -15,7 +15,5 @@ namespace ClosedXML.Report.Options
                     .SetAutoFilter();
             }
         }
-
-        public override byte Priority => 10;
     }
 }

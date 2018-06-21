@@ -79,7 +79,7 @@ namespace ClosedXML.Report.Tests
                 throw new FileNotFoundException("Gauge file not found.", fileExpected);
             }
 
-            using (var expected = new XLWorkbook(fileExpected))
+            using (var expected = XLWorkbook.OpenFromTemplate(fileExpected))
             {
                 actual.Worksheets.Count.ShouldBeEquivalentTo(expected.Worksheets.Count, $"Count of worksheets must be {expected.Worksheets.Count}");
 

@@ -64,7 +64,5 @@ namespace ClosedXML.Report.Options
                 passw = Guid.NewGuid().ToString();
             ws.Protect(passw);
         }
-
-        public override byte Priority { get { return 0; } }
     }
 }

@@ -26,7 +26,5 @@ namespace ClosedXML.Report.Options
                 if (HasParameter("Landscape")) ws.PageSetup.PageOrientation = XLPageOrientation.Landscape;
             }
         }
-
-        public override byte Priority { get { return 0; } }
     }
 }

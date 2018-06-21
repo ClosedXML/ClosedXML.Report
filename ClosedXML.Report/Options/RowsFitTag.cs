@@ -45,6 +45,5 @@
                 ws.Rows(cellRow, cellRow).AdjustToContents(cellClmn, cellClmn);
             }
         }
-        public override byte Priority { get { return 0; } }
     }
 }

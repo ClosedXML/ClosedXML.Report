@@ -38,8 +38,6 @@ namespace ClosedXML.Report.Options
                 tag.Enabled = false;
             }
         }
-
-        public override byte Priority => 128;
     }
 
     public class DescTag : SortTag
