@@ -72,7 +72,7 @@ namespace ClosedXML.Report.Options
                 catch
                 {
                     throw;
-                    // ignored
+                    // TODO ignored
                 }
                 finally
                 {

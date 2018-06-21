@@ -37,7 +37,6 @@ namespace ClosedXML.Report.Options
     public class GroupTag : SortTag
     {
         private int _maxLevel;
-        public override byte Priority => 200;
 
         public bool PageBreaks => Parameters.ContainsKey("pagebreaks");
         public bool DisableSubtotals => Parameters.ContainsKey("disablesubtotals");

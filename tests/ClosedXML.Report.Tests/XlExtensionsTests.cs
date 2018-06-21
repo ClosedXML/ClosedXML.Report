@@ -18,7 +18,7 @@ namespace ClosedXML.Report.Tests
         public void OffsetTest()
         {
             var fileName = Path.Combine(TestConstants.TemplatesFolder, "1.xlsx");
-            using (var workbook = new XLWorkbook(fileName))
+            using (var workbook = XLWorkbook.OpenFromTemplate(fileName))
             {
                 var ws = workbook.Worksheet(1);
                 ws.Range("A1:B2").Offset(10, 0).RangeAddress.ToStringRelative().Should().Be("A11:B12");
@@ -36,7 +36,7 @@ namespace ClosedXML.Report.Tests
         public void GetRangeParameters_should_return_range_address_from_formula()
         {
             var fileName = Path.Combine(TestConstants.TemplatesFolder, "1.xlsx");
-            using (var workbook = new XLWorkbook(fileName))
+            using (var workbook = XLWorkbook.OpenFromTemplate(fileName))
             {
                 var pars = workbook.Worksheet(1).GetRangeParameters("SUBTOTALS(9,I36:I38, U32");
                 pars.Length.Should().Be(2);

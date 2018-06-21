@@ -33,8 +33,6 @@ namespace ClosedXML.Report.Options
 {
     public class PivotTag: OptionTag
     {
-        public override byte Priority => 240;
-
         public override void Execute(ProcessingContext context)
         {
             var fields = List.GetAll<PivotTag>()

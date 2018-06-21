@@ -11,7 +11,7 @@ namespace ClosedXML.Report
     public class XLTemplate : IDisposable
     {
         private readonly RangeInterpreter _interpreter;
-        private bool _disposeWorkbookWithTemplate;
+        private readonly bool _disposeWorkbookWithTemplate;
 
         public bool IsDisposed { get; private set; }
 
@@ -19,40 +19,40 @@ namespace ClosedXML.Report
 
         static XLTemplate()
         {
-            TagsRegister.Add<ColsFitTag>("ColsFit");
-            TagsRegister.Add<RowsFitTag>("RowsFit");
-            TagsRegister.Add<HiddenTag>("Hidden");
-            TagsRegister.Add<HiddenTag>("Hide");
-            TagsRegister.Add<OnlyValuesTag>("OnlyValues");
-            TagsRegister.Add<AutoFilterTag>("AutoFilter");
-            TagsRegister.Add<PageOptionsTag>("PageOptions");
-            TagsRegister.Add<ProtectedTag>("Protected");
-            TagsRegister.Add<RangeOptionTag>("Range");
-            TagsRegister.Add<RangeOptionTag>("SummaryAbove");
-            TagsRegister.Add<RangeOptionTag>("DisableGrandTotal");
-            TagsRegister.Add<DeleteTag>("Delete");
-            TagsRegister.Add<SortTag>("Sort");
-            TagsRegister.Add<SortTag>("Asc");
-            TagsRegister.Add<DescTag>("Desc");
-            TagsRegister.Add<GroupTag>("Group");
-            TagsRegister.Add<PivotTag>("Pivot");
-            TagsRegister.Add<FieldPivotTag>("Row");
-            TagsRegister.Add<FieldPivotTag>("Column");
-            TagsRegister.Add<FieldPivotTag>("Col");
-            TagsRegister.Add<FieldPivotTag>("Page");
-            TagsRegister.Add<DataPivotTag>("Data");
-            TagsRegister.Add<SummaryFuncTag>("SUM");
-            TagsRegister.Add<SummaryFuncTag>("AVG");
-            TagsRegister.Add<SummaryFuncTag>("AVERAGE");
-            TagsRegister.Add<SummaryFuncTag>("COUNT");
-            TagsRegister.Add<SummaryFuncTag>("COUNTNUMS");
-            TagsRegister.Add<SummaryFuncTag>("MAX");
-            TagsRegister.Add<SummaryFuncTag>("MIN");
-            TagsRegister.Add<SummaryFuncTag>("PRODUCT");
-            TagsRegister.Add<SummaryFuncTag>("STDEV");
-            TagsRegister.Add<SummaryFuncTag>("STDEVP");
-            TagsRegister.Add<SummaryFuncTag>("VAR");
-            TagsRegister.Add<SummaryFuncTag>("VARP");
+            TagsRegister.Add<RangeOptionTag>("Range", 255);
+            TagsRegister.Add<RangeOptionTag>("SummaryAbove", 255);
+            TagsRegister.Add<RangeOptionTag>("DisableGrandTotal", 255);
+            TagsRegister.Add<GroupTag>("Group", 200);
+            TagsRegister.Add<PivotTag>("Pivot", 180);
+            TagsRegister.Add<FieldPivotTag>("Row", 180);
+            TagsRegister.Add<FieldPivotTag>("Column", 180);
+            TagsRegister.Add<FieldPivotTag>("Col", 180);
+            TagsRegister.Add<FieldPivotTag>("Page", 180);
+            TagsRegister.Add<DataPivotTag>("Data", 180);
+            TagsRegister.Add<SortTag>("Sort", 128);
+            TagsRegister.Add<SortTag>("Asc", 128);
+            TagsRegister.Add<DescTag>("Desc", 128);
+            TagsRegister.Add<SummaryFuncTag>("SUM", 50);
+            TagsRegister.Add<SummaryFuncTag>("AVG", 50);
+            TagsRegister.Add<SummaryFuncTag>("AVERAGE", 50);
+            TagsRegister.Add<SummaryFuncTag>("COUNT", 50);
+            TagsRegister.Add<SummaryFuncTag>("COUNTNUMS", 50);
+            TagsRegister.Add<SummaryFuncTag>("MAX", 50);
+            TagsRegister.Add<SummaryFuncTag>("MIN", 50);
+            TagsRegister.Add<SummaryFuncTag>("PRODUCT", 50);
+            TagsRegister.Add<SummaryFuncTag>("STDEV", 50);
+            TagsRegister.Add<SummaryFuncTag>("STDEVP", 50);
+            TagsRegister.Add<SummaryFuncTag>("VAR", 50);
+            TagsRegister.Add<SummaryFuncTag>("VARP", 50);
+            TagsRegister.Add<OnlyValuesTag>("OnlyValues", 40);
+            TagsRegister.Add<AutoFilterTag>("AutoFilter", 10);
+            TagsRegister.Add<ColsFitTag>("ColsFit", 0);
+            TagsRegister.Add<RowsFitTag>("RowsFit", 0);
+            TagsRegister.Add<HiddenTag>("Hidden", 0);
+            TagsRegister.Add<HiddenTag>("Hide", 0);
+            TagsRegister.Add<PageOptionsTag>("PageOptions", 0);
+            TagsRegister.Add<ProtectedTag>("Protected", 0);
+            TagsRegister.Add<DeleteTag>("Delete", 0);
         }
 
         public XLTemplate(string fileName) : this(new XLWorkbook(fileName))

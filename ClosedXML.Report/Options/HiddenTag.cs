@@ -20,7 +20,5 @@ namespace ClosedXML.Report.Options
                 context.Range.Rows().ForEach(r => r.WorksheetRow().Hide());
             }
         }
-
-        public override byte Priority { get { return 0; } }
     }
 }

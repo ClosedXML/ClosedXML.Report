@@ -48,6 +48,5 @@ namespace ClosedXML.Report.Options
                 ws.Column(cellClmn).AdjustToContents(cellRow, cellRow);
             }
         }
-        public override byte Priority { get { return 0; } }
     }
 }
