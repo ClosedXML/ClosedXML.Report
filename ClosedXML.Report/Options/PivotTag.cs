@@ -172,11 +172,11 @@ namespace ClosedXML.Report.Options
                 var shSp = dstStr.IndexOf("!", StringComparison.Ordinal);
                 dstSheet = wb.Worksheet(dstStr.Substring(0, shSp));
                 if (dstSheet == null)
-                    throw new ArgumentException($"Can\'t find pivot destination sheet \'{dstStr.Substring(0, shSp)}\'");
+                    throw new TemplateParseException($"Can\'t find pivot destination sheet \'{dstStr.Substring(0, shSp)}\'", Cell.XLCell.AsRange());
                 dstStr = dstStr.Substring(shSp+1, dstStr.Length - shSp - 1);
                 dstCell = dstSheet.Cell(dstStr);
                 if (dstCell == null)
-                    throw new ArgumentException($"Can\'t find pivot destination cell \'{dstStr}\'");
+                    throw new TemplateParseException($"Can\'t find pivot destination cell \'{dstStr}\'", Cell.XLCell.AsRange());
             }
             else
             {

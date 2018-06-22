@@ -19,10 +19,12 @@ namespace ClosedXML.Report
         private readonly TagsEvaluator _tagsEvaluator;
         private readonly Dictionary<string, object> _variables = new Dictionary<string, object>();
         private readonly Dictionary<string, TagsList> _tags = new Dictionary<string, TagsList>();
+        private readonly TemplateErrors _errors;
 
-        public RangeInterpreter(string alias)
+        public RangeInterpreter(string alias, TemplateErrors errors)
         {
             _alias = alias;
+            _errors = errors;
             _evaluator = new FormulaEvaluator();
             _tagsEvaluator = new TagsEvaluator();
         }
@@ -50,7 +52,7 @@ namespace ClosedXML.Report
                         select c;
 
             if (!_tags.ContainsKey(rangeName))
-                _tags.Add(rangeName, new TagsList());
+                _tags.Add(rangeName, new TagsList(_errors));
 
             foreach (var cell in cells)
             {
@@ -85,7 +87,7 @@ namespace ClosedXML.Report
         {
             var srcTags = _tags[srcRangeName];
             if (!_tags.ContainsKey(destRangeName))
-                _tags.Add(destRangeName, new TagsList());
+                _tags.Add(destRangeName, new TagsList(_errors));
             _tags[destRangeName].AddRange(srcTags.CopyTo(destRange));
         }
 
@@ -118,28 +120,28 @@ namespace ClosedXML.Report
                 {
                     if (ex.Message == "Unknown identifier 'item'" && pars.Length == 0)
                     {
-                        var firstCell = cell.CellAbove().WorksheetRow().FirstCell();
-                        firstCell.Value = "The range does not meet the requirements of the list ranges. For details, see the documentation.";
+                        var firstCell = cell.Address.RowNumber > 1
+                            ? cell.CellAbove().WorksheetRow().FirstCell()
+                            : cell.WorksheetRow().FirstCell();
+                        var msg = "The range does not meet the requirements of the list ranges. For details, see the documentation.";
+                        firstCell.Value = msg;
                         firstCell.Style.Font.FontColor = XLColor.Red;
+                        _errors.Add(new TemplateError(msg, firstCell.AsRange()));
                     }
                     cell.Value = ex.Message;
                     cell.Style.Font.FontColor = XLColor.Red;
-                    Debug.WriteLine("Cell value evaluation exception (cell '{1}'): {0}", ex.Message, cell.Address);
+                    _errors.Add(new TemplateError(ex.Message, cell.AsRange()));
                 }
             }
 
             foreach (var nr in innerRanges)
             {
-                Debug.Assert(_variables.ContainsKey(nr.Name), $"Variable with name '{nr.Name}' was not found.");
-                if (!_variables.ContainsKey(nr.Name))
-                    continue;
-
                 var datas = _variables[nr.Name] as IEnumerable;
                 if (datas == null)
                     continue;
 
                 var items = datas as object[] ?? datas.Cast<object>().ToArray();
-                var tplt = RangeTemplate.Parse(nr);
+                var tplt = RangeTemplate.Parse(nr, _errors);
                 var nrng = nr.Ranges.First();
                 using (var buff = tplt.Generate(items))
                 {

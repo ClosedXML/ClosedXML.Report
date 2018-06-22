@@ -279,11 +279,11 @@ namespace ClosedXML.Report.Excel
                 else */if (summ.FuncNum > 0)
                 {
                     var funcRngAddr = groupRng.Column(summ.Column).Unsubscribed().RangeAddress;
-                    summRow.Cell(summ.Column).FormulaA1 = string.Format("Subtotal({0},{1})", summ.FuncNum, funcRngAddr.ToStringRelative());
+                    summRow.Cell(summ.Column).FormulaA1 = $"Subtotal({summ.FuncNum},{funcRngAddr.ToStringRelative()})";
                 }
                 else
                 {
-                    throw new NotSupportedException(string.Format("Aggregate function {0} not supported.", summ.FuncName));
+                    throw new NotSupportedException($"Aggregate function {summ.FuncName} not supported.");
                 }
             }
 
@@ -380,7 +380,7 @@ namespace ClosedXML.Report.Excel
             var groupRng = _range.Range(firstCell, lastCell).Unsubscribed();
             var level = firstCell.WorksheetRow().Unsubscribed().OutlineLevel;
             var group = new MoveData(groupRng.RangeAddress, rangeType, title, level) {GroupColumn = groupColumn};
-            return @group;
+            return group;
         }
 
         private void CalculateAddresses(MoveData[] groups)
@@ -532,12 +532,12 @@ namespace ClosedXML.Report.Excel
                 Level = level;
             }
 
-            public IXLRangeAddress SourceAddress { get; private set; }
+            public IXLRangeAddress SourceAddress { get; }
             public IXLRangeAddress TargetAddress { get; set; }
-            public RangeType Type { get; private set; }
-            public string GroupTitle { get; private set; }
+            public RangeType Type { get; }
+            public string GroupTitle { get; }
             public int GroupColumn { get; set; }
-            public int Level { get; private set; }
+            public int Level { get; }
             public bool PageBreak { get; set; }
         }
 

@@ -10,7 +10,8 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void Add_with_same_priority_should_increase_count()
         {
-            var list = new TagsList
+            var errList = new TemplateErrors();
+            var list = new TagsList(errList)
             {
                 new GroupTag {Name = "val1"},
                 new GroupTag {Name = "val2"}
@@ -21,7 +22,8 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void Items_should_be_sorted_by_priority()
         {
-            var list = new TagsList
+            var errList = new TemplateErrors();
+            var list = new TagsList(errList)
             {
                 new GroupTag {Name = "val1"},
                 new GroupTag {Name = "val2"},
@@ -35,7 +37,8 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void Get_by_type_should_return_tags_with_inherits()
         {
-            var list = new TagsList
+            var errList = new TemplateErrors();
+            var list = new TagsList(errList)
             {
                 new GroupTag {Name = "val1"},
                 new GroupTag {Name = "val2"},
