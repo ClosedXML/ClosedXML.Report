@@ -7,13 +7,16 @@ namespace ClosedXML.Report.Options
 {
     public class TagsList : SortedSet<OptionTag>
     {
-        public TagsList() : base(new OptionTagComparer())
+        private readonly TemplateErrors _errors;
+
+        public TagsList(TemplateErrors errors) : base(new OptionTagComparer())
         {
+            _errors = errors;
         }
 
         public TagsList CopyTo(IXLRange toRange)
         {
-            var clone = new TagsList();
+            var clone = new TagsList(_errors);
             foreach (var srcTag in this)
             {
                 var tag = (OptionTag)srcTag.Clone();
@@ -69,10 +72,9 @@ namespace ClosedXML.Report.Options
                 {
                     t.Execute(context);
                 }
-                catch
+                catch(TemplateParseException ex)
                 {
-                    throw;
-                    // TODO ignored
+                    _errors.Add(new TemplateError(ex.Message, ex.Range));
                 }
                 finally
                 {

@@ -12,6 +12,7 @@ namespace ClosedXML.Report
     {
         private readonly RangeInterpreter _interpreter;
         private readonly bool _disposeWorkbookWithTemplate;
+        private readonly TemplateErrors _errors = new TemplateErrors();
 
         public bool IsDisposed { get; private set; }
 
@@ -68,10 +69,10 @@ namespace ClosedXML.Report
         public XLTemplate(IXLWorkbook workbook)
         {
             Workbook = workbook ?? throw new ArgumentNullException(nameof(workbook), "Workbook cannot be null");
-            _interpreter = new RangeInterpreter(null);
+            _interpreter = new RangeInterpreter(null, _errors);
         }
 
-        public void Generate()
+        public XLGenerateResult Generate()
         {
             CheckIsDisposed();
             foreach (var ws in Workbook.Worksheets.Where(sh => sh.Visibility == XLWorksheetVisibility.Visible && !sh.PivotTables.Any()).ToArray())
@@ -80,6 +81,7 @@ namespace ClosedXML.Report
                 _interpreter.Evaluate(ws.AsRange());
                 ws.ReplaceCFFormulaeToA1();
             }
+            return new XLGenerateResult(_errors);
         }
 
         public void AddVariable(object value)
@@ -131,5 +133,16 @@ namespace ClosedXML.Report
             if (IsDisposed)
                 throw new ObjectDisposedException("Template has been disposed");
         }
+    }
+
+    public class XLGenerateResult
+    {
+        public XLGenerateResult(TemplateErrors errors)
+        {
+            ParsingErrors = errors;
+        }
+
+        public bool HasErrors => ParsingErrors.Count > 0;
+        public TemplateErrors ParsingErrors { get; }
     }
 }

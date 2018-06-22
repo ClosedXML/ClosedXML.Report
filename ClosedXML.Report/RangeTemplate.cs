@@ -20,6 +20,7 @@ namespace ClosedXML.Report
         private readonly TagsList _tags;
         private readonly TagsList _rangeTags;
         private readonly TagsEvaluator _tagsEvaluator;
+        private readonly TemplateErrors _errors;
         private RangeOptionTag _rangeOption;
         private TempSheetBuffer _buff;
         private IXLRange _rowRange;
@@ -32,38 +33,39 @@ namespace ClosedXML.Report
         public string Source { get; private set; }
         public string Name { get; private set; }
 
-        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff)
+        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors)
         {
             _rowRange = range.Ranges.First();
             _cells = new TemplateCells(this);
             _tagsEvaluator = new TagsEvaluator();
             var wb = _rowRange.Worksheet.Workbook;
             _buff = buff;
-            _tags = new TagsList();
-            _rangeTags = new TagsList();
+            _errors = errors;
+            _tags = new TagsList(_errors);
+            _rangeTags = new TagsList(_errors);
             Name = range.Name;
             Source = range.Name;
             wb.NamedRanges.Add(range.Name + "_tpl", range.Ranges);
         }
 
-        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, int rowCnt, int colCnt) : this(range, buff)
+        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, int rowCnt, int colCnt, TemplateErrors errors) : this(range, buff, errors)
         {
             _rowCnt = rowCnt;
             _colCnt = colCnt;
         }
 
 
-        public static RangeTemplate Parse(IXLNamedRange range)
+        public static RangeTemplate Parse(IXLNamedRange range, TemplateErrors errors)
         {
             var wb = range.Ranges.First().Worksheet.Workbook;
-            return Parse(range, new TempSheetBuffer(wb));
+            return Parse(range, new TempSheetBuffer(wb), errors);
         }
 
-        private static RangeTemplate Parse(IXLNamedRange range, TempSheetBuffer buff, RangeTemplate parent = null)
+        private static RangeTemplate Parse(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors, RangeTemplate parent = null)
         {
             var prng = range.Ranges.First();
             var result = new RangeTemplate(range, buff,
-                prng.RowCount(), prng.ColumnCount());
+                prng.RowCount(), prng.ColumnCount(), errors);
 
             var innerRanges = GetInnerRanges(prng).ToArray();
 
@@ -106,7 +108,7 @@ namespace ClosedXML.Report
 
             result._subranges = innerRanges.Select(rng =>
             {
-                var tpl = Parse(rng, buff, result);
+                var tpl = Parse(rng, buff, errors, result);
                 tpl._buff = result._buff;
                 tpl._isSubrange = true;
                 return tpl;
@@ -255,7 +257,8 @@ namespace ClosedXML.Report
             catch (ParseException ex)
             {
                 _buff.WriteValue(ex.Message, cell.Style);
-                Debug.WriteLine("Cell value evaluation exception (cell '{1}'): {0}", ex.Message, cell.XLCell.Address);
+                _buff.GetCell(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber).Style.Font.FontColor = XLColor.Red;
+                _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
                 return;
             }
 
