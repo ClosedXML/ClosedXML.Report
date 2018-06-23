@@ -116,6 +116,15 @@ img {
   -ms-box-shadow: 0 0 5px #ebebeb;
 }
 
+img .noshadow
+{
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  -o-box-shadow: none;
+  -ms-box-shadow: none;
+}
+
 p img {
   display: inline;
   margin: 0;
@@ -233,7 +242,7 @@ Full-Width Styles
   z-index: 10;
   padding: 10px 20px 10px 50px;
   color: #fff;
-  background: url('../images/blacktocat.svg') #0090ff no-repeat 8% 50%;
+  background: url('../images/blacktocat.svg') #4CAF50 no-repeat 8% 50%;
   background-size: 25px;
   font-weight: 700;
   border: none;
