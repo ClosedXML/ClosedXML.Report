@@ -78,4 +78,4 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 
 ![result1](../../images/quick-start-02.png)
 
-For more information see [the documentation](index) and [tests](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
+For more information see [the documentation](index) and [tests]({{ site.github.repository_url}}/tree/master/tests)

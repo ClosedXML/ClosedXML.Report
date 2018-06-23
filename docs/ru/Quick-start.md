@@ -68,4 +68,4 @@ PM> Install-Package ClosedXML.Report.Signed
 
 ![result1](../../images/quick-start-02.png)
 
-Для получения дополнительной информации см. [Документация](index) и [Тесты](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
+Для получения дополнительной информации см. [Документация](index) и [Тесты]({{ site.github.repository_url}}/tree/master/tests)
