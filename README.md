@@ -1,9 +1,9 @@
 # ClosedXML.Report
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors)
+[![Release](https://img.shields.io/badge/release-0.1.0-blue.svg)](https://github.com/ClosedXML/ClosedXML.Report/releases/latest)
 [![Build status](https://ci.appveyor.com/api/projects/status/y2ha69ggalbj1y47/branch/develop?svg=true)](https://ci.appveyor.com/project/ClosedXML/closedxml-report/branch/develop/artifacts)
 [![Open Source Helpers](https://www.codetriage.com/closedxml/closedxml.report/badges/users.svg)](https://www.codetriage.com/closedxml/closedxml.report)
-[![NuGet version (ClosedXML.Report)](https://img.shields.io/nuget/v/ClosedXML.Report.svg?style=flat-square)](https://www.nuget.org/packages/ClosedXML.Report/)
-[![NuGet downloads (ClosedXML.Report)](https://img.shields.io/nuget/dt/ClosedXML.Report.svg?style=flat-square)](https://www.nuget.org/packages/ClosedXML.Report/)
+[![NuGet Badge](https://buildstats.info/nuget/ClosedXML.Report)](https://www.nuget.org/packages/ClosedXML.Report/)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors)
 
 ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel.
 It is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code. With ClosedXML.Report, you can easily export any data from your .NET classes to Excel using the XLSX-template.
