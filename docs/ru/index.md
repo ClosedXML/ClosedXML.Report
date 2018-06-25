@@ -12,9 +12,9 @@ title: Оглавление
 
 ## Начало работы
 
-[Простой шаблон](Simple-template)
-
 [Быстрый старт](Quick-start)
+
+[Простой шаблон](Simple-template)
 
 [Примеры отчётов](Examples)
 
