@@ -94,8 +94,8 @@ namespace ClosedXML.Report.Excel
         {
             // LastCellUsed may produce the wrong result, see https://github.com/ClosedXML/ClosedXML/issues/339
             var lastCell = _sheet.Cell(
-                _sheet.LastRowUsed(true).RowNumber(),
-                _sheet.LastColumnUsed(true).ColumnNumber());
+                _sheet.LastRowUsed(true)?.RowNumber() ?? 1,
+                _sheet.LastColumnUsed(true)?.ColumnNumber()?? 1);
             var tempRng = _sheet.Range(_sheet.Cell(1, 1), lastCell);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
