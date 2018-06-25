@@ -11,9 +11,9 @@ Welcome to the ClosedXML.Report wiki!
 [Basic concepts](Basic-concepts)
 
 ## Let's go 
-[Simple template](Simple-template)
-
 [Quick start](Quick-start)
+
+[Simple template](Simple-template)
 
 [Report examples](Examples)
 
