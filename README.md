@@ -80,3 +80,17 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 ![result1](https://user-images.githubusercontent.com/1150085/33486460-31a02542-d6bb-11e7-8899-8694157ee9dd.png)
 
 [For more information see the wiki](https://closedxml.github.io/ClosedXML.Report/) and [tests](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
+
+## Credits
+* Afalinasoft team with their XLReport for the idea
+* ClosedXML team for a great library
+* Logo design by [@Tobaloidee](https://github.com/Tobaloidee)
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
