@@ -1,5 +1,4 @@
 # ClosedXML.Report
-[![Release](https://img.shields.io/badge/release-0.1.0-blue.svg)](https://github.com/ClosedXML/ClosedXML.Report/releases/latest)
 [![Build status](https://ci.appveyor.com/api/projects/status/y2ha69ggalbj1y47/branch/develop?svg=true)](https://ci.appveyor.com/project/ClosedXML/closedxml-report/branch/develop/artifacts)
 [![Open Source Helpers](https://www.codetriage.com/closedxml/closedxml.report/badges/users.svg)](https://www.codetriage.com/closedxml/closedxml.report)
 [![NuGet Badge](https://buildstats.info/nuget/ClosedXML.Report)](https://www.nuget.org/packages/ClosedXML.Report/)
