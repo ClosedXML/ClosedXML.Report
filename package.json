@@ -1,0 +1,23 @@
+{
+  "name": "closedxml.report",
+  "version": "0.1.0",
+  "description": "ClosedXML.Report reporting engine.",
+  "author": "b0bi <b0bi@yandex.ru>",
+  "homepage": "http://ClosedXML.github.io/ClosedXML.Report/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ClosedXML/ClosedXML.Report.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ClosedXML/ClosedXML.Report/issues"
+  },
+  "license": "MIT",
+  "scripts": {
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate"
+  },
+  "private": true,
+  "devDependencies": {
+    "all-contributors-cli": "^5.2.1"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "projectName": "ClosedXML.Report",
+  "projectOwner": "b0bi79",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "b0bi79",
+      "name": "Rozhkov Alexey",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1150085?v=4",
+      "profile": "https://github.com/b0bi79",
+      "contributions": [
+        "code",
+        "doc",
+        "review"
+      ]
+    },
+    {
+      "login": "Pankraty",
+      "name": "Aleksei",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/19576939?v=4",
+      "profile": "https://github.com/Pankraty",
+      "contributions": [
+        "code",
+        "translation",
+        "review",
+        "infra"
+      ]
+    },
+    {
+      "login": "igitur",
+      "name": "Francois Botha",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/145854?v=4",
+      "profile": "http://www.vwd.co.za",
+      "contributions": [
+        "platform"
+      ]
+    },
+    {
+      "login": "Tobaloidee",
+      "name": "tobaloidee",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/36028424?v=4",
+      "profile": "https://github.com/Tobaloidee",
+      "contributions": [
+        "design"
+      ]
+    }
+  ]
+}
