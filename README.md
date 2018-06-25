@@ -81,6 +81,11 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
 
 [For more information see the wiki](https://closedxml.github.io/ClosedXML.Report/) and [tests](https://github.com/ClosedXML/ClosedXML.Report/tree/master/tests)
 
+## Credits
+* Afalinasoft team with their XLReport for the idea
+* ClosedXML team for a great library
+* Logo design by [@Tobaloidee](https://github.com/Tobaloidee)
+
 ## Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
