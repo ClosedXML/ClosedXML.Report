@@ -17,6 +17,11 @@ There are certain limitations on range configuration:
 
 While building a document ClosedXML.Report finds all named ranges and determines a data sources by their names. Range name should coincide with the name of the variable serving a data source for this range. For nested tables, range name is built using underscore (`_`). E.g. to output values from `Customers[].Orders[].Items[]` the range name must be `Customers_Orders_Items`. This example may be found in the [sample template]({{ site.github.repository_url }}/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx).
 
+### Expressions within tables
+To work with tabular data, ClosedXML.Report introduces special variables that you can use in expressions inside tables:
+* `item` - element from the list.
+* `index` - the index of the element in the list (starts with 0).
+* `items` - the entire list of items.
 
 ## Vertical tables
 
