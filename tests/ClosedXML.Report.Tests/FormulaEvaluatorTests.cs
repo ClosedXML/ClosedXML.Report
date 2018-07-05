@@ -57,6 +57,14 @@ namespace ClosedXML.Report.Tests
                 .Message.Should().Be("Unknown identifier 'item'");
         }
 
+        [Fact]
+        public void EvalExpressionVariableWithAt()
+        {
+            var eval = new FormulaEvaluator();
+            eval.AddVariable("@a", 1);
+            eval.Evaluate("{{@a+@a}}").Should().Be(2);
+        }
+
         class Customer
         {
             public int Id { get; set; }

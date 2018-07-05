@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
@@ -141,7 +140,7 @@ namespace ClosedXML.Report
                     continue;
 
                 var items = datas as object[] ?? datas.Cast<object>().ToArray();
-                var tplt = RangeTemplate.Parse(nr, _errors);
+                var tplt = RangeTemplate.Parse(nr, _errors, _variables);
                 var nrng = nr.Ranges.First();
                 using (var buff = tplt.Generate(items))
                 {
