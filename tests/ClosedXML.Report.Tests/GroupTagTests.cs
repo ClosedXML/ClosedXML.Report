@@ -19,6 +19,7 @@ namespace ClosedXML.Report.Tests
          InlineData("tLists2_sum.xlsx"),
          InlineData("tLists3_options.xlsx"),
          InlineData("tLists4_complexRange.xlsx"),
+         InlineData("tLists5_GlobalVars.xlsx"),
          InlineData("tPage1_options.xlsx"),
         ]
         public void Simple(string templateFile)
@@ -31,6 +32,7 @@ namespace ClosedXML.Report.Tests
                         var cust = db.customers.LoadWith(x => x.Orders).OrderBy(c => c.CustNo).First(x=>x.CustNo == 1356);
                         tpl.AddVariable(cust);
                     }
+                    tpl.AddVariable("Tax", 13);
                 },
                 wb =>
                 {
