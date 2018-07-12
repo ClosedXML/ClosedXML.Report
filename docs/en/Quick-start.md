@@ -58,7 +58,7 @@ gridlines. ClosedXML.Report will preserve all changes to the template.
     protected void Report()
     {
         const string outputFile = @".\Output\report.xlsx";
-        var template = XLWorkbook.OpenFromTemplate(@".\Templates\report.xlsx");
+        var template = new XLTemplate(@".\Templates\report.xlsx");
 
         using (var db = new DbDemos())
         {
