@@ -17,7 +17,7 @@ title: Простой шаблон
 
 ```c#
 ...
-        var template = XLWorkbook.OpenFromTemplate(workbook);
+        var template = new XLTemplate(@".\Templates\template.xlsx");
         var cust = db.Customers.GetById(10);
 
         template.AddVariable(cust);
