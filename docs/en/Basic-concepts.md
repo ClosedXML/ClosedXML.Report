@@ -31,9 +31,13 @@ Examples:
 {% endraw %}
 
 ### Tags
-ClosedXML.Report has a few advanced features allowing to hide a worksheet, sort the data table, apply groupping, calculate totals, etc. These features are controlled by addit tags to the worksheet, to the entire range, or to a single column. Tag is a text embrased by double angle brackets that can be analyzed by a ClosedXML.Report parser. Different tags let you get subtotals, build pivot tables, apply auto-filter, and so on. Tags may have parameters for tuning their behavior.
+ClosedXML.Report has a few advanced features allowing to hide a worksheet, sort the data table, apply groupping, calculate totals, etc. These features are controlled by addit tags to the worksheet, to the entire range, or to a single column. Tag is a text embrased by double angle brackets that can be analyzed by a ClosedXML.Report parser. Different tags let you get subtotals, build pivot tables, apply auto-filter, and so on. Tags may have parameters for tuning their behavior. Parameters may require you to specify their values. In this case, the parameter name is separated from the value by the equal sign.
+
+All tags can refer to six report objects: report, sheet, column, row, region, column of area. Report tags are specified in cell A1 of any template sheet. Sheet tags are specified in cell A2 on the sheet. The column's tags are specified in the first line of the sheet. The line tags are specified in the first column of the sheet. The area tags are specified in the leftmost cell of the options row of this area. Tags of the column of the area are specified in the cell of this column in the options row of the area.
 
 Example: `<<Range horizontal>>`.
+
+A list of all the tags you can find on the [Tags page](More-options)
 
 ### Ranges
 To represent IEnumerable values, Excel named regions are used.
