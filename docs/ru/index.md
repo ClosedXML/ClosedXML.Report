@@ -34,6 +34,6 @@ title: Оглавление
 
 [Группировка](Grouping)
 
-[Другие возможности](More-options)
+[Тэги](More-options)
 
-[Добавление нестандартных тегов](Adding-custom-tags)
+[Добавление пользовательских тегов](Adding-custom-tags)
