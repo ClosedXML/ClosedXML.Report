@@ -269,10 +269,27 @@ Full-Width Styles
 }
 
 .inner {
-  position: relative;
-  max-width: 640px;
-  padding: 20px 10px;
-  margin: 0 auto;
+    position: relative;
+    padding: 20px 15px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .inner {
+        width:750px
+    }
+}
+
+@media (min-width: 992px) {
+    .inner {
+        width:970px
+    }
+}
+
+@media (min-width: 1200px) {
+    .inner {
+        width:1170px
+    }
 }
 
 #forkme_banner {
@@ -393,11 +410,6 @@ Small Device Styles
     display: none;
   }
 
-  .inner {
-    min-width: 320px;
-    max-width: 480px;
-  }
-
   #project_title {
   font-size: 32px;
   }
@@ -439,11 +451,6 @@ Small Device Styles
 
   #downloads {
     display: none;
-  }
-
-  .inner {
-    min-width: 240px;
-    max-width: 320px;
   }
 
   #project_title {
