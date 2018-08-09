@@ -31,6 +31,6 @@ Welcome to the ClosedXML.Report wiki!
 
 [Grouping](Grouping)
 
-[More options](More-options)
+[Tags list](More-options)
 
 [Adding custom tags](Adding-custom-tags)
