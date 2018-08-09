@@ -7,6 +7,7 @@ title: Tags list
 | Tag 				| Parameters 			| Scope 	   | Description 
 |-------------------|-----------------------|--------------|-------------------------------------------------------------------------------
 | Range             | source, horizontal	| range 	   | Using the `source` parameter, you can specify a data source for an range other than the name of the range. By using the `horizontal` option, you can specify that the range should be horizontally constructed.
+
 | Sort              | asc, desc             | rangeCol     | Sorts the range by the column for which it is specified. The parameters `Desc` and` Asc` (Asc - by default) indicate the sort order. You can simultaneously sort by several columns. Sorting occurs from right to left, that is, first the rightmost column is sorted, then the next one is left, etc. The `<sort>` tag works both for separately located ranges, and for nested (the lowest level of nesting).
 | Asc               |                       | rangeCol     | Same as `<sort desc>`
 | Desc              |                       | rangeCol     | Same as `<sort asc>`
