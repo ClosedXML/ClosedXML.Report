@@ -12,7 +12,7 @@
     <copyright>MIT</copyright>
     <language>en-US</language>
     <iconUrl>https://github.com/ClosedXML/ClosedXML.Report/raw/develop/Resources/favicon-01.png</iconUrl>
-    <description>It is a tool with which you can easily export any data from your .NET classes in Excel using a XLSX-template. For signed assembly use ClosedXML.Report.Signed</description>
+    <description>It is a tool with which you can easily export any data from your .NET classes to Excel using a XLSX-template. For signed assembly use ClosedXML.Report.Signed</description>
     <summary>ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code.</summary>
     <tags>ClosedXML Reporting Excel</tags>
   </metadata>
