@@ -2,6 +2,7 @@
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -102,6 +103,8 @@ namespace ClosedXML.Report
         public void AddVariable(string alias, object value)
         {
             CheckIsDisposed();
+            if (value is DataTable)
+                value = ((DataTable) value).Rows.Cast<DataRow>();
             _interpreter.AddVariable(alias, value);
         }
 
