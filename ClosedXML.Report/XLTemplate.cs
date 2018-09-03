@@ -104,7 +104,7 @@ namespace ClosedXML.Report
         {
             CheckIsDisposed();
             if (value is DataTable)
-                value = DataTableExtensions.AsEnumerable((DataTable) value);
+                value = ((DataTable) value).Rows.Cast<DataRow>();
             _interpreter.AddVariable(alias, value);
         }
 
