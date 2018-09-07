@@ -38,6 +38,7 @@ namespace ClosedXML.Report
             TagsRegister.Add<SummaryFuncTag>("AVG", 50);
             TagsRegister.Add<SummaryFuncTag>("AVERAGE", 50);
             TagsRegister.Add<SummaryFuncTag>("COUNT", 50);
+            TagsRegister.Add<SummaryFuncTag>("COUNTA", 50);
             TagsRegister.Add<SummaryFuncTag>("COUNTNUMS", 50);
             TagsRegister.Add<SummaryFuncTag>("MAX", 50);
             TagsRegister.Add<SummaryFuncTag>("MIN", 50);
