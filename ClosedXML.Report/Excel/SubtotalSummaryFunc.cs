@@ -13,6 +13,7 @@ namespace ClosedXML.Report.Excel
             {"average", new FuncData<AverageAggregator>(1)},
             {"avg", new FuncData<AverageAggregator>(1)},
             {"count", new FuncData<CountAggregator>(2)},
+            {"countnums", new FuncData<CountAggregator>(2)},
             {"counta", new FuncData<CountAAggregator>(3)},
             {"max", new FuncData<MaxAggregator>(4)},
             {"min", new FuncData<MinAggregator>(5)},
