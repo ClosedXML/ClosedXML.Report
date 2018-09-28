@@ -14,6 +14,7 @@ namespace ClosedXML.Report.Tests
 
         [Theory,
          InlineData("GroupTagTests_Simple.xlsx"),
+         InlineData("GroupTagTests_Simple_WithOutsideLink.xlsx"),
          InlineData("GroupTagTests_Collapse.xlsx"),
          InlineData("tLists1_sort.xlsx"),
          InlineData("tLists2_sum.xlsx"),

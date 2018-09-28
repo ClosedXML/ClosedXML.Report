@@ -100,7 +100,7 @@ namespace ClosedXML.Report.Excel
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)
-                range.InsertRowsBelow(rowDiff, true);
+                range.LastRow().Unsubscribed().RowAbove().Unsubscribed().InsertRowsBelow(rowDiff, true);
             else if (rowDiff < 0)
                 range.Worksheet.Range(
                     range.LastRow().RowNumber() + rowDiff + 1,
