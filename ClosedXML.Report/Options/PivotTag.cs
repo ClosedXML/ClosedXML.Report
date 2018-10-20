@@ -28,6 +28,7 @@ using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Utils;
+using MoreLinq;
 
 namespace ClosedXML.Report.Options
 {
@@ -189,7 +190,7 @@ namespace ClosedXML.Report.Options
         private IXLPivotTable CreatePivot(PivotTag pivot, ProcessingContext context, IXLWorksheet targetSheet, string tableName, IXLCell targetCell)
         {
             IXLRange srcRange = context.Range.Offset(-1, 1, context.Range.RowCount(), context.Range.ColumnCount() - 1);
-            var pt = targetSheet.PivotTables.AddNew(tableName, targetCell, srcRange);
+            var pt = targetSheet.PivotTables.Add(tableName, targetCell, srcRange);
             pt.MergeAndCenterWithLabels = pivot.HasParameter("MergeLabels");
             pt.ShowExpandCollapseButtons = pivot.HasParameter("ShowButtons");
             pt.ClassicPivotTableLayout = !pivot.HasParameter("TreeLayout");

@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Dynamic.Core.Exceptions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using ClosedXML.Report.Utils;
+using MoreLinq;
 
 namespace ClosedXML.Report
 {
@@ -31,7 +31,7 @@ namespace ClosedXML.Report
         private bool _isSubrange;
 
         public string Source { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; }
 
         internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors)
         {
@@ -116,11 +116,8 @@ namespace ClosedXML.Report
 
             result.ParseTags(prng);
 
-            if (result._rangeOption != null)
-            {
-                var source = result._rangeOption.GetParameter("source");
-                if (!string.IsNullOrEmpty(source)) result.Source = source;
-            }
+            var source = result._rangeOption?.GetParameter("source");
+            if (!string.IsNullOrEmpty(source)) result.Source = source;
 
             return result;
         }
@@ -195,20 +192,19 @@ namespace ClosedXML.Report
                     }
                 }
 
-                using (var newRowRng = _buff.GetRange(rowStart, rowEnd))
+                var newRowRng = _buff.GetRange(rowStart, rowEnd);
+                foreach (var mrg in _mergedRanges.Where(r => !_optionsRow.Contains(r)))
                 {
-                    foreach (var mrg in _mergedRanges.Where(r=>!_optionsRow.Contains(r)))
-                    {
-                        var newMrg = mrg.Relative(_rowRange, newRowRng).Unsubscribed();
-                        newMrg.Merge(false);
-                    }
-
-                    if (_rowCnt > 1)
-                    {
-                        _buff.AddConditionalFormats(_condFormats, _rowRange, newRowRng);
-                    }
-                    tags.Execute(new ProcessingContext(newRowRng, items[i]));
+                    var newMrg = mrg.Relative(_rowRange, newRowRng).Unsubscribed();
+                    newMrg.Merge(false);
                 }
+
+                if (_rowCnt > 1)
+                {
+                    _buff.AddConditionalFormats(_condFormats, _rowRange, newRowRng);
+                }
+
+                tags.Execute(new ProcessingContext(newRowRng, items[i]));
             }
 
             // Render options row
@@ -218,31 +214,32 @@ namespace ClosedXML.Report
                 {
                     RenderCell(evaluator, cell);
                 }
+
                 _buff.NewRow();
             }
 
             // Execute range options tags
-            using (var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress))
+            var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
+            if (_rowCnt == 1)
             {
-                if (_rowCnt == 1)
+                var rows = resultRange.RowCount() - (_optionsRowIsEmpty ? 0 : 1);
+                _buff.AddConditionalFormats(_condFormats, _rowRange, resultRange.Offset(0, 0, rows, resultRange.ColumnCount()));
+            }
+
+            if (!_optionsRowIsEmpty)
+            {
+                var optionsRow = resultRange.LastRow().AsRange().Unsubscribed();
+                foreach (var mrg in _mergedRanges.Where(r => _optionsRow.Contains(r)))
                 {
-                    var rows = resultRange.RowCount() - (_optionsRowIsEmpty ? 0 : 1);
-                    _buff.AddConditionalFormats(_condFormats, _rowRange, resultRange.Offset(0, 0, rows, resultRange.ColumnCount()));
-                }
-                if (!_optionsRowIsEmpty)
-                {
-                    var optionsRow = resultRange.LastRow().AsRange().Unsubscribed();
-                    foreach (var mrg in _mergedRanges.Where(r => _optionsRow.Contains(r)))
-                    {
-                        var newMrg = mrg.Relative(_optionsRow, optionsRow).Unsubscribed();
-                        newMrg.Merge();
-                    }
-                    _buff.AddConditionalFormats(_totalsCondFormats, _optionsRow, optionsRow);
+                    var newMrg = mrg.Relative(_optionsRow, optionsRow).Unsubscribed();
+                    newMrg.Merge();
                 }
 
-                if (_isSubrange)
-                    _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
+                _buff.AddConditionalFormats(_totalsCondFormats, _optionsRow, optionsRow);
             }
+
+            if (_isSubrange)
+                _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
         }
 
         private void RenderCell(FormulaEvaluator evaluator, TemplateCell cell, params Parameter[] pars)
@@ -333,8 +330,9 @@ namespace ClosedXML.Report
                 {
                     RenderCell(items, i, evaluator, cell);
                 }
-                using (var newClmnRng = _buff.GetRange(clmnStart, _buff.PrevAddress))
-                    tags.Execute(new ProcessingContext(newClmnRng, items[i]));
+
+                var newClmnRng = _buff.GetRange(clmnStart, _buff.PrevAddress);
+                tags.Execute(new ProcessingContext(newClmnRng, items[i]));
             }
             /*using (var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress))
                 _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));*/
@@ -346,7 +344,7 @@ namespace ClosedXML.Report
             var cells = from c in _cells
                         let value = c.GetString()
                         where (value.StartsWith("<<") || value.EndsWith(">>"))
-                            && !innerRanges.Any(nr => { using (var r = nr.Ranges) using (var cr = c.XLCell.AsRange()) return r.Contains(cr); })
+                            && !innerRanges.Any(nr => nr.Ranges.Contains(c.XLCell.AsRange()))
                         select c;
 
             foreach (var cell in cells)

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
@@ -41,12 +40,7 @@ namespace ClosedXML.Report
         {
             var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
             var cells = from c in range.CellsUsed(c => !c.HasFormula
-                                                    && !innerRanges.Any(nr =>
-                                                    {
-                                                           using (var r = nr.Ranges)
-                                                           using (var cr = c.AsRange())
-                                                               return r.Contains(cr);
-                                                    }))
+                                                       && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())))
                         let value = c.GetString()
                         where (value.StartsWith("<<") || value.EndsWith(">>"))
                         select c;
@@ -136,8 +130,7 @@ namespace ClosedXML.Report
 
             foreach (var nr in innerRanges)
             {
-                var datas = _variables[nr.Name] as IEnumerable;
-                if (datas == null)
+                if (!(_variables[nr.Name] is IEnumerable datas))
                     continue;
 
                 var items = datas as object[] ?? datas.Cast<object>().ToArray();
