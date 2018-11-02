@@ -47,7 +47,7 @@ namespace ClosedXML.Report.Excel
         public void WriteValue(object value, IXLStyle cellStyle)
         {
             var xlCell = _sheet.Cell(_row, _clmn);
-            xlCell.SetValue(value);
+            xlCell.Value = value;
             xlCell.Style = cellStyle ?? _wb.Style;
             _maxClmn = Math.Max(_maxClmn, _clmn);
             _maxRow = Math.Max(_maxRow, _row);
@@ -99,7 +99,7 @@ namespace ClosedXML.Report.Excel
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)
-                range.LastRow().Unsubscribed().RowAbove().Unsubscribed().InsertRowsBelow(rowDiff, true);
+                range.LastRow().RowAbove().InsertRowsBelow(rowDiff, true);
             else if (rowDiff < 0)
                 range.Worksheet.Range(
                     range.LastRow().RowNumber() + rowDiff + 1,

@@ -30,8 +30,8 @@ namespace ClosedXML.Report.Tests
         public void SubtotalsTest()
         {
             LoadTemplate("9_plaindata.xlsx");
-            _rng.Subtotal(2, "sum", new[] { 5, 7 });
-            _rng.Subtotal(3, "sum", new[] { 5, 7 }, false);
+            _rng = _rng.Subtotal(2, "sum", new[] { 5, 7 });
+            _rng = _rng.Subtotal(3, "sum", new[] { 5, 7 }, false);
             CompareWithGauge(_workbook, "XlExtensions_Subtotals.xlsx");
         }
 
@@ -39,8 +39,8 @@ namespace ClosedXML.Report.Tests
         public void SubtotalsReplaceTest()
         {
             LoadTemplate("9_plaindata.xlsx");
-            _rng.Subtotal(2, "sum", new[] { 5, 7 });
-            _rng.Subtotal(3, "sum", new[] { 5, 7 });
+            _rng = _rng.Subtotal(2, "sum", new[] { 5, 7 });
+            _rng = _rng.Subtotal(3, "sum", new[] { 5, 7 });
             CompareWithGauge(_workbook, "XlExtensions_SubtotalsReplace.xlsx");
         }
 
@@ -48,8 +48,8 @@ namespace ClosedXML.Report.Tests
         public void SummaryAbove()
         {
             LoadTemplate("9_plaindata.xlsx");
-            _rng.Subtotal(2, "sum", new[] { 5, 7 }, summaryAbove: true);
-            _rng.Subtotal(3, "sum", new[] { 5, 7 }, false, summaryAbove: true);
+            _rng = _rng.Subtotal(2, "sum", new[] { 5, 7 }, summaryAbove: true);
+            _rng = _rng.Subtotal(3, "sum", new[] { 5, 7 }, false, summaryAbove: true);
             CompareWithGauge(_workbook, "Subtotal_SummaryAbove.xlsx");
         }
 
@@ -78,8 +78,8 @@ namespace ClosedXML.Report.Tests
         public void PageBreaks()
         { 
             LoadTemplate("9_plaindata.xlsx");
-            _rng.Subtotal(2, "sum", new[] { 5, 7 }, pageBreaks: true);
-            _rng.Subtotal(3, "sum", new[] { 5, 7 }, false, true);
+            _rng = _rng.Subtotal(2, "sum", new[] { 5, 7 }, pageBreaks: true);
+            _rng = _rng.Subtotal(3, "sum", new[] { 5, 7 }, false, true);
             CompareWithGauge(_workbook, "Subtotal_PageBreaks.xlsx");
         }
         
@@ -101,7 +101,6 @@ namespace ClosedXML.Report.Tests
 
         public void Dispose()
         {
-            _rng?.Dispose();
             _workbook?.Dispose();
             _stream?.Dispose();
         }

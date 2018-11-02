@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
+using FluentAssertions;
 using LinqToDB;
 using Xunit;
 using Xunit.Abstractions;

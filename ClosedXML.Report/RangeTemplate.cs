@@ -95,7 +95,7 @@ namespace ClosedXML.Report
                 result._rowCnt--;
 
                 result._rowRange = prng.Offset(0, 0, result._rowCnt, result._colCnt);
-                result._optionsRow = prng.LastRow().Unsubscribed();
+                result._optionsRow = prng.LastRow();
                 result._optionsRowIsEmpty = !result._optionsRow.CellsUsed(false).Any();
                 result._totalsCondFormats = sheet.ConditionalFormats
                     .Where(f => result._optionsRow.Contains(f.Range) && !innerRanges.Any(ir => ir.Ranges.Contains(f.Range)))
@@ -195,7 +195,7 @@ namespace ClosedXML.Report
                 var newRowRng = _buff.GetRange(rowStart, rowEnd);
                 foreach (var mrg in _mergedRanges.Where(r => !_optionsRow.Contains(r)))
                 {
-                    var newMrg = mrg.Relative(_rowRange, newRowRng).Unsubscribed();
+                    var newMrg = mrg.Relative(_rowRange, newRowRng);
                     newMrg.Merge(false);
                 }
 
@@ -228,10 +228,10 @@ namespace ClosedXML.Report
 
             if (!_optionsRowIsEmpty)
             {
-                var optionsRow = resultRange.LastRow().AsRange().Unsubscribed();
+                var optionsRow = resultRange.LastRow().AsRange();
                 foreach (var mrg in _mergedRanges.Where(r => _optionsRow.Contains(r)))
                 {
-                    var newMrg = mrg.Relative(_optionsRow, optionsRow).Unsubscribed();
+                    var newMrg = mrg.Relative(_optionsRow, optionsRow);
                     newMrg.Merge();
                 }
 
@@ -313,7 +313,7 @@ namespace ClosedXML.Report
                         });
                 }
             }
-            var rng = _buff.GetRange(start, _buff.PrevAddress).Unsubscribed();
+            var rng = _buff.GetRange(start, _buff.PrevAddress);
             var rangeName = ownRng.Name;
             var dnr = rng.Worksheet.Workbook.NamedRange(rangeName);
             dnr.SetRefersTo(rng);

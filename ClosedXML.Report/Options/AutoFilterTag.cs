@@ -9,9 +9,9 @@ namespace ClosedXML.Report.Options
             var xlCell = Cell.GetXlCell(context.Range);
             if (IsSpecialRangeCell(xlCell))
             {
-                context.Range.Range(context.Range.FirstCell().CellRight(), context.Range.LastCell()).Unsubscribed()
-                    .FirstRow().Unsubscribed()
-                    .RowAbove().Unsubscribed()
+                context.Range.Range(context.Range.FirstCell().CellRight(), context.Range.LastCell())
+                    .FirstRow()
+                    .RowAbove()
                     .SetAutoFilter();
             }
         }

@@ -44,9 +44,32 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.93.1" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.7" />
-    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
+    <PackageReference Include="morelinq" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <Reference Include="ClosedXML">
+      <HintPath>..\..\ClosedXML\ClosedXML\bin\Debug\net40\ClosedXML.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="ClosedXML">
+      <HintPath>..\..\ClosedXML\ClosedXML\bin\Debug\net46\ClosedXML.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <Reference Include="ClosedXML">
+      <HintPath>..\..\ClosedXML\ClosedXML\bin\Debug\netstandard2.0\ClosedXML.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.CSharp\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
