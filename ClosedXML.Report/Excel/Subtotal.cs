@@ -475,7 +475,7 @@ namespace ClosedXML.Report.Excel
                     .Where(g => g.Column < gr.GroupColumn && g.Range.RangeAddress.Contains(gr.SourceAddress))
                     .ForEach(g =>
                     {
-                        _range = g.Range.ExtendRows(1);
+                        g.Range = g.Range.ExtendRows(1);
                         if (!_summaryAbove && g.SummaryRow != null) g.SummaryRow = g.SummaryRow.ShiftRows(1).Row(1);
                     });
             }
