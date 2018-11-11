@@ -6,7 +6,7 @@ using ClosedXML.Report.Utils;
 
 namespace ClosedXML.Report.Excel
 {
-    internal class TempSheetBuffer: IReportBuffer
+    internal class TempSheetBuffer : IReportBuffer
     {
         private const string SheetName = "__temp_buffer";
         private readonly XLWorkbook _wb;
@@ -45,7 +45,7 @@ namespace ClosedXML.Report.Excel
             Clear();
         }
 
-        public void WriteValue(object value, IXLStyle cellStyle)
+        public void WriteValue(object value, IXLStyle cellStyle, TemplateCell tempCell)
         {
             var xlCell = _sheet.Cell(_row, _clmn);
             xlCell.SetValue(value);
@@ -53,9 +53,12 @@ namespace ClosedXML.Report.Excel
             _maxClmn = Math.Max(_maxClmn, _clmn);
             _maxRow = Math.Max(_maxRow, _row);
             ChangeAddress(_row, _clmn + 1);
+
+            // Set the height of the current row to the height of the template row
+            xlCell.WorksheetRow().Height = tempCell.XLCell.WorksheetRow().Height;
         }
 
-        public void WriteFormulaR1C1(string formula, IXLStyle cellStyle)
+        public void WriteFormulaR1C1(string formula, IXLStyle cellStyle, TemplateCell tempCell)
         {
             var xlCell = _sheet.Cell(_row, _clmn);
             xlCell.Style = cellStyle;
@@ -63,6 +66,9 @@ namespace ClosedXML.Report.Excel
             _maxClmn = Math.Max(_maxClmn, _clmn);
             _maxRow = Math.Max(_maxRow, _row);
             ChangeAddress(_row, _clmn + 1);
+
+            // Set the height of the current row to the height of the template row
+            xlCell.WorksheetRow().Height = tempCell.XLCell.WorksheetRow().Height;
         }
 
         public void NewRow()
@@ -95,7 +101,7 @@ namespace ClosedXML.Report.Excel
             // LastCellUsed may produce the wrong result, see https://github.com/ClosedXML/ClosedXML/issues/339
             var lastCell = _sheet.Cell(
                 _sheet.LastRowUsed(true)?.RowNumber() ?? 1,
-                _sheet.LastColumnUsed(true)?.ColumnNumber()?? 1);
+                _sheet.LastColumnUsed(true)?.ColumnNumber() ?? 1);
             var tempRng = _sheet.Range(_sheet.Cell(1, 1), lastCell);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
@@ -129,12 +135,15 @@ namespace ClosedXML.Report.Excel
             using (var srcRows = _sheet.Rows(tempRng.RangeAddress.FirstAddress.RowNumber, tempRng.RangeAddress.LastAddress.RowNumber))
                 foreach (var row in srcRows)
                 {
-                    var xlRow = tgtSheet.Row(row.RowNumber() + tgtStartRow-1);
+                    var xlRow = tgtSheet.Row(row.RowNumber() + tgtStartRow - 1);
                     xlRow.OutlineLevel = row.OutlineLevel;
                     if (row.IsHidden)
                         xlRow.Collapse();
                     else
                         xlRow.Expand();
+
+                    // Set the height of the current row to the height of the template row
+                    xlRow.Height = row.Height;
                 }
             return range;
         }

@@ -84,7 +84,7 @@ namespace ClosedXML.Report
                     result._cells.AddNewRow();
             }
 
-            result._mergedRanges = sheet.MergedRanges.Where(x => prng.Contains(x) && !innerRanges.Any(nr=>nr.Ranges.Any(r=>r.Contains(x)))).ToArray();
+            result._mergedRanges = sheet.MergedRanges.Where(x => prng.Contains(x) && !innerRanges.Any(nr => nr.Ranges.Any(r => r.Contains(x)))).ToArray();
             sheet.MergedRanges.RemoveAll(result._mergedRanges.Contains);
             result._condFormats = sheet.ConditionalFormats
                 .Where(f => prng.Contains(f.Range) && !innerRanges.Any(ir => ir.Ranges.Contains(f.Range)))
@@ -129,13 +129,13 @@ namespace ClosedXML.Report
         {
             var containings = prng.GetContainingNames().ToArray();
             return from nr in containings
-                let br = nr.Ranges
-                    .Any(rng => containings
-                        .Where(rr => rr != nr)
-                        .SelectMany(rr => rr.Ranges)
-                        .Any(r => r.Contains(rng)))
-                where !br
-                select nr;
+                   let br = nr.Ranges
+                       .Any(rng => containings
+                           .Where(rr => rr != nr)
+                           .SelectMany(rr => rr.Ranges)
+                           .Any(r => r.Contains(rng)))
+                   where !br
+                   select nr;
         }
 
         public IReportBuffer Generate(object[] items)
@@ -197,7 +197,7 @@ namespace ClosedXML.Report
 
                 using (var newRowRng = _buff.GetRange(rowStart, rowEnd))
                 {
-                    foreach (var mrg in _mergedRanges.Where(r=>!_optionsRow.Contains(r)))
+                    foreach (var mrg in _mergedRanges.Where(r => !_optionsRow.Contains(r)))
                     {
                         var newMrg = mrg.Relative(_rowRange, newRowRng).Unsubscribed();
                         newMrg.Merge(false);
@@ -256,7 +256,7 @@ namespace ClosedXML.Report
             }
             catch (ParseException ex)
             {
-                _buff.WriteValue(ex.Message, cell.Style);
+                _buff.WriteValue(ex.Message, cell.Style, cell);
                 _buff.GetCell(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber).Style.Font.FontColor = XLColor.Red;
                 _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
                 return;
@@ -265,10 +265,10 @@ namespace ClosedXML.Report
             if (cell.CellType == TemplateCellType.Formula)
             {
                 var r1c1 = cell.XLCell.GetFormulaR1C1(value.ToString());
-                _buff.WriteFormulaR1C1(r1c1, cell.Style);
+                _buff.WriteFormulaR1C1(r1c1, cell.Style, cell);
             }
             else
-                _buff.WriteValue(value, cell.Style);
+                _buff.WriteValue(value, cell.Style, cell);
         }
 
         private void RenderCell(object[] items, int i, FormulaEvaluator evaluator, TemplateCell cell)
@@ -304,7 +304,7 @@ namespace ClosedXML.Report
                 else
                 {
                     row += ownRng._rowCnt - 1;
-                    while (_cells[iCell].Row <= row+1)
+                    while (_cells[iCell].Row <= row + 1)
                         iCell++;
 
                     int shiftLen = ownRng._rowCnt * (valArr.Length - 1);
