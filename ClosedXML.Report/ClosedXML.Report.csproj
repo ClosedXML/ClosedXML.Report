@@ -46,7 +46,7 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.92.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
-    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
 </Project>
