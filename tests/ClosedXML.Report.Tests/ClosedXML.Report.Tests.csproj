@@ -30,7 +30,7 @@
     <PackageReference Include="FluentAssertions" Version="4.18.0" />
     <PackageReference Include="linq2db" Version="1.0.7.1" />
     <PackageReference Include="linq2db.Access" Version="1.7.6" />
-    <PackageReference Include="linq2db.t4models" Version="1.0.7.1" />
+    <PackageReference Include="linq2db.t4models" Version="2.5.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="NSubstitute" Version="1.10.0.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
