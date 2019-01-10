@@ -44,26 +44,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.94.2" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
     <PackageReference Include="morelinq" Version="2.10.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
-    <Reference Include="ClosedXML">
-      <HintPath>..\..\ClosedXML\ClosedXML\bin\Debug\net40\ClosedXML.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="ClosedXML">
-      <HintPath>..\..\ClosedXML\ClosedXML\bin\Debug\net46\ClosedXML.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <Reference Include="ClosedXML">
-      <HintPath>..\..\ClosedXML\ClosedXML\bin\Debug\netstandard2.0\ClosedXML.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

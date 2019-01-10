@@ -218,7 +218,6 @@ namespace ClosedXML.Report
                 _buff.NewRow();
             }
 
-            // Execute range options tags
             var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
             if (_rowCnt == 1)
             {
@@ -238,6 +237,7 @@ namespace ClosedXML.Report
                 _buff.AddConditionalFormats(_totalsCondFormats, _optionsRow, optionsRow);
             }
 
+            // Execute range options tags
             if (_isSubrange)
                 _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
         }

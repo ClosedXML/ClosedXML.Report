@@ -91,14 +91,12 @@ namespace ClosedXML.Report
             {
                 AddParameter(parameter.Value);
             }
-            range.Worksheet.SuspendEvents();
             var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
             var cells = range.CellsUsed()
                 .Where(c => !c.HasFormula
                             && c.GetString().Contains("{{")
                             && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())))
                 .ToArray();
-            range.Worksheet.ResumeEvents();
 
             foreach (var cell in cells)
             {

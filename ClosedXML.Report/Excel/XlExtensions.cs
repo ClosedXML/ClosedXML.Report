@@ -216,27 +216,11 @@ namespace ClosedXML.Report.Excel
             method.Invoke(targetFormat, new object[] { srcFormat });
         }
 
-        public static void SuspendEvents(this IXLWorksheet sheet)
-        {
-            return; //TODO remove method
-            /*var type = sheet.GetType();
-            var method = type.GetMethod("SuspendEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);*/
-        }
-
         public static void Consolidate(this IXLConditionalFormats formats)
         {
             var type = formats.GetType();
             var method = type.GetMethod("Consolidate", BindingFlags.Instance | BindingFlags.NonPublic);
             method.Invoke(formats, new object[0]);
-        }
-
-        public static void ResumeEvents(this IXLWorksheet sheet)
-        {
-            return; //TODO remove method
-            /*var type = sheet.GetType();
-            var method = type.GetMethod("ResumeEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);*/
         }
 
         public static int RowCount(this IXLRangeAddress address)
@@ -288,12 +272,10 @@ namespace ClosedXML.Report.Excel
         internal static void CopyConditionalFormatsFrom(this IXLRangeBase targetRange, IXLRangeBase srcRange)
         {
             var sheet = targetRange.Worksheet;
-            sheet.SuspendEvents();
             foreach (var conditionalFormat in sheet.ConditionalFormats.Where(c => c.Range.Intersects(srcRange)).ToList())
             {
                 conditionalFormat.CopyRelative(srcRange, targetRange, false);
             }
-            sheet.ResumeEvents();
         }
 
         public static IXLRange Offset(this IXLRange range, int rowsOffset, int columnOffset)
@@ -346,7 +328,9 @@ namespace ClosedXML.Report.Excel
         {
             foreach (var format in worksheet.ConditionalFormats)
             {
-                var target = format.Range.FirstCell();
+                var target = format.Ranges.OrderBy(x=>x.RangeAddress.FirstAddress.RowNumber)
+                    .ThenBy(x=> x.RangeAddress.FirstAddress.ColumnNumber)
+                    .First().FirstCell();
                 foreach (var v in format.Values.Where(v => v.Value.Value.StartsWith("&=")).ToList())
                 {
                     var f = v.Value.Value.Substring(1);

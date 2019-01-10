@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using FluentAssertions;
@@ -16,6 +17,8 @@ namespace ClosedXML.Report.Tests
 
         public SubtotalTests(ITestOutputHelper output) : base(output)
         {
+            var consoleOut = new ConsoleTestWriter(output);
+            Console.SetOut(consoleOut);
         }
 
         private void LoadTemplate(string fileTemplate)
@@ -40,7 +43,9 @@ namespace ClosedXML.Report.Tests
         {
             LoadTemplate("9_plaindata.xlsx");
             _rng = _rng.Subtotal(2, "sum", new[] { 5, 7 });
+            Console.WriteLine("_rng: "+ _rng);
             _rng = _rng.Subtotal(3, "sum", new[] { 5, 7 });
+            Console.WriteLine("_rng: " + _rng);
             CompareWithGauge(_workbook, "XlExtensions_SubtotalsReplace.xlsx");
         }
 
@@ -103,6 +108,38 @@ namespace ClosedXML.Report.Tests
         {
             _workbook?.Dispose();
             _stream?.Dispose();
+        }
+    }
+
+    public class ConsoleTestWriter : TextWriter
+    {
+        private readonly ITestOutputHelper _output;
+
+        public ConsoleTestWriter(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        public override Encoding Encoding { get; }
+
+        public override void WriteLine(string value)
+        {
+            _output.WriteLine(value);
+        }
+
+        public override void WriteLine(int value)
+        {
+            _output.WriteLine(value.ToString());
+        }
+
+        public override void WriteLine(decimal value)
+        {
+            _output.WriteLine(value.ToString());
+        }
+
+        public override void WriteLine(float value)
+        {
+            _output.WriteLine(value.ToString());
         }
     }
 }

@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.93.1" />
+    <PackageReference Include="ClosedXML" Version="0.94.2" />
     <PackageReference Include="FluentAssertions" Version="5.4.2" />
     <PackageReference Include="linq2db" Version="1.0.7.1" />
     <PackageReference Include="linq2db.Access" Version="1.7.6" />

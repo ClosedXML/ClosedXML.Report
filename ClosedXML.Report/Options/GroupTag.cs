@@ -188,7 +188,6 @@ namespace ClosedXML.Report.Options
         protected virtual void GroupRender(SubtotalGroup subGroup, GroupTag grData)
         {
             var sheet = subGroup.Range.Worksheet;
-            sheet.SuspendEvents();
             if (!sheet.Row(subGroup.Range.FirstRow().RowNumber()).IsHidden && grData.Collapse)
             {
                 sheet.CollapseRows(grData.Level);
@@ -225,8 +224,6 @@ namespace ClosedXML.Report.Options
                         rng.Cell(1).Value = "";
                 }
             }
-
-            sheet.ResumeEvents();
         }
 
         public enum MergeMode
