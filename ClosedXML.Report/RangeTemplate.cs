@@ -278,7 +278,7 @@ namespace ClosedXML.Report
             var start = _buff.NextAddress;
             // дочерний шаблон, к которому принадлежит ячейка
             var xlCell = _rowRange.Cell(cell.Row, cell.Column);
-            var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && Equals(c.XLCell.Address, xlCell.Address)));
+            var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
             var formula = "{{" + ownRng.Source.ReplaceLast("_", ".") + "}}";
             IEnumerable value = evaluator.Evaluate(formula, new Parameter(Name, item)) as IEnumerable;
 
