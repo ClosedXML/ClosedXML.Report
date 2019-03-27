@@ -276,6 +276,30 @@ namespace ClosedXML.Report.Tests
             Assert.Throws<ObjectDisposedException>(() => template.Generate());
         }
 
+
+        [Fact]
+        public void Leading_zeros_should_not_be_trimmed()
+        {
+            var data = new
+            {
+                Id = "01",
+                Items = new object[] {
+                    new { Id = "001" },
+                    new { Id = "002" },
+                }
+            };
+
+            XlTemplateTest("Leading_Zeros.xlsx",
+                tpl => tpl.AddVariable(data),
+                wb =>
+                {
+                    var sheet = wb.Worksheet(1);
+                    sheet.Cell(2, 2).Value.Should().Be("001");
+                    sheet.Cell(3, 2).Value.Should().Be("002");
+                    sheet.Cell(1, 1).Value.Should().Be("01");
+                });
+        }
+
         private void ReplaceWorkbookWithMock(XLTemplate template, IXLWorkbook mock)
         {
             var property = template.GetType().GetProperty("Workbook");
