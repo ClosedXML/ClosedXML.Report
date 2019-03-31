@@ -98,11 +98,17 @@ namespace ClosedXML.Report.Excel
                 .Where(x => x.Column <= column)
                 .SelectMany(x =>
                 {
-                    var datas = new List<MoveData>();
-                    datas.Add(new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) {GroupColumn = x.Column});
+                    var moveDataEntries = new List<MoveData>
+                    {
+                        new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level)
+                        {
+                            GroupColumn = x.Column
+                        }
+                    };
+
                     if (x.SummaryRow != null)
-                        datas.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
-                    return datas;
+                        moveDataEntries.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
+                    return moveDataEntries;
                 })
                 .Where(x => x.Type == RangeType.SummaryRow || x.GroupColumn >= column)
                 .Union(_groups.Where(x => x.HeaderRow != null).Select(x => new MoveData(x.HeaderRow.RangeAddress, RangeType.HeaderRow, "", x.Level - 1)))
@@ -130,11 +136,16 @@ namespace ClosedXML.Report.Excel
             SetOutlineLevels(
                 _groups.SelectMany(x =>
                 {
-                    var datas = new List<MoveData>();
-                    datas.Add(new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) { GroupColumn = x.Column});
+                    var moveDataEntries = new List<MoveData>
+                    {
+                        new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level)
+                        {
+                            GroupColumn = x.Column
+                        }
+                    };
                     if (x.SummaryRow != null)
-                        datas.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
-                    return datas;
+                        moveDataEntries.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
+                    return moveDataEntries;
                 })
                 .Union(_groups.Where(x => x.HeaderRow != null).Select(x => new MoveData(x.HeaderRow.RangeAddress, RangeType.HeaderRow, "", x.Level - 1)))
                 .ToArray()

@@ -168,8 +168,7 @@ namespace ClosedXML.Report.Utils
             this Type type,
             Expression<Func<TSource, TProperty>> propertyLambda)
         {
-            MemberExpression member = propertyLambda.Body as MemberExpression;
-            if (member == null)
+            if (!(propertyLambda.Body is MemberExpression member))
                 throw new ArgumentException(string.Format(
                     "Expression '{0}' refers to a method, not a property.",
                     propertyLambda.ToString()));

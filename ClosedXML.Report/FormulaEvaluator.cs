@@ -37,11 +37,12 @@ namespace ClosedXML.Report
         private string ObjToString(object val)
         {
             if (val == null) val = "";
-            if (val is DateTime)
-                return ((DateTime)val).ToOADate().ToString(CultureInfo.InvariantCulture);
+            if (val is DateTime dateVal)
+                return dateVal.ToOADate().ToString(CultureInfo.InvariantCulture);
 
-            var formattable = val as IFormattable;
-            return formattable != null ? formattable.ToString(null, CultureInfo.InvariantCulture) : val?.ToString();
+            return val is IFormattable formattable
+                ? formattable.ToString(null, CultureInfo.InvariantCulture)
+                : val?.ToString();
         }
 
         private IEnumerable<string> GetExpressions(string cellValue)
@@ -52,8 +53,7 @@ namespace ClosedXML.Report
 
         private object Eval(string expression, Parameter[] pars)
         {
-            Delegate lambda;
-            if (!_lambdaCache.TryGetValue(expression, out lambda))
+            if (!_lambdaCache.TryGetValue(expression, out var lambda))
             {
                 var parameters = pars.Select(p=>p.ParameterExpression).ToArray();
                 lambda = DynamicExpressionParser.ParseLambda(parameters, typeof(object), expression, _variables).Compile();

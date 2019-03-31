@@ -96,7 +96,7 @@ namespace ClosedXML.Report.Excel
             foreach (var match in regex.Matches(formulaA1).Cast<Match>())
             {
                 var matchValue = match.Value;
-                
+
                 if (matchValue.Contains('!'))
                 {
                     var split = matchValue.Split('!');
@@ -104,8 +104,7 @@ namespace ClosedXML.Report.Excel
                     var wsName = first.StartsWith("'") ? first.Substring(1, first.Length - 2) : first;
                     matchValue = split[1];
 
-                    IXLWorksheet refWs;
-                    if (ws.Workbook.Worksheets.TryGetWorksheet(wsName, out refWs))
+                    if (ws.Workbook.Worksheets.TryGetWorksheet(wsName, out var refWs))
                     {
                         ws = refWs;
                     }

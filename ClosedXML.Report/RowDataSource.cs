@@ -19,8 +19,7 @@ namespace ClosedXML.Report
 
         public object GetValue(IXLRangeRow row)
         {
-            int key;
-            if (row.LastCell().TryGetValue(out key))
+            if (row.LastCell().TryGetValue(out int key))
             {
                 if (key >= 0 && key < _items.Length)
                     return _items[key];

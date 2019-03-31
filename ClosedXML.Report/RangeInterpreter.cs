@@ -130,8 +130,7 @@ namespace ClosedXML.Report
 
             foreach (var nr in innerRanges)
             {
-                var datas = _variables[nr.Name] as IEnumerable;
-                if (datas == null)
+                if (!(_variables[nr.Name] is IEnumerable datas))
                     continue;
 
                 var items = datas as object[] ?? datas.Cast<object>().ToArray();
@@ -141,7 +140,7 @@ namespace ClosedXML.Report
                 {
                     var trgtRng = buff.CopyTo(nrng);
                     nr.SetRefersTo(trgtRng);
-                    
+
                     tplt.RangeTagsApply(trgtRng, items);
                 }
 

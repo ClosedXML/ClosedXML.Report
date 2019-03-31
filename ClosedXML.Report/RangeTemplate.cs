@@ -280,9 +280,8 @@ namespace ClosedXML.Report
             var xlCell = _rowRange.Cell(cell.Row, cell.Column);
             var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
             var formula = "{{" + ownRng.Source.ReplaceLast("_", ".") + "}}";
-            IEnumerable value = evaluator.Evaluate(formula, new Parameter(Name, item)) as IEnumerable;
 
-            if (value != null)
+            if (evaluator.Evaluate(formula, new Parameter(Name, item)) is IEnumerable value)
             {
                 var valArr = value.Cast<object>().ToArray();
                 ownRng.Generate(valArr);
@@ -313,6 +312,7 @@ namespace ClosedXML.Report
                         });
                 }
             }
+
             var rng = _buff.GetRange(start, _buff.PrevAddress);
             var rangeName = ownRng.Name;
             var dnr = rng.Worksheet.Workbook.NamedRange(rangeName);
