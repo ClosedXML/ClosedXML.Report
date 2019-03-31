@@ -14,17 +14,14 @@ namespace ClosedXML.Report.Options
                 return;
 
             var summ = GetFunc();
-            /*var lastAddress = Range.RangeAddress.LastAddress;
-            var summRow = Range.Worksheet.Range(lastAddress.RowNumber + 1, Range.RangeAddress.FirstAddress.ColumnNumber, 
-                lastAddress.RowNumber + 1, lastAddress.ColumnNumber).Unsubscribed();*/
-            var summRow = context.Range.LastRow().Unsubscribed();
+            var summRow = context.Range.LastRow();
             if (summ.FuncNum == 0)
             {
                 summRow.Cell(summ.Column).Value = summ.Calculate((IDataSource)context.Value);
             }
             else if (summ.FuncNum > 0)
             {
-                var funcRngAddr = context.Range.Offset(0, summ.Column-1, context.Range.RowCount()-1, 1).Unsubscribed().Column(1).Unsubscribed().RangeAddress;
+                var funcRngAddr = context.Range.Offset(0, summ.Column-1, context.Range.RowCount()-1, 1).Column(1).RangeAddress;
                 summRow.Cell(summ.Column).FormulaA1 = string.Format("Subtotal({0},{1})", summ.FuncNum, funcRngAddr.ToStringRelative());
             }
         }

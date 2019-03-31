@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ClosedXML.Report.Utils
 {
-    public static class ConvertExtesions
+    public static class ConvertExtensions
     {
         public static T As<T>(this object obj)
         {

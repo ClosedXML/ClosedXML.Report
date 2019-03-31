@@ -169,21 +169,10 @@ namespace ClosedXML.Report.Excel
             return row.Cells(x => x.HasFormula && x.FormulaA1.ToLower().StartsWith("subtotal(")).Any();
         }
 
-        public static bool IsEmpty(this IXLRangeRow row)
-        {
-            return !row.Cells(x => x.HasFormula || !x.GetString().IsNullOrWhiteSpace()).Any();
-        }
-
-        public static T Unsubscribed<T>(this T range) where T : IXLRangeBase
-        {
-            //TODO delete method
-            return range;
-        }
-
         public static void CopyStylesFrom(this IXLRangeBase trgtRow, IXLRangeBase srcRow)
         {
             trgtRow.Style = srcRow.Style;
-            var srcCells = srcRow.Cells(true, true).ToArray();
+            var srcCells = srcRow.Cells(true, XLCellsUsedOptions.All).ToArray();
             for (int i = 0; i < srcCells.Length; i++)
             {
                 var rela = srcCells[i].Relative(srcRow.RangeAddress.FirstAddress);
@@ -199,29 +188,6 @@ namespace ClosedXML.Report.Excel
             var type = targetFormat.GetType();
             var method = type.GetMethod("CopyFrom", BindingFlags.Instance | BindingFlags.Public);
             method.Invoke(targetFormat, new object[] { srcFormat });
-        }
-
-        public static void SuspendEvents(this IXLWorksheet sheet)
-        {
-            return; //TODO remove method
-            /*var type = sheet.GetType();
-            var method = type.GetMethod("SuspendEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);*/
-        }
-
-        public static void Consolidate(this IXLConditionalFormats formats)
-        {
-            var type = formats.GetType();
-            var method = type.GetMethod("Consolidate", BindingFlags.Instance | BindingFlags.NonPublic);
-            method.Invoke(formats, new object[0]);
-        }
-
-        public static void ResumeEvents(this IXLWorksheet sheet)
-        {
-            return; //TODO remove method
-            /*var type = sheet.GetType();
-            var method = type.GetMethod("ResumeEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);*/
         }
 
         public static int RowCount(this IXLRangeAddress address)
@@ -250,8 +216,13 @@ namespace ClosedXML.Report.Excel
                 var frmtRng = Intersection(sourceFmtRange, fromRange)
                         .Relative(fromRange, toRange)
                         as IXLRange;
-                if (expand && toRange.RangeAddress.RowCount() != sourceFmtRange.RowCount())
-                    frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount()).Unsubscribed();
+                if (expand &&
+                    frmtRng.RangeAddress.RowCount() == fromRange.RangeAddress.RowCount() &&
+                    frmtRng.RangeAddress.RowCount() != toRange.RangeAddress.RowCount())
+                {
+                    frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount());
+                }
+
                 var newFrmt = frmtRng.AddConditionalFormat();
                 newFrmt.CopyFrom(format);
             }
@@ -275,12 +246,10 @@ namespace ClosedXML.Report.Excel
         internal static void CopyConditionalFormatsFrom(this IXLRangeBase targetRange, IXLRangeBase srcRange)
         {
             var sheet = targetRange.Worksheet;
-            sheet.SuspendEvents();
             foreach (var conditionalFormat in sheet.ConditionalFormats.Where(c => c.Range.Intersects(srcRange)).ToList())
             {
                 conditionalFormat.CopyRelative(srcRange, targetRange, false);
             }
-            sheet.ResumeEvents();
         }
 
         public static IXLRange Offset(this IXLRange range, int rowsOffset, int columnOffset)
@@ -342,21 +311,5 @@ namespace ClosedXML.Report.Excel
                 }
             }
         }
-
-    }
-
-    public enum XlCopyType
-    {
-        All = -4104,	// Everything will be pasted.
-        AllExceptBorders = 7,	// Everything except borders will be pasted.
-        AllMergingConditionalFormats = 14,	// Everything will be pasted and conditional formats will be merged.
-        AllUsingSourceTheme = 13,	// Everything will be pasted using the source theme.
-        ColumnWidths = 8,	// Copied column width is pasted.
-        Comments = -4144,	// Comments are pasted.
-        Formats = -4122,	// Copied source format is pasted.
-        Formulas = -4123,	// Formulas are pasted.
-        FormulasAndNumberFormats = 11,	// Formulas and Number formats are pasted.
-        Values = -4163,	// Values are pasted.
-        ValuesAndNumberFormats = 12	// Values and Number formats are pasted.
     }
 }

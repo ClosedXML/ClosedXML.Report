@@ -1,8 +1,7 @@
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ClosedXML.Excel;
-using ClosedXML.Report.Utils;
 
 namespace ClosedXML.Report.Excel
 {
@@ -15,8 +14,6 @@ namespace ClosedXML.Report.Excel
         private int _clmn;
         private int _prevrow;
         private int _prevclmn;
-        private int _maxClmn;
-        private int _maxRow;
 
         public TempSheetBuffer(XLWorkbook wb)
         {
@@ -36,12 +33,10 @@ namespace ClosedXML.Report.Excel
                     _sheet = _wb.AddWorksheet(SheetName);
                     _sheet.SetCalcEngineCacheExpressions(false);
                 }
-                //_sheet.Visibility = XLWorksheetVisibility.VeryHidden;
+                _sheet.Visibility = XLWorksheetVisibility.VeryHidden;
             }
-            _row = 1;
-            _clmn = 1;
-            _maxRow = _prevrow = 1;
-            _maxClmn = _prevclmn = 1;
+            _row = _prevrow = 1;
+            _clmn = _prevclmn = 1;
             Clear();
             _sheet.Style = _wb.Worksheets.First().Style;
         }
@@ -59,8 +54,6 @@ namespace ClosedXML.Report.Excel
             }
 
             xlCell.Style = cellStyle ?? _wb.Style;
-            _maxClmn = Math.Max(_maxClmn, _clmn);
-            _maxRow = Math.Max(_maxRow, _row);
             ChangeAddress(_row, _clmn + 1);
         }
 
@@ -69,8 +62,6 @@ namespace ClosedXML.Report.Excel
             var xlCell = _sheet.Cell(_row, _clmn);
             xlCell.Style = cellStyle;
             xlCell.SetFormulaR1C1(formula);
-            _maxClmn = Math.Max(_maxClmn, _clmn);
-            _maxRow = Math.Max(_maxRow, _row);
             ChangeAddress(_row, _clmn + 1);
         }
 
@@ -102,12 +93,12 @@ namespace ClosedXML.Report.Excel
         public IXLRange CopyTo(IXLRange range)
         {
             var firstCell = _sheet.Cell(1, 1);
-            var lastCell = _sheet.LastCellUsed(includeFormats:true) ?? firstCell;
+            var lastCell = _sheet.LastCellUsed(XLCellsUsedOptions.All) ?? firstCell;
             var tempRng = _sheet.Range(firstCell, lastCell);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)
-                range.LastRow().Unsubscribed().RowAbove().Unsubscribed().InsertRowsBelow(rowDiff, true);
+                range.LastRow().RowAbove().InsertRowsBelow(rowDiff, true);
             else if (rowDiff < 0)
                 range.Worksheet.Range(
                     range.LastRow().RowNumber() + rowDiff + 1,
@@ -148,7 +139,7 @@ namespace ClosedXML.Report.Excel
 
         public void Clear()
         {
-            var srcRows = _sheet.RowsUsed(true);
+            var srcRows = _sheet.RowsUsed(XLCellsUsedOptions.All);
             foreach (var row in srcRows)
             {
                 row.OutlineLevel = 0;
@@ -158,7 +149,6 @@ namespace ClosedXML.Report.Excel
 
         public void AddConditionalFormats(IEnumerable<IXLConditionalFormat> formats, IXLRangeBase fromRange, IXLRangeBase toRange)
         {
-            //var tempRng = _sheet.Range(_sheet.Cell(1, 1), _sheet.Cell(_prevrow, _prevclmn));
             foreach (var format in formats)
             {
                 format.CopyRelative(fromRange, toRange, true);

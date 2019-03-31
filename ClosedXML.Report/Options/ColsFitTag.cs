@@ -1,6 +1,4 @@
-﻿using ClosedXML.Report.Excel;
-
-namespace ClosedXML.Report.Options
+﻿namespace ClosedXML.Report.Options
 {
     public class ColsFitTag : OptionTag
     {
