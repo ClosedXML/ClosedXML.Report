@@ -33,10 +33,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="NSubstitute" Version="1.10.0.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
-    <PackageReference Include="xunit" Version="2.3.1" />
-    <PackageReference Include="xunit.abstractions" Version="2.0.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.assert" Version="2.4.1" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.3.1" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
 
