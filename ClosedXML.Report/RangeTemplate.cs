@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Dynamic.Core.Exceptions;
 using ClosedXML.Excel;
@@ -30,11 +29,12 @@ namespace ClosedXML.Report
         private IXLConditionalFormat[] _condFormats;
         private IXLConditionalFormat[] _totalsCondFormats;
         private bool _isSubrange;
+        private IDictionary<string, object> _globalVariables;
 
         public string Source { get; private set; }
         public string Name { get; private set; }
 
-        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors)
+        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
             _rowRange = range.Ranges.First();
             _cells = new TemplateCells(this);
@@ -42,6 +42,7 @@ namespace ClosedXML.Report
             var wb = _rowRange.Worksheet.Workbook;
             _buff = buff;
             _errors = errors;
+            _globalVariables = globalVariables;
             _tags = new TagsList(_errors);
             _rangeTags = new TagsList(_errors);
             Name = range.Name;
@@ -49,24 +50,24 @@ namespace ClosedXML.Report
             wb.NamedRanges.Add(range.Name + "_tpl", range.Ranges);
         }
 
-        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, int rowCnt, int colCnt, TemplateErrors errors) : this(range, buff, errors)
+        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, int rowCnt, int colCnt, TemplateErrors errors, IDictionary<string, object> globalVariables) : this(range, buff, errors, globalVariables)
         {
             _rowCnt = rowCnt;
             _colCnt = colCnt;
         }
 
 
-        public static RangeTemplate Parse(IXLNamedRange range, TemplateErrors errors)
+        public static RangeTemplate Parse(IXLNamedRange range, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
             var wb = range.Ranges.First().Worksheet.Workbook;
-            return Parse(range, new TempSheetBuffer(wb), errors);
+            return Parse(range, new TempSheetBuffer(wb), errors, globalVariables);
         }
 
-        private static RangeTemplate Parse(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors, RangeTemplate parent = null)
+        private static RangeTemplate Parse(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
             var prng = range.Ranges.First();
             var result = new RangeTemplate(range, buff,
-                prng.RowCount(), prng.ColumnCount(), errors);
+                prng.RowCount(), prng.ColumnCount(), errors, globalVariables);
 
             var innerRanges = GetInnerRanges(prng).ToArray();
 
@@ -109,9 +110,10 @@ namespace ClosedXML.Report
 
             result._subranges = innerRanges.Select(rng =>
             {
-                var tpl = Parse(rng, buff, errors, result);
+                var tpl = Parse(rng, buff, errors, globalVariables);
                 tpl._buff = result._buff;
                 tpl._isSubrange = true;
+                tpl._globalVariables = globalVariables;
                 return tpl;
             }).ToArray();
 
@@ -143,6 +145,10 @@ namespace ClosedXML.Report
         {
             var evaluator = new FormulaEvaluator();
             evaluator.AddVariable("items", items);
+            foreach (var v in _globalVariables)
+            {
+                evaluator.AddVariable("@"+v.Key, v.Value);
+            }
             _rangeTags.Reset();
 
             if (IsHorizontal)
@@ -321,7 +327,6 @@ namespace ClosedXML.Report
 
         private void HorizontalTable(object[] items, FormulaEvaluator evaluator)
         {
-            var rangeStart = _buff.NextAddress;
             var tags = _tags.CopyTo(_rowRange);
             for (int i = 0; i < items.Length; i++)
             {
