@@ -7,7 +7,6 @@ OPTION          PARAMS                OBJECTS
 ================================================
 */
 using System;
-using System.Collections;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using MoreLinq;

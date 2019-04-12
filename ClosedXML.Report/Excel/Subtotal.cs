@@ -71,9 +71,8 @@ namespace ClosedXML.Report.Excel
             _pageBreaks = pageBreaks;
             _getGroupLabel = getGroupLabel;
 
-            int level;
             var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber);
-            level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
+            var level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
 
             var grRanges = ScanRange(groupBy);
             int grCnt = grRanges.Count(x => x.Type == RangeType.DataRange);
@@ -302,9 +301,8 @@ namespace ClosedXML.Report.Excel
         {
             var grRanges = ScanRange(groupBy);
             var result = new List<SubtotalGroup>(grRanges.Length);
-            int level;
             var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber);
-            level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
+            var level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
 
             foreach (var moveData in grRanges)
             {

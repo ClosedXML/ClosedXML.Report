@@ -189,7 +189,8 @@ namespace ClosedXML.Report.Options
 
         private IXLPivotTable CreatePivot(PivotTag pivot, ProcessingContext context, IXLWorksheet targetSheet, string tableName, IXLCell targetCell)
         {
-            IXLRange srcRange = context.Range.Offset(-1, 1, context.Range.RowCount(), context.Range.ColumnCount() - 1);
+            var rowOffset = context.Range.RangeAddress.FirstAddress.RowNumber > 1 ? -1 : 0;
+            IXLRange srcRange = context.Range.Offset(rowOffset, 1, context.Range.RowCount(), context.Range.ColumnCount() - 1);
             var pt = targetSheet.PivotTables.Add(tableName, targetCell, srcRange);
             pt.MergeAndCenterWithLabels = pivot.HasParameter("MergeLabels");
             pt.ShowExpandCollapseButtons = pivot.HasParameter("ShowButtons");
