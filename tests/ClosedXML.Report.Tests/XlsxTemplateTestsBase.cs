@@ -124,8 +124,8 @@ namespace ClosedXML.Report.Tests
             if (expected.PageSetup.PageOrder != actual.PageSetup.PageOrder)
                 messages.Add("PageOrder differ");
 
-            var usedCells = expected.CellsUsed(true).Select(c => c.Address)
-                .Concat(actual.CellsUsed(true).Select(c => c.Address))
+            var usedCells = expected.CellsUsed(XLCellsUsedOptions.All).Select(c => c.Address)
+                .Concat(actual.CellsUsed(XLCellsUsedOptions.All).Select(c => c.Address))
                 .Distinct();
             foreach (var address in usedCells)
             {
@@ -145,7 +145,7 @@ namespace ClosedXML.Report.Tests
                     cellsAreEqual = false;
                 }
 
-                if (actualCell.DataType != expectedCell.DataType)
+                if (!expectedCell.HasFormula && actualCell.DataType != expectedCell.DataType)
                 {
                     messages.Add($"Cell data types are not equal starting from {address}");
                     cellsAreEqual = false;

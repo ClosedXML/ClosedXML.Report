@@ -30,6 +30,7 @@ using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Utils;
+using MoreLinq;
 
 namespace ClosedXML.Report.Options
 {
@@ -187,7 +188,6 @@ namespace ClosedXML.Report.Options
         protected virtual void GroupRender(SubtotalGroup subGroup, GroupTag grData)
         {
             var sheet = subGroup.Range.Worksheet;
-            sheet.SuspendEvents();
             if (!sheet.Row(subGroup.Range.FirstRow().RowNumber()).IsHidden && grData.Collapse)
             {
                 sheet.CollapseRows(grData.Level);
@@ -195,10 +195,8 @@ namespace ClosedXML.Report.Options
 
             if (grData.DisableOutLine)
             {
-                using (var rows = sheet.Rows(subGroup.Range.RangeAddress.FirstAddress.RowNumber, subGroup.Range.RangeAddress.LastAddress.RowNumber))
-                {
-                    rows.Ungroup();
-                }
+                sheet.Rows(subGroup.Range.RangeAddress.FirstAddress.RowNumber, subGroup.Range.RangeAddress.LastAddress.RowNumber)
+                    .Ungroup();
             }
 
             if (subGroup.Column <= 0)
@@ -209,27 +207,23 @@ namespace ClosedXML.Report.Options
 
             if (grData.MergeLabels > 0)
             {
-                using (var rng = subGroup.Range.Column(subGroup.Column))
+                var rng = subGroup.Range.Column(subGroup.Column);
+                if (subGroup.Range.RowCount() > 1)
                 {
-                    if (subGroup.Range.RowCount() > 1)
-                    {
-                        int cellIdx = _maxLevel - subGroup.Level + 1;
-                        var style = rng.Cell(cellIdx).Style;
-                        rng.Merge();
-                        rng.Style = style;
-                        rng.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                        if (grData.MergeLabels != MergeMode.Merge2)
-                            rng.Cell(1).Value = "";
-                    }
-                    else
-                    {
-                        if (grData.MergeLabels != MergeMode.Merge2)
-                            rng.Cell(1).Value = "";
-                    }
+                    int cellIdx = _maxLevel - subGroup.Level + 1;
+                    var style = rng.Cell(cellIdx).Style;
+                    rng.Merge();
+                    rng.Style = style;
+                    rng.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    if (grData.MergeLabels != MergeMode.Merge2)
+                        rng.Cell(1).Value = "";
+                }
+                else
+                {
+                    if (grData.MergeLabels != MergeMode.Merge2)
+                        rng.Cell(1).Value = "";
                 }
             }
-
-            sheet.ResumeEvents();
         }
 
         public enum MergeMode

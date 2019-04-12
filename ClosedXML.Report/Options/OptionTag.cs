@@ -22,7 +22,7 @@ namespace ClosedXML.Report.Options
             {
                 return _rangeOptionsRow == null
                     ? null
-                    : Cell.XLCell.Worksheet.Range(_rangeOptionsRow).Unsubscribed().RangeAddress;
+                    : Cell.XLCell.Worksheet.Range(_rangeOptionsRow).RangeAddress;
             }
             set { _rangeOptionsRow = value.ToString(); }
         }

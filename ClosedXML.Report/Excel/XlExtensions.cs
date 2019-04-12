@@ -55,25 +55,34 @@ namespace ClosedXML.Report.Excel
             return rangeAddress.Contains(address.FirstAddress) && rangeAddress.Contains(address.LastAddress);
         }
 
-        internal static void ShiftRows(this IXLRangeBase range, int rowCount)
+        internal static IXLRange ShiftRows(this IXLRangeBase range, int rowCount)
         {
             var firstAddress = range.RangeAddress.FirstAddress;
             var lastAddress = range.RangeAddress.LastAddress;
-            range.RangeAddress.FirstAddress = range.Worksheet.Cell(firstAddress.RowNumber + rowCount, firstAddress.ColumnNumber).Address;
-            range.RangeAddress.LastAddress = range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address;
+
+            return range.Worksheet.Range(
+                firstAddress.RowNumber + rowCount,
+                firstAddress.ColumnNumber,
+                lastAddress.RowNumber + rowCount,
+                lastAddress.ColumnNumber);
         }
 
-        internal static void ExtendRows(this IXLRangeBase range, int rowCount, bool down = true)
+        internal static IXLRange ExtendRows(this IXLRangeBase range, int rowCount, bool down = true)
         {
             if (down)
             {
                 var lastAddress = range.RangeAddress.LastAddress;
-                range.RangeAddress.LastAddress = range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address;
+                return range.Worksheet.Range(
+                    range.RangeAddress.FirstAddress,
+                    range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address
+                    );
             }
             else
             {
                 var firstAddress = range.RangeAddress.FirstAddress;
-                range.RangeAddress.FirstAddress = range.Worksheet.Cell(firstAddress.RowNumber - rowCount, firstAddress.ColumnNumber).Address;
+                return range.Worksheet.Range(
+                    range.Worksheet.Cell(firstAddress.RowNumber - rowCount, firstAddress.ColumnNumber).Address,
+                    range.RangeAddress.LastAddress);
             }
         }
 
@@ -87,7 +96,7 @@ namespace ClosedXML.Report.Excel
             foreach (var match in regex.Matches(formulaA1).Cast<Match>())
             {
                 var matchValue = match.Value;
-                
+
                 if (matchValue.Contains('!'))
                 {
                     var split = matchValue.Split('!');
@@ -95,8 +104,7 @@ namespace ClosedXML.Report.Excel
                     var wsName = first.StartsWith("'") ? first.Substring(1, first.Length - 2) : first;
                     matchValue = split[1];
 
-                    IXLWorksheet refWs;
-                    if (ws.Workbook.Worksheets.TryGetWorksheet(wsName, out refWs))
+                    if (ws.Workbook.Worksheets.TryGetWorksheet(wsName, out var refWs))
                     {
                         ws = refWs;
                     }
@@ -123,12 +131,12 @@ namespace ClosedXML.Report.Excel
         /// <param name="baseAddr">Reference system. Coordinates are calculated relative to this range.</param>
         public static IXLRangeAddress Relative(this IXLRangeAddress range, IXLRangeAddress baseAddr)
         {
-            using (var xlRange = baseAddr.Worksheet.Range(
+            return baseAddr.Worksheet.Range(
                 range.FirstAddress.RowNumber - baseAddr.FirstAddress.RowNumber + 1,
                 range.FirstAddress.ColumnNumber - baseAddr.FirstAddress.ColumnNumber + 1,
                 range.LastAddress.RowNumber - baseAddr.FirstAddress.RowNumber + 1,
-                range.LastAddress.ColumnNumber - baseAddr.FirstAddress.ColumnNumber + 1))
-                return xlRange.RangeAddress;
+                range.LastAddress.ColumnNumber - baseAddr.FirstAddress.ColumnNumber + 1)
+                .RangeAddress;
         }
 
         /// <summary>
@@ -143,27 +151,6 @@ namespace ClosedXML.Report.Excel
                 cell.Address.ColumnNumber - baseAddr.ColumnNumber + 1).Address;
         }
 
-
-        /// <summary>
-        /// Get range relative to another range.
-        /// </summary>
-        /// <param name="range">range</param>
-        /// <param name="baseRange">Coordinate system. Coordinates are calculated relative to this range.</param>
-        /// <param name="targetBase"></param>
-        public static IXLRange Relative(this IXLRangeBase range, IXLRangeBase baseRange, IXLRangeBase targetBase)
-        {
-            using (var xlRange = targetBase.Worksheet.Range(
-                range.RangeAddress.FirstAddress.RowNumber - baseRange.RangeAddress.FirstAddress.RowNumber + 1,
-                range.RangeAddress.FirstAddress.ColumnNumber - baseRange.RangeAddress.FirstAddress.ColumnNumber + 1,
-                range.RangeAddress.LastAddress.RowNumber - baseRange.RangeAddress.FirstAddress.RowNumber + 1,
-                range.RangeAddress.LastAddress.ColumnNumber - baseRange.RangeAddress.FirstAddress.ColumnNumber + 1))
-            {
-                var type = targetBase.GetType();
-                var method = type.GetMethod("Range", new[] {typeof(IXLRangeAddress)});
-                return (IXLRange)method.Invoke(targetBase, new object[] { xlRange.RangeAddress });
-                //return targetBase.Range(xlRange.RangeAddress);
-            }
-        }
         public static void Subtotal(this IXLRange range, int groupBy, string function, int[] totalList, bool replace = true, bool pageBreaks = false, bool summaryAbove = false)
         {
             using (var subtotal = new Subtotal(range, summaryAbove))
@@ -181,21 +168,10 @@ namespace ClosedXML.Report.Excel
             return row.Cells(x => x.HasFormula && x.FormulaA1.ToLower().StartsWith("subtotal(")).Any();
         }
 
-        public static bool IsEmpty(this IXLRangeRow row)
-        {
-            return !row.Cells(x => x.HasFormula || !x.GetString().IsNullOrWhiteSpace()).Any();
-        }
-
-        public static T Unsubscribed<T>(this T range) where T : IXLRangeBase
-        {
-            range.Dispose();
-            return range;
-        }
-
         public static void CopyStylesFrom(this IXLRangeBase trgtRow, IXLRangeBase srcRow)
         {
             trgtRow.Style = srcRow.Style;
-            var srcCells = srcRow.Cells(true, true).ToArray();
+            var srcCells = srcRow.Cells(true, XLCellsUsedOptions.All).ToArray();
             for (int i = 0; i < srcCells.Length; i++)
             {
                 var rela = srcCells[i].Relative(srcRow.RangeAddress.FirstAddress);
@@ -211,27 +187,6 @@ namespace ClosedXML.Report.Excel
             var type = targetFormat.GetType();
             var method = type.GetMethod("CopyFrom", BindingFlags.Instance | BindingFlags.Public);
             method.Invoke(targetFormat, new object[] { srcFormat });
-        }
-
-        public static void SuspendEvents(this IXLWorksheet sheet)
-        {
-            var type = sheet.GetType();
-            var method = type.GetMethod("SuspendEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);
-        }
-
-        public static void Consolidate(this IXLConditionalFormats formats)
-        {
-            var type = formats.GetType();
-            var method = type.GetMethod("Consolidate", BindingFlags.Instance | BindingFlags.NonPublic);
-            method.Invoke(formats, new object[0]);
-        }
-
-        public static void ResumeEvents(this IXLWorksheet sheet)
-        {
-            var type = sheet.GetType();
-            var method = type.GetMethod("ResumeEvents", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(sheet, new object[0]);
         }
 
         public static int RowCount(this IXLRangeAddress address)
@@ -255,11 +210,21 @@ namespace ClosedXML.Report.Excel
 
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
-            var frmtRng = Intersection(format.Range, fromRange).Relative(fromRange, toRange);
-            if (expand && toRange.RangeAddress.RowCount() != format.Range.RowCount())
-                frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount()).Unsubscribed();
-            var newFrmt = frmtRng.AddConditionalFormat();
-            newFrmt.CopyFrom(format);
+            foreach (var sourceFmtRange in format.Ranges)
+            {
+                var frmtRng = Intersection(sourceFmtRange, fromRange)
+                        .Relative(fromRange, toRange)
+                        as IXLRange;
+                if (expand &&
+                    frmtRng.RangeAddress.RowCount() == fromRange.RangeAddress.RowCount() &&
+                    frmtRng.RangeAddress.RowCount() != toRange.RangeAddress.RowCount())
+                {
+                    frmtRng = frmtRng.Offset(0, 0, toRange.RangeAddress.RowCount(), frmtRng.ColumnCount());
+                }
+
+                var newFrmt = frmtRng.AddConditionalFormat();
+                newFrmt.CopyFrom(format);
+            }
         }
 
         internal static IXLRangeBase Intersection(IXLRangeBase range, IXLRangeBase crop)
@@ -280,12 +245,10 @@ namespace ClosedXML.Report.Excel
         internal static void CopyConditionalFormatsFrom(this IXLRangeBase targetRange, IXLRangeBase srcRange)
         {
             var sheet = targetRange.Worksheet;
-            sheet.SuspendEvents();
             foreach (var conditionalFormat in sheet.ConditionalFormats.Where(c => c.Range.Intersects(srcRange)).ToList())
             {
                 conditionalFormat.CopyRelative(srcRange, targetRange, false);
             }
-            sheet.ResumeEvents();
         }
 
         public static IXLRange Offset(this IXLRange range, int rowsOffset, int columnOffset)
@@ -347,21 +310,5 @@ namespace ClosedXML.Report.Excel
                 }
             }
         }
-
-    }
-
-    public enum XlCopyType
-    {
-        All = -4104,	// Everything will be pasted.
-        AllExceptBorders = 7,	// Everything except borders will be pasted.
-        AllMergingConditionalFormats = 14,	// Everything will be pasted and conditional formats will be merged.
-        AllUsingSourceTheme = 13,	// Everything will be pasted using the source theme.
-        ColumnWidths = 8,	// Copied column width is pasted.
-        Comments = -4144,	// Comments are pasted.
-        Formats = -4122,	// Copied source format is pasted.
-        Formulas = -4123,	// Formulas are pasted.
-        FormulasAndNumberFormats = 11,	// Formulas and Number formats are pasted.
-        Values = -4163,	// Values are pasted.
-        ValuesAndNumberFormats = 12	// Values and Number formats are pasted.
     }
 }

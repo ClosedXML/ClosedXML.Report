@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>
     <Authors>Alexey Rozhkov</Authors>
     <Copyright>MIT</Copyright>
-    <Version>0.1.0.0</Version>
+    <Version>0.2.0.0</Version>
     <Product>ClosedXML.Report</Product>
     <PackageReleaseNotes>See https://github.com/ClosedXML/ClosedXML.Report/releases/tag/$(productVersion)</PackageReleaseNotes>
     <Description>ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel. ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code.</Description>
@@ -44,9 +44,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.92.1" />
+    <PackageReference Include="ClosedXML.Signed" Version="0.95.0-beta1" Condition="'$(Configuration)'=='Release.Signed'"/>
+    <PackageReference Include="ClosedXML" Version="0.95.0-beta1" Condition="'$(Configuration)'!='Release.Signed'"/>
+    <PackageReference Include="morelinq" Version="2.9.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
-    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

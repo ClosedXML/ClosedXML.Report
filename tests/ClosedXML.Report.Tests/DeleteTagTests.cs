@@ -70,9 +70,9 @@ namespace ClosedXML.Report.Tests
         {
             return new List<object>
             {
-                new {FirstName = "Alice", LastName = "Liddell", Country = "Wonderland", Address = "Westminster, London, England", BirthDay = DateTime.Parse("1852-05-04")},
-                new {FirstName = "Lewis", LastName = "Carroll", Country = "UK", Address = "Daresbury, Cheshire, England", BirthDay = DateTime.Parse("1832-01-27")},
-                new {FirstName = "Charles", LastName = "Dodgson", Country = "UK", Address = "Daresbury, Cheshire, England", BirthDay = DateTime.Parse("1832-01-27")},
+                new {FirstName = "Alice", LastName = "Liddell", Country = "Wonderland", Address = "Westminster, London, England", BirthDay = DateTime.Parse("1852-05-04").ToString("d")},
+                new {FirstName = "Lewis", LastName = "Carroll", Country = "UK", Address = "Daresbury, Cheshire, England", BirthDay = DateTime.Parse("1832-01-27").ToString("d")},
+                new {FirstName = "Charles", LastName = "Dodgson", Country = "UK", Address = "Daresbury, Cheshire, England", BirthDay = DateTime.Parse("1832-01-27").ToString("d")},
             };
         }
     }

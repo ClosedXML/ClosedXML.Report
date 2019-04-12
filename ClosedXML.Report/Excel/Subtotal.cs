@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using ClosedXML.Excel;
+using MoreLinq;
 
 namespace ClosedXML.Report.Excel
 {
     public class Subtotal : IDisposable
     {
-        private readonly IXLRange _range;
+        private IXLRange _range;
         private readonly bool _summaryAbove;
         private bool _pageBreaks;
         private Func<string, string> _getGroupLabel;
@@ -31,6 +32,7 @@ namespace ClosedXML.Report.Excel
             if (!workbook.Worksheets.TryGetWorksheet(tempsheet, out _tempSheet))
             {
                 _tempSheet = workbook.AddWorksheet(tempsheet);
+                _tempSheet.Style = Sheet.Style;
                 _tempSheet.Hide();
             }
         }
@@ -42,20 +44,20 @@ namespace ClosedXML.Report.Excel
 
         public SubtotalGroup AddGrandTotal(SubtotalSummaryFunc[] summaries)
         {
-            if (Sheet.Row(_range.Row(2).Unsubscribed().RowNumber()).OutlineLevel == 0)
+            if (Sheet.Row(_range.Row(2).RowNumber()).OutlineLevel == 0)
             {
                 SubtotalGroup gr;
                 if (_summaryAbove)
                 {
-                    Sheet.Row(_range.RangeAddress.FirstAddress.RowNumber).Unsubscribed().InsertRowsAbove(1).Dispose();
-                    gr = CreateGroup(Sheet.Range(_range.RangeAddress), 1, 1, GrandLabel, summaries, false);
-                    _range.ExtendRows(1, false);
+                    var rangeAddress = _range.ShiftRows(1).RangeAddress;
+                    _range.InsertRowsAbove(1, true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false);
                 }
                 else
                 {
-                    Sheet.Row(_range.RangeAddress.LastAddress.RowNumber).Unsubscribed().InsertRowsBelow(1).Dispose();
-                    gr = CreateGroup(Sheet.Range(_range.RangeAddress), 1, 1, GrandLabel, summaries, false);
-                    _range.ExtendRows(1);
+                    var rangeAddress = _range.RangeAddress;
+                    _range.InsertRowsBelow(1, true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false);
                 }
                 gr.Column = 0;
                 _groups.Add(gr);
@@ -70,21 +72,17 @@ namespace ClosedXML.Report.Excel
             _getGroupLabel = getGroupLabel;
 
             int level;
-            using (var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber))
-            {
-                level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
-            }
+            var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber);
+            level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
 
             var grRanges = ScanRange(groupBy);
             int grCnt = grRanges.Count(x => x.Type == RangeType.DataRange);
-            Sheet.Row(_range.RangeAddress.LastAddress.RowNumber).Unsubscribed().InsertRowsBelow(grCnt).Dispose();
-            Sheet.SuspendEvents();
+            _range.InsertRowsBelow(grCnt, true);
             CalculateAddresses(grRanges);
 
             RecalculateGroups(grRanges, true);
 
             ArrangeRanges(grRanges);
-            _range.ExtendRows(grRanges.Count(x => x.Type == RangeType.DataRange));
 
             foreach (var moveData in grRanges)
             {
@@ -92,7 +90,6 @@ namespace ClosedXML.Report.Excel
                     _groups.Add(CreateGroup(Sheet.Range(moveData.TargetAddress), groupBy, level, moveData.GroupTitle, summaries, _pageBreaks));
             }
             ArrangePageBreaks(Groups, grRanges);
-            Sheet.ResumeEvents();
         }
 
         public void AddHeaders(int column)
@@ -101,11 +98,17 @@ namespace ClosedXML.Report.Excel
                 .Where(x => x.Column <= column)
                 .SelectMany(x =>
                 {
-                    var datas = new List<MoveData>();
-                    datas.Add(new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) {GroupColumn = x.Column});
+                    var moveDataEntries = new List<MoveData>
+                    {
+                        new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level)
+                        {
+                            GroupColumn = x.Column
+                        }
+                    };
+
                     if (x.SummaryRow != null)
-                        datas.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
-                    return datas;
+                        moveDataEntries.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
+                    return moveDataEntries;
                 })
                 .Where(x => x.Type == RangeType.SummaryRow || x.GroupColumn >= column)
                 .Union(_groups.Where(x => x.HeaderRow != null).Select(x => new MoveData(x.HeaderRow.RangeAddress, RangeType.HeaderRow, "", x.Level - 1)))
@@ -113,8 +116,7 @@ namespace ClosedXML.Report.Excel
                 .ToArray();
 
             int grCnt = grRanges.Count(x => x.Type == RangeType.DataRange);
-            Sheet.Row(_range.RangeAddress.LastAddress.RowNumber).Unsubscribed().InsertRowsBelow(grCnt).Dispose();
-            Sheet.SuspendEvents();
+            _range.InsertRowsBelow(grCnt, true);
             CalculateHeaders(grRanges, column);
 
             ArrangeRanges(grRanges);
@@ -134,23 +136,26 @@ namespace ClosedXML.Report.Excel
             SetOutlineLevels(
                 _groups.SelectMany(x =>
                 {
-                    var datas = new List<MoveData>();
-                    datas.Add(new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level) { GroupColumn = x.Column});
+                    var moveDataEntries = new List<MoveData>
+                    {
+                        new MoveData(x.Range.RangeAddress, RangeType.DataRange, x.GroupTitle, x.Level)
+                        {
+                            GroupColumn = x.Column
+                        }
+                    };
                     if (x.SummaryRow != null)
-                        datas.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
-                    return datas;
+                        moveDataEntries.Add(new MoveData(x.SummaryRow.RangeAddress, RangeType.SummaryRow, "", x.Level - 1));
+                    return moveDataEntries;
                 })
                 .Union(_groups.Where(x => x.HeaderRow != null).Select(x => new MoveData(x.HeaderRow.RangeAddress, RangeType.HeaderRow, "", x.Level - 1)))
                 .ToArray()
             );
-            _range.ExtendRows(grRanges.Count(x => x.Type == RangeType.DataRange));
-            Sheet.ResumeEvents();
         }
 
         public void Unsubtotal()
         {
-            using (var rows = Sheet.Rows(_range.FirstRow().RowNumber(), _range.LastRow().RowNumber()))
-                rows.Ungroup(true);
+            var rows = Sheet.Rows(_range.FirstRow().RowNumber(), _range.LastRow().RowNumber());
+            rows.Ungroup(true);
 
             IXLRangeRow row = _range.FirstRow();
             while (!row.IsEmpty())
@@ -163,21 +168,20 @@ namespace ClosedXML.Report.Excel
                 }
                 row = row.RowBelow();
             }
-            row.Dispose();
         }
 
         private void SetOutlineLevels(MoveData[] grRanges)
         {
-            using (var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber))
-                rows.Ungroup(true);
+            var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber);
+            rows.Ungroup(true);
 
             foreach (var moveData in grRanges)
             {
-                using (var rows = Sheet.Rows(moveData.SourceAddress.FirstAddress.RowNumber, moveData.SourceAddress.LastAddress.RowNumber))
-                    foreach (var row in rows)
-                    {
-                        row.OutlineLevel = moveData.Level;
-                    }
+                rows = Sheet.Rows(moveData.SourceAddress.FirstAddress.RowNumber, moveData.SourceAddress.LastAddress.RowNumber);
+                foreach (var row in rows)
+                {
+                    row.OutlineLevel = moveData.Level;
+                }
             }
         }
 
@@ -185,8 +189,8 @@ namespace ClosedXML.Report.Excel
         {
             ExpandSummariesRanges(grRanges);
 
-            using (var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber))
-                rows.Ungroup(true);
+            var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber);
+            rows.Ungroup(true);
 
             for (int i = grRanges.Length - 1; i >= 0; i--)
             {
@@ -220,8 +224,8 @@ namespace ClosedXML.Report.Excel
 
         private void MoveSummary(MoveData moveData)
         {
-            var srcRng = Sheet.Range(moveData.SourceAddress).Unsubscribed();
-            var trgtRng = Sheet.Range(moveData.TargetAddress).Unsubscribed();
+            var srcRng = Sheet.Range(moveData.SourceAddress);
+            var trgtRng = Sheet.Range(moveData.TargetAddress);
             Sheet.Row(trgtRng.RangeAddress.FirstAddress.RowNumber).OutlineLevel = moveData.Level;
 
             var fcell = trgtRng.FirstCell();
@@ -230,6 +234,7 @@ namespace ClosedXML.Report.Excel
 
             trgtRng.Clear();
             fcell.Value = srcRng;
+            srcRng.Clear(XLClearOptions.AllContents);
 
             foreach (var cell in trgtRng.CellsUsed(c => c.HasFormula))
             {
@@ -239,12 +244,12 @@ namespace ClosedXML.Report.Excel
 
         private void MoveRange(MoveData moveData)
         {
-            var srcRng = Sheet.Range(moveData.SourceAddress).Unsubscribed();
+            var srcRng = Sheet.Range(moveData.SourceAddress);
             _tempSheet.Clear();
             _tempSheet.Cell(1, 1).Value = srcRng;
-            Sheet.Range(moveData.TargetAddress).Unsubscribed().Clear();
-            Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount()).Unsubscribed();
-            Sheet.ConditionalFormats.Consolidate();
+            srcRng.Clear(XLClearOptions.AllContents);
+            Sheet.Range(moveData.TargetAddress).Clear();
+            Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
         }
 
         private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SubtotalSummaryFunc[] summaries, bool pageBreaks)
@@ -255,18 +260,18 @@ namespace ClosedXML.Report.Excel
 
             if (_summaryAbove)
             {
-                var fr = _range.Row(firstRow - _range.RangeAddress.FirstAddress.RowNumber + 1).Unsubscribed();
+                var fr = _range.Row(firstRow - _range.RangeAddress.FirstAddress.RowNumber + 1);
                 summRow = fr.RowAbove();
                 summRow.CopyStylesFrom(fr);
             }
             else
             {
-                var fr = _range.Row(lastRow - _range.RangeAddress.FirstAddress.RowNumber + 1).Unsubscribed();
+                var fr = _range.Row(lastRow - _range.RangeAddress.FirstAddress.RowNumber + 1);
                 summRow = fr.RowBelow();
                 summRow.CopyStylesFrom(fr);
             }
 
-            summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
+            summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); //TODO Check if the issue persists (ClosedXML issue 844)
             summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " "+ TotalLabel;
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
 
@@ -278,7 +283,7 @@ namespace ClosedXML.Report.Excel
                 }
                 else */if (summ.FuncNum > 0)
                 {
-                    var funcRngAddr = groupRng.Column(summ.Column).Unsubscribed().RangeAddress;
+                    var funcRngAddr = groupRng.Column(summ.Column).RangeAddress;
                     summRow.Cell(summ.Column).FormulaA1 = $"Subtotal({summ.FuncNum},{funcRngAddr.ToStringRelative()})";
                 }
                 else
@@ -287,10 +292,8 @@ namespace ClosedXML.Report.Excel
                 }
             }
 
-            using (var rows = Sheet.Rows(firstRow, lastRow))
-            {
-                rows.ForEach(r => r.OutlineLevel = level);
-            }
+            var rows = Sheet.Rows(firstRow, lastRow);
+            rows.ForEach(r => r.OutlineLevel = level);
 
             return new SubtotalGroup(level, groupClmn, title, groupRng, summRow, pageBreaks);
         }
@@ -300,10 +303,8 @@ namespace ClosedXML.Report.Excel
             var grRanges = ScanRange(groupBy);
             var result = new List<SubtotalGroup>(grRanges.Length);
             int level;
-            using (var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber))
-            {
-                level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
-            }
+            var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber);
+            level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
 
             foreach (var moveData in grRanges)
             {
@@ -321,26 +322,24 @@ namespace ClosedXML.Report.Excel
 
         private MoveData[] ScanRange(int groupBy)
         {
-            Sheet.SuspendEvents();
             IXLRangeRow lastRow = null;
             string prevVal = null;
             int groupStart = 0;
             List<MoveData> groups = new List<MoveData>();
 
-            using (var rows = _range.Rows())
+            var rows = _range.Rows();
+            foreach (var row in rows)
             {
-                foreach (var row in rows)
-                {
-                    lastRow = row;
+                lastRow = row;
 
-                    var val = row.Cell(groupBy).GetString();
-                    var isSummaryRow = row.IsSummary();
+                var val = row.Cell(groupBy).GetString();
+                var isSummaryRow = row.IsSummary();
 
                     if (string.IsNullOrEmpty(val) && !isSummaryRow)
                     {
                         if (groupStart > 0)
                         {
-                            groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().Unsubscribed().LastCell(), RangeType.DataRange));
+                            groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().LastCell(), RangeType.DataRange));
                         }
                         groups.Add(CreateMoveTask(groupBy, "", row.FirstCell(), row.LastCell(), RangeType.HeaderRow));
                         prevVal = null;
@@ -348,37 +347,34 @@ namespace ClosedXML.Report.Excel
                         continue;
                     }
 
-                    if (val != prevVal)
-                    {
-                        if (groupStart > 0)
-                        {
-                            groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().Unsubscribed().LastCell(), RangeType.DataRange));
-                        }
-                        prevVal = val;
-                        groupStart = !isSummaryRow ? row.RangeAddress.Relative(_range.RangeAddress).FirstAddress.RowNumber : 0;
-                    }
-                    if (isSummaryRow)
-                    {
-                        var moveData = new MoveData(row.RangeAddress, RangeType.SummaryRow, "", Sheet.Row(row.RowNumber()).Unsubscribed().OutlineLevel);
-                        moveData.PageBreak = Sheet.PageSetup.RowBreaks.Any(x => row.RowNumber() - (_summaryAbove ? 1 : 0) == x);
-                        groups.Add(moveData);
-                    }
-                }
-                if (lastRow != null && groupStart > 0)
+                if (val != prevVal)
                 {
-                    using (var groupRng = _range.Range(_range.Cell(groupStart, 1), lastRow.LastCell()))
-                        groups.Add(new MoveData(groupRng.RangeAddress, RangeType.DataRange, prevVal, Sheet.Row(groupStart).Unsubscribed().OutlineLevel) { GroupColumn = groupBy });
+                    if (groupStart > 0)
+                    {
+                        groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().LastCell(), RangeType.DataRange));
+                    }
+                    prevVal = val;
+                    groupStart = !isSummaryRow ? row.RangeAddress.Relative(_range.RangeAddress).FirstAddress.RowNumber : 0;
+                }
+                if (isSummaryRow)
+                {
+                    var moveData = CreateMoveTask(groupBy, "", row.FirstCell(), row.LastCell(), RangeType.SummaryRow);
+                    moveData.PageBreak = Sheet.PageSetup.RowBreaks.Any(x => row.RowNumber() - (_summaryAbove ? 1 : 0) == x);
+                    groups.Add(moveData);
                 }
             }
+            if (lastRow != null && groupStart > 0)
+            {
+                groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), lastRow.LastCell(), RangeType.DataRange));
+            }
 
-            Sheet.ResumeEvents();
             return groups.ToArray();
         }
 
         private MoveData CreateMoveTask(int groupColumn, string title, IXLCell firstCell, IXLCell lastCell, RangeType rangeType)
         {
-            var groupRng = _range.Range(firstCell, lastCell).Unsubscribed();
-            var level = firstCell.WorksheetRow().Unsubscribed().OutlineLevel;
+            var groupRng = _range.Range(firstCell, lastCell);
+            var level = firstCell.WorksheetRow().OutlineLevel;
             var group = new MoveData(groupRng.RangeAddress, rangeType, title, level) {GroupColumn = groupColumn};
             return group;
         }
@@ -398,7 +394,7 @@ namespace ClosedXML.Report.Excel
                 if (gr.Type == RangeType.DataRange && _summaryAbove)
                     rIdx++;
                 var grRowCnt = gr.SourceAddress.LastAddress.RowNumber - gr.SourceAddress.FirstAddress.RowNumber + 1;
-                var trgtRng = Sheet.Range(firstRow + rIdx, firstCol, firstRow + grRowCnt + rIdx - 1, lastCol).Unsubscribed();
+                var trgtRng = Sheet.Range(firstRow + rIdx, firstCol, firstRow + grRowCnt + rIdx - 1, lastCol);
                 gr.TargetAddress = trgtRng.RangeAddress;
 
                 rIdx += grRowCnt;
@@ -419,7 +415,7 @@ namespace ClosedXML.Report.Excel
                 if (gr.GroupColumn == column)
                     rIdx++;
                 var grRowCnt = gr.SourceAddress.LastAddress.RowNumber - gr.SourceAddress.FirstAddress.RowNumber + 1;
-                var trgtRng = Sheet.Range(firstRow + rIdx, firstCol, firstRow + grRowCnt + rIdx - 1, lastCol).Unsubscribed();
+                var trgtRng = Sheet.Range(firstRow + rIdx, firstCol, firstRow + grRowCnt + rIdx - 1, lastCol);
                 gr.TargetAddress = trgtRng.RangeAddress;
 
                 rIdx += grRowCnt;
@@ -434,7 +430,7 @@ namespace ClosedXML.Report.Excel
                 if (gr.Type == RangeType.SummaryRow)
                 {
                     // expand summary formulas
-                    var row = sheet.Row(gr.SourceAddress.FirstAddress.RowNumber).Unsubscribed();
+                    var row = sheet.Row(gr.SourceAddress.FirstAddress.RowNumber);
                     foreach (var cell in row.CellsUsed(c => c.HasFormula))
                     {
                         cell.FormulaA1 = ExpandFormula(groups, cell.FormulaA1);
@@ -447,37 +443,49 @@ namespace ClosedXML.Report.Excel
         {
             foreach (var gr in extendedGroups.Where(g => g.Type == RangeType.DataRange).Reverse())
             {
+                //TODO What are the proper names of these collections?
+                var collectionA = _groups
+                    .Where(g => g.Column > gr.GroupColumn && gr.SourceAddress.Contains(g.Range.RangeAddress))
+                    .ToList();
+                var collectionB = _groups
+                    .Where(g => g.Column == gr.GroupColumn && Equals(g.Range.RangeAddress, gr.SourceAddress))
+                    .ToList();
+                var collectionC = _groups
+                    .Where(g => g.Range.RangeAddress.FirstAddress.RowNumber > gr.SourceAddress.LastAddress.RowNumber)
+                    .ToList();
+                var collectionD = _groups
+                    .Where(g => g.Column < gr.GroupColumn && g.Range.RangeAddress.Contains(gr.SourceAddress))
+                    .ToList();
+
                 if (!extendAtEnd)
-                    _groups
-                        .Where(g => g.Column > gr.GroupColumn && gr.SourceAddress.Contains(g.Range.RangeAddress))
+                    collectionA
                         .ForEach(g =>
                         {
-                            g.HeaderRow?.ShiftRows(1);
-                            g.Range.ShiftRows(1);
-                            g.SummaryRow?.ShiftRows(1);
+                            g.HeaderRow = g.HeaderRow?.ShiftRows(1)?.Row(1);
+                            g.Range = g.Range.ShiftRows(1);
+                            g.SummaryRow = g.SummaryRow?.ShiftRows(1)?.Row(1);
                         });
 
-                _groups
-                    .Where(g => g.Column == gr.GroupColumn && Equals(g.Range.RangeAddress, gr.SourceAddress))
+                collectionB
                     .ForEach(g =>
                     {
-                        g.Range.ShiftRows(1);
-                        g.SummaryRow?.ShiftRows(1);
+                        g.Range = g.Range.ShiftRows(1);
+                        g.SummaryRow = g.SummaryRow?.ShiftRows(1)?.Row(1);
                     });
-                _groups
-                    .Where(g => g.Range.RangeAddress.FirstAddress.RowNumber > gr.SourceAddress.LastAddress.RowNumber)
+
+                collectionC
                     .ForEach(g =>
                     {
-                        g.HeaderRow?.ShiftRows(1);
-                        g.Range.ShiftRows(1);
-                        g.SummaryRow?.ShiftRows(1);
+                        g.HeaderRow = g.HeaderRow?.ShiftRows(1)?.Row(1);
+                        g.Range = g.Range.ShiftRows(1);
+                        g.SummaryRow = g.SummaryRow?.ShiftRows(1)?.Row(1);
                     });
-                _groups
-                    .Where(g => g.Column < gr.GroupColumn && g.Range.RangeAddress.Contains(gr.SourceAddress))
+
+                collectionD
                     .ForEach(g =>
                     {
-                        g.Range.ExtendRows(1);
-                        if (!_summaryAbove) g.SummaryRow?.ShiftRows(1);
+                        g.Range = g.Range.ExtendRows(1);
+                        if (!_summaryAbove) g.SummaryRow = g.SummaryRow?.ShiftRows(1)?.Row(1);
                     });
             }
         }
@@ -494,13 +502,13 @@ namespace ClosedXML.Report.Excel
                     continue;
 
                 var sheet = addr.Value.Worksheet;
-                addr.Value.FirstAddress = sheet.Cell(
+                var rangeAddress = sheet.Range(
                     firstGroup.TargetAddress.FirstAddress.RowNumber,
-                    addr.Value.FirstAddress.ColumnNumber).Address;
-                addr.Value.LastAddress = sheet.Cell(
+                    addr.Value.FirstAddress.ColumnNumber,
                     lastGroup.TargetAddress.LastAddress.RowNumber,
-                    addr.Value.LastAddress.ColumnNumber).Address;
-                formula = formula.Replace(addr.Key, addr.Value.ToStringRelative());
+                    addr.Value.LastAddress.ColumnNumber).RangeAddress;
+                formula = formula.Replace(addr.Key, rangeAddress.ToStringRelative());
+
             }
             return formula;
         }
@@ -511,13 +519,12 @@ namespace ClosedXML.Report.Excel
             foreach (var addr in pars)
             {
                 var sheet = addr.Value.Worksheet;
-                addr.Value.FirstAddress = sheet.Cell(
+                var rangeAddress = sheet.Range(
                     addr.Value.FirstAddress.RowNumber + rowCount,
-                    addr.Value.FirstAddress.ColumnNumber).Address;
-                addr.Value.LastAddress = sheet.Cell(
+                    addr.Value.FirstAddress.ColumnNumber,
                     addr.Value.LastAddress.RowNumber + rowCount,
-                    addr.Value.LastAddress.ColumnNumber).Address;
-                formula = formula.Replace(addr.Key, addr.Value.ToStringRelative());
+                    addr.Value.LastAddress.ColumnNumber).RangeAddress;
+                formula = formula.Replace(addr.Key, rangeAddress.ToStringRelative());
             }
             return formula;
         }
@@ -553,7 +560,6 @@ namespace ClosedXML.Report.Excel
             if (_tempSheet != null)
             {
                 _tempSheet.Delete();
-                _tempSheet.Dispose();
                 _tempSheet = null;
             }
         }

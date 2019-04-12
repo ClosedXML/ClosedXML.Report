@@ -81,7 +81,6 @@ namespace ClosedXML.Report.Tests
         public void Dispose()
         {
             _template?.Dispose();
-            _ws?.Dispose();
             _wb?.Dispose();
         }
     }

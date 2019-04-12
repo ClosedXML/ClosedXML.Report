@@ -101,7 +101,6 @@ namespace ClosedXML.Report.Tests
 
         public void Dispose()
         {
-            _rng?.Dispose();
             _workbook?.Dispose();
             _stream?.Dispose();
         }

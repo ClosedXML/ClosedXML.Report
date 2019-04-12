@@ -31,9 +31,7 @@ namespace ClosedXML.Report.Utils
         /// <exception cref="T:System.ArgumentNullException">Значение параметра <paramref name="s" /> — null. </exception>
         public VernoStringReader(string s, CultureInfo culture)
         {
-            if (s == null)
-                throw new ArgumentNullException("s");
-            _s = s;
+            _s = s ?? throw new ArgumentNullException("s");
             _length = s.Length;
             _culture = culture;
         }
@@ -328,11 +326,12 @@ namespace ClosedXML.Report.Utils
             string str = _s.Substring(_pos, dateFormat.Length);
             _pos += str.Length;
 
-            DateTime result;
-            var dateTimeStyles = DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal | DateTimeStyles.NoCurrentDateDefault;
-            return DateTime.TryParseExact(str, dateFormat, _culture, dateTimeStyles, out result)
+            var dateTimeStyles = DateTimeStyles.AllowWhiteSpaces
+                               | DateTimeStyles.AssumeLocal
+                               | DateTimeStyles.NoCurrentDateDefault;
+            return DateTime.TryParseExact(str, dateFormat, _culture, dateTimeStyles, out var result)
                 ? result
-                : (failure != null ? failure(str) : DateTime.MinValue);
+                : (failure?.Invoke(str) ?? DateTime.MinValue);
         }
 
         private static readonly Regex DateTimeRegex = new Regex(@"([1-9]|0[1-9]|[12][0-9]|3[01])\D([1-9]|0[1-9]|1[012])\D(19[0-9][0-9]|20[0-9][0-9])", RegexOptions.IgnoreCase);

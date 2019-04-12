@@ -22,15 +22,14 @@ namespace ClosedXML.Report.Utils
             Type type = value.GetType();
             string name = GetName(type, value);
             FieldInfo field = type.GetField(name);
-            if (field != null)
+
+            if (field != null &&
+                Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) is DescriptionAttribute attr)
             {
-                DescriptionAttribute attr = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
-                if (attr != null)
-                {
-                    //return the description if we have it
-                    name = attr.Description;
-                }
+                //return the description if we have it
+                name = attr.Description;
             }
+
             return name;
         }
 

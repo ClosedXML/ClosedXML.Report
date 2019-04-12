@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ClosedXML.Report.Utils
 {
-    public static class ConvertExtesions
+    public static class ConvertExtensions
     {
         public static T As<T>(this object obj)
         {
@@ -19,9 +19,12 @@ namespace ClosedXML.Report.Utils
         public static int AsInt(this string value, int def, CultureInfo culture = null)
         {
             culture = culture ?? CultureInfo.CurrentCulture;
-            int result;
-            if (!string.IsNullOrEmpty(value) && int.TryParse(value, NumberStyles.AllowThousands, culture, out result))
+            if (!string.IsNullOrEmpty(value) &&
+                int.TryParse(value, NumberStyles.AllowThousands, culture, out var result))
+            {
                 return result;
+            }
+
             return value.ExtractNumber(def);
         }
 
@@ -84,16 +87,18 @@ namespace ClosedXML.Report.Utils
 
         public static DateTime AsDateTime(this string value, CultureInfo culture, DateTime def)
         {
-            DateTime result;
-
             string[] fmts = { "yyyy-MM-dd HH:mm:ssZ" };
             fmts = fmts.Union(culture.DateTimeFormat.GetAllDateTimePatterns()).ToArray();
             if (Equals(culture, CultureInfo.InvariantCulture))
                 fmts = fmts.Union(CultureInfo.CurrentCulture.DateTimeFormat.GetAllDateTimePatterns()).ToArray();
             else
                 fmts = fmts.Union(CultureInfo.InvariantCulture.DateTimeFormat.GetAllDateTimePatterns()).ToArray();
-            if (!string.IsNullOrEmpty(value) && DateTime.TryParseExact(value, fmts, culture, DateTimeStyles.None, out result))
+            if (!string.IsNullOrEmpty(value) &&
+                DateTime.TryParseExact(value, fmts, culture, DateTimeStyles.None, out var result))
+            {
                 return result;
+            }
+
             return def;
         }
 
@@ -124,10 +129,13 @@ namespace ClosedXML.Report.Utils
 
         public static double AsDouble(this string value, double def, CultureInfo culture = null)
         {
-            double result;
             value = ReplaceNumberFormat(value);
-            if (!string.IsNullOrEmpty(value) && double.TryParse(value, NumberStyles.AllowThousands, culture, out result))
+            if (!string.IsNullOrEmpty(value) &&
+                double.TryParse(value, NumberStyles.AllowThousands, culture, out var result))
+            {
                 return result;
+            }
+
             return def;
         }
 
@@ -138,10 +146,13 @@ namespace ClosedXML.Report.Utils
 
         public static float AsFloat(this string value, float def, CultureInfo culture = null)
         {
-            float result;
             value = ReplaceNumberFormat(value);
-            if (!string.IsNullOrEmpty(value) && float.TryParse(value, NumberStyles.AllowThousands, culture, out result))
+            if (!string.IsNullOrEmpty(value) &&
+                float.TryParse(value, NumberStyles.AllowThousands, culture, out var result))
+            {
                 return result;
+            }
+
             return def;
         }
 
@@ -177,7 +188,9 @@ namespace ClosedXML.Report.Utils
             var t = typeof(T);
 
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
-                return value != null ? (T)Convert.ChangeType(value, Nullable.GetUnderlyingType(t), CultureInfo.CurrentCulture) : default(T);
+                return value != null
+                    ? (T)Convert.ChangeType(value, Nullable.GetUnderlyingType(t), CultureInfo.CurrentCulture)
+                    : default(T);
             else
                 return (T)Convert.ChangeType(value, t, CultureInfo.CurrentCulture);
         }
@@ -191,22 +204,28 @@ namespace ClosedXML.Report.Utils
         {
             var t = conversion;
 
-            string valstr = value as string;
-            if (valstr != null)
+            if (value is string stringValue)
             {
                 if (typeof(int) == conversion)
-                    return valstr.AsInt(0, culture);
+                    return stringValue.AsInt(0, culture);
                 else if (typeof(double) == conversion)
-                    return valstr.AsDouble(0, culture);
+                    return stringValue.AsDouble(0, culture);
                 else if (typeof(float) == conversion)
-                    return valstr.AsFloat(0, culture);
+                    return stringValue.AsFloat(0, culture);
                 else if (typeof(decimal) == conversion)
-                    return valstr.AsDecimal(0, culture);
+                    return stringValue.AsDecimal(0, culture);
             }
+
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
-                return value != null ? Convert.ChangeType(value, Nullable.GetUnderlyingType(t), culture) : t.GetDefault();
+            {
+                return value != null
+                    ? Convert.ChangeType(value, Nullable.GetUnderlyingType(t), culture)
+                    : t.GetDefault();
+            }
             else
+            {
                 return Convert.ChangeType(value, t, culture);
+            }
         }
     }
 }
