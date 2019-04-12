@@ -6,7 +6,6 @@ OPTION          OBJECTS
 ================================================
 */
 
-using ClosedXML.Excel;
 using MoreLinq;
 
 namespace ClosedXML.Report.Options

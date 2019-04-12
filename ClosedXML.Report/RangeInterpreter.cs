@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
@@ -17,7 +17,7 @@ namespace ClosedXML.Report
         private readonly string _alias;
         private readonly FormulaEvaluator _evaluator;
         private readonly TagsEvaluator _tagsEvaluator;
-        private readonly Dictionary<string, object> _variables = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _variables = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, TagsList> _tags = new Dictionary<string, TagsList>();
         private readonly TemplateErrors _errors;
 

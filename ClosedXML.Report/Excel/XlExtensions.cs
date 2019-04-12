@@ -301,7 +301,9 @@ namespace ClosedXML.Report.Excel
         {
             foreach (var format in worksheet.ConditionalFormats)
             {
-                var target = format.Range.FirstCell();
+                var target = format.Ranges.OrderBy(x=>x.RangeAddress.FirstAddress.RowNumber)
+                    .ThenBy(x=> x.RangeAddress.FirstAddress.ColumnNumber)
+                    .First().FirstCell();
                 foreach (var v in format.Values.Where(v => v.Value.Value.StartsWith("&=")).ToList())
                 {
                     var f = v.Value.Value.Substring(1);
