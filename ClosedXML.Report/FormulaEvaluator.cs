@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -42,7 +43,7 @@ namespace ClosedXML.Report
 
             return val is IFormattable formattable
                 ? formattable.ToString(null, CultureInfo.InvariantCulture)
-                : val?.ToString();
+                : val.ToString();
         }
 
         private IEnumerable<string> GetExpressions(string cellValue)
@@ -56,7 +57,14 @@ namespace ClosedXML.Report
             if (!_lambdaCache.TryGetValue(expression, out var lambda))
             {
                 var parameters = pars.Select(p=>p.ParameterExpression).ToArray();
-                lambda = DynamicExpressionParser.ParseLambda(parameters, typeof(object), expression, _variables).Compile();
+                try
+                {
+                    lambda = DynamicExpressionParser.ParseLambda(parameters, typeof(object), expression, _variables).Compile();
+                }
+                catch (ArgumentException)
+                {
+                    return null;
+                }
 
                 _lambdaCache.Add(expression, lambda);
             }
@@ -69,11 +77,11 @@ namespace ClosedXML.Report
     {
         public Parameter(string name, object value)
         {
-            ParameterExpression = Expression.Parameter(value.GetType(), name);
+            ParameterExpression = Expression.Parameter(value?.GetType() ?? typeof(string), name);
             Value = value;
         }
 
-        public ParameterExpression ParameterExpression { get; private set; }
-        public object Value { get; private set; }
+        public ParameterExpression ParameterExpression { get; }
+        public object Value { get; }
     }
 }
