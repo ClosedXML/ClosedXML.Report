@@ -2,6 +2,8 @@
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -89,15 +91,25 @@ namespace ClosedXML.Report
         public void AddVariable(object value)
         {
             CheckIsDisposed();
-            var type = value.GetType();
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
-                .Select(f => new { f.Name, val = f.GetValue(value), type = f.FieldType })
-                .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
-                    .Select(f => new { f.Name, val = f.GetValue(value, new object[] { }), type = f.PropertyType }));
-
-            foreach (var field in fields)
+            if (value is IDictionary dictionary)
             {
-                AddVariable(field.Name, field.val);
+                foreach (DictionaryEntry entry in dictionary)
+                {
+                    AddVariable(entry.Key.ToString(), entry.Value);
+                }
+            }
+            else
+            {
+                var type = value.GetType();
+                var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
+                    .Select(f => new {f.Name, val = f.GetValue(value), type = f.FieldType})
+                    .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
+                        .Select(f => new {f.Name, val = f.GetValue(value, new object[] { }), type = f.PropertyType}));
+
+                foreach (var field in fields)
+                {
+                    AddVariable(field.Name, field.val);
+                }
             }
         }
 
