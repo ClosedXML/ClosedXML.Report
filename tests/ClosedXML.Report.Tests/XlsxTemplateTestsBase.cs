@@ -79,7 +79,8 @@ namespace ClosedXML.Report.Tests
                 throw new FileNotFoundException("Gauge file not found.", fileExpected);
             }
 
-            using (var expected = XLWorkbook.OpenFromTemplate(fileExpected))
+            using (var expectStream = File.Open(fileExpected, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var expected = new XLWorkbook(expectStream))
             {
                 actual.Worksheets.Count.ShouldBeEquivalentTo(expected.Worksheets.Count, $"Count of worksheets must be {expected.Worksheets.Count}");
 
@@ -208,6 +209,18 @@ namespace ClosedXML.Report.Tests
 
                     if (expectedCf.Style.ToString() != actualCf.Style.ToString())
                         messages.Add($"Conditional formats at {actualCf.Range.RangeAddress} have different styles");
+
+                    if (expectedCf.Values.Count != actualCf.Values.Count)
+                        messages.Add($"Conditional formats at {actualCf.Range.RangeAddress} counts differ");
+
+                    for (int j = 1; j <= expectedCf.Values.Count; j++)
+                    {
+                        if (expectedCf.Values[j].Value != actualCf.Values[j].Value)
+                        {
+                            messages.Add($"Conditional formats at {actualCf.Range.RangeAddress} have different values");
+                            break;
+                        }
+                    }
                 }
             }
 
