@@ -300,6 +300,54 @@ namespace ClosedXML.Report.Tests
                 });
         }
 
+        [Fact]
+        public void DictionaryVariableTest()
+        {
+            var dic = new Dictionary<string, object>
+            {
+                { "Customer1", new Dictionary<string, object>{{"ID", "1"}, {"Name", "Customer 1"}}},
+                { "Customer2", new Dictionary<string, object>{{"ID", "2"}, {"Name", "Customer 2"}}},
+                { "Customer3", new Dictionary<string, object>{{"ID", "3"}, {"Name", "Customer 3"}}},
+            };
+
+            XlTemplateTest("DictionarySource.xlsx",
+                tpl => tpl.AddVariable(dic),
+                wb =>
+                {
+                    var sheet = wb.Worksheet(1);
+                    sheet.Cell(1, 1).Value.Should().Be("1");
+                    sheet.Cell(1, 2).Value.Should().Be("Customer 1");
+                    sheet.Cell(2, 1).Value.Should().Be("2");
+                    sheet.Cell(2, 2).Value.Should().Be("Customer 2");
+                    sheet.Cell(3, 1).Value.Should().Be("3");
+                    sheet.Cell(3, 2).Value.Should().Be("Customer 3");
+                });
+        }
+
+        [Fact]
+        public void ListOfDictionariesTest()
+        {
+            var dic = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>{{"ID", "1"}, {"Name", "Customer 1"}},
+                new Dictionary<string, object>{{"ID", "2"}, {"Name", "Customer 2"}},
+                new Dictionary<string, object>{{"ID", "3"}, {"Name", "Customer 3"}},
+            };
+
+            XlTemplateTest("ListDictionariesSource.xlsx",
+                tpl => tpl.AddVariable("Customers", dic),
+                wb =>
+                {
+                    var sheet = wb.Worksheet(1);
+                    sheet.Cell(2, 2).Value.Should().Be("1");
+                    sheet.Cell(2, 3).Value.Should().Be("Customer 1");
+                    sheet.Cell(3, 2).Value.Should().Be("2");
+                    sheet.Cell(3, 3).Value.Should().Be("Customer 2");
+                    sheet.Cell(4, 2).Value.Should().Be("3");
+                    sheet.Cell(4, 3).Value.Should().Be("Customer 3");
+                });
+        }
+
         private void ReplaceWorkbookWithMock(XLTemplate template, IXLWorkbook mock)
         {
             var property = template.GetType().GetProperty("Workbook");
