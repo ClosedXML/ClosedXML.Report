@@ -32,7 +32,7 @@ namespace ClosedXML.Report
 
         public void AddVariable(string name, object value)
         {
-            _variables.Add(name, value);
+            _variables[name]=value;
         }
 
         private string ObjToString(object val)

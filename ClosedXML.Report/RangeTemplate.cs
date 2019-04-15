@@ -21,6 +21,7 @@ namespace ClosedXML.Report
         private readonly TagsList _rangeTags;
         private readonly TagsEvaluator _tagsEvaluator;
         private readonly TemplateErrors _errors;
+        private readonly FormulaEvaluator _evaluator;
         private RangeOptionTag _rangeOption;
         private TempSheetBuffer _buff;
         private IXLRange _rowRange;
@@ -48,6 +49,7 @@ namespace ClosedXML.Report
             Name = range.Name;
             Source = range.Name;
             wb.NamedRanges.Add(range.Name + "_tpl", range.Ranges);
+            _evaluator = new FormulaEvaluator();
         }
 
         internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, int rowCnt, int colCnt, TemplateErrors errors, IDictionary<string, object> globalVariables) : this(range, buff, errors, globalVariables)
@@ -143,21 +145,20 @@ namespace ClosedXML.Report
 
         public IReportBuffer Generate(object[] items)
         {
-            var evaluator = new FormulaEvaluator();
-            evaluator.AddVariable("items", items);
+            _evaluator.AddVariable("items", items);
             foreach (var v in _globalVariables)
             {
-                evaluator.AddVariable("@"+v.Key, v.Value);
+                _evaluator.AddVariable("@"+v.Key, v.Value);
             }
             _rangeTags.Reset();
 
             if (IsHorizontal)
             {
-                HorizontalTable(items, evaluator);
+                HorizontalTable(items, _evaluator);
             }
             else
             {
-                VerticalTable(items, evaluator);
+                VerticalTable(items, _evaluator);
             }
             return _buff;
         }
