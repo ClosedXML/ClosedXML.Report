@@ -224,7 +224,125 @@ namespace ClosedXML.Report.Tests
                 }
             }
 
+            if (expected.PivotTables.Count() != actual.PivotTables.Count())
+                messages.Add("Pivot tables counts differ");
+            else
+            {
+                var expPt = expected.PivotTables.ToArray();
+                var actPt = actual.PivotTables.ToArray();
+
+                for (var i = 0; i < expPt.Length; i++)
+                {
+                    var expectedPt = expPt[i];
+                    var actualPt = actPt[i];
+
+                    if (expectedPt.MergeAndCenterWithLabels != actualPt.MergeAndCenterWithLabels)
+                        messages.Add($"Pivot table {expectedPt.Name} MergeAndCenterWithLabels are not equal");
+                    if (expectedPt.ShowExpandCollapseButtons != actualPt.ShowExpandCollapseButtons)
+                        messages.Add($"Pivot table {expectedPt.Name} ShowExpandCollapseButtons are not equal");
+                    if (expectedPt.ClassicPivotTableLayout != actualPt.ClassicPivotTableLayout)
+                        messages.Add($"Pivot table {expectedPt.Name} ClassicPivotTableLayout are not equal");
+                    if (expectedPt.AutofitColumns != actualPt.AutofitColumns)
+                        messages.Add($"Pivot table {expectedPt.Name} AutofitColumns are not equal");
+                    if (expectedPt.SortFieldsAtoZ != actualPt.SortFieldsAtoZ)
+                        messages.Add($"Pivot table {expectedPt.Name} SortFieldsAtoZ are not equal");
+                    if (expectedPt.PreserveCellFormatting != actualPt.PreserveCellFormatting)
+                        messages.Add($"Pivot table {expectedPt.Name} PreserveCellFormatting are not equal");
+                    if (expectedPt.ShowGrandTotalsColumns != actualPt.ShowGrandTotalsColumns)
+                        messages.Add($"Pivot table {expectedPt.Name} ShowGrandTotalsColumns are not equal");
+                    if (expectedPt.ShowGrandTotalsRows != actualPt.ShowGrandTotalsRows)
+                        messages.Add($"Pivot table {expectedPt.Name} ShowGrandTotalsRows are not equal");
+                    if (expectedPt.SaveSourceData != actualPt.SaveSourceData)
+                        messages.Add($"Pivot table {expectedPt.Name} SaveSourceData are not equal");
+                    if (expectedPt.FilterAreaOrder != actualPt.FilterAreaOrder)
+                        messages.Add($"Pivot table {expectedPt.Name} FilterAreaOrder are not equal");
+                    if (expectedPt.RefreshDataOnOpen != actualPt.RefreshDataOnOpen)
+                        messages.Add($"Pivot table {expectedPt.Name} RefreshDataOnOpen are not equal");
+                    if (expectedPt.SourceRange.RangeAddress.ToString() != actualPt.SourceRange.RangeAddress.ToString())
+                        messages.Add($"Pivot table {expectedPt.Name} SourceRange are not equal");
+                    if (expectedPt.TargetCell.Address.ToString() != actualPt.TargetCell.Address.ToString())
+                        messages.Add($"Pivot table {expectedPt.Name} TargetCell are not equal");
+                    
+                    if (expectedPt.RowLabels.Count() != actualPt.RowLabels.Count())
+                        messages.Add($"Pivot table {expectedPt.Name} RowLabels counts differ");
+                    else
+                        PivotStylesCompare(expectedPt.RowLabels, actualPt.RowLabels, messages);
+
+                    if (expectedPt.ColumnLabels.Count() != actualPt.ColumnLabels.Count())
+                        messages.Add($"Pivot table {expectedPt.Name} ColumnLabels counts differ");
+                    else
+                        PivotStylesCompare(expectedPt.ColumnLabels, actualPt.ColumnLabels, messages);
+
+                    if (expectedPt.ReportFilters.Count() != actualPt.ReportFilters.Count())
+                        messages.Add($"Pivot table {expectedPt.Name} ReportFilters counts differ");
+                    else
+                        PivotStylesCompare(expectedPt.ReportFilters, actualPt.ReportFilters, messages);
+
+                    if (expectedPt.Values.Count() != actualPt.Values.Count())
+                        messages.Add($"Pivot table {expectedPt.Name} ReportFilters counts differ");
+                    else
+                    {
+                        foreach (var expVal in expectedPt.Values)
+                        {
+                            var actRLbl = actualPt.Values.Get(expVal.SourceName);
+                            if (actRLbl.SummaryFormula != expVal.SummaryFormula)
+                                messages.Add($"Pivot table SummaryFormula are not equal");
+                        }
+                    }
+                }
+            }
+
             return !messages.Any();
+        }
+
+        private static void PivotStylesCompare(IXLPivotFields expectedFields, IXLPivotFields actualFields, IList<string> messages)
+        {
+            foreach (var expRLbl in expectedFields)
+            {
+                var actRLbl = actualFields.Get(expRLbl.SourceName);
+                if (actRLbl.SubtotalCaption != expRLbl.SubtotalCaption)
+                    messages.Add($"Pivot table SubtotalCaption are not equal");
+
+                if (actRLbl.CustomName != expRLbl.CustomName)
+                    messages.Add($"Pivot table CustomName are not equal");
+
+                if (actRLbl.StyleFormats.Label.Style.ToString() != expRLbl.StyleFormats.Label.Style.ToString())
+                    messages.Add($"Pivot table Label styles are not equal");
+
+                if (actRLbl.StyleFormats.Header.Style.ToString() != expRLbl.StyleFormats.Header.Style.ToString())
+                    messages.Add($"Pivot table Header styles are not equal");
+
+                if (actRLbl.StyleFormats.Subtotal.Label.Style.ToString() != expRLbl.StyleFormats.Subtotal.Label.Style.ToString())
+                    messages.Add($"Pivot table Subtotal styles are not equal");
+
+                DataValueFormatsCompare(messages, "Subtotal", actRLbl.StyleFormats.Subtotal.DataValuesFormats, expRLbl.StyleFormats.Subtotal.DataValuesFormats);
+
+                DataValueFormatsCompare(messages, "Data", actRLbl.StyleFormats.DataValuesFormats, expRLbl.StyleFormats.DataValuesFormats);
+            }
+        }
+
+        private static void DataValueFormatsCompare(IList<string> messages, string targetName, IEnumerable<IXLPivotValueStyleFormat> actFormats,
+            IEnumerable<IXLPivotValueStyleFormat> expFormats)
+        {
+            if (actFormats.Count() != expFormats.Count())
+                messages.Add($"Pivot table {targetName} DataValuesFormats counts differ");
+
+            var expValFormats = expFormats.ToList();
+            var actValFormats = actFormats.ToList();
+            for (var i = 0; i < expValFormats.Count; i++)
+            {
+                var expValFmt = expValFormats[i];
+                var actValFmt = actValFormats[i];
+
+                if (actValFmt.PivotField.SourceName != expValFmt.PivotField.SourceName)
+                    messages.Add($"Pivot table DataValuesFormat PivotField.SourceName are not equals");
+                if (actValFmt.Outline != expValFmt.Outline)
+                    messages.Add($"Pivot table DataValuesFormat Outline are not equals");
+                if (actValFmt.Style.ToString() != expValFmt.Style.ToString())
+                    messages.Add($"Pivot table DataValuesFormat Style are not equals");
+                if (actValFmt.AppliesTo != expValFmt.AppliesTo)
+                    messages.Add($"Pivot table DataValuesFormat AppliesTo are not equals");
+            }
         }
     }
 }
