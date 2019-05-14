@@ -350,6 +350,29 @@ namespace ClosedXML.Report.Tests
                     sheet.Cell(4, 3).Value.Should().Be("Customer 3");
                 });
         }
+        
+        [Fact]
+        public void HorizontalRangeTest()
+        {
+            XlTemplateTest("HorizontalRange.xlsx",
+                tpl => tpl.AddVariable("Datas", TestEntity.GetTestData(3)),
+                wb =>
+                {
+                    var sheet = wb.Worksheet(1);
+                    sheet.Cell("C3").Value.Should().Be(1d);
+                    sheet.Cell("E3").Value.Should().Be(2d);
+                    sheet.Cell("G3").Value.Should().Be(3d);
+                    sheet.Cell("C4").Value.Should().Be("Developer");
+                    sheet.Cell("D4").Value.Should().Be("John Smith");
+                    sheet.Cell("E4").Value.Should().Be("Analyst");
+                    sheet.Cell("F4").Value.Should().Be("James Smith");
+                    sheet.Cell("G4").Value.Should().Be("Manager");
+                    sheet.Cell("H4").Value.Should().Be("Jim Smith");
+                    sheet.Cell("C5").Value.Should().Be("NY");
+                    sheet.Cell("E5").Value.Should().Be("Dallas");
+                    sheet.Cell("G5").Value.Should().Be("Miami");
+                });
+        }
 
         private void ReplaceWorkbookWithMock(XLTemplate template, IXLWorkbook mock)
         {

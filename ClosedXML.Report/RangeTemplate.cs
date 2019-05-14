@@ -93,7 +93,10 @@ namespace ClosedXML.Report
             result._condFormats = sheet.ConditionalFormats
                 .Where(f => prng.Contains(f.Range) && !innerRanges.Any(ir => ir.Ranges.Contains(f.Range)))
                 .ToArray();
-            if (result._rowCnt > 1)
+
+            result.ParseTags(prng);
+
+            if (result._rowCnt > 1 && !result.IsHorizontal)
             {
                 // Exclude special row
                 result._rowCnt--;
@@ -118,8 +121,6 @@ namespace ClosedXML.Report
                 tpl._globalVariables = globalVariables;
                 return tpl;
             }).ToArray();
-
-            result.ParseTags(prng);
 
             if (result._rangeOption != null)
             {
@@ -163,10 +164,9 @@ namespace ClosedXML.Report
             return _buff;
         }
 
-        protected bool IsHorizontal
-        {
-            get { return (_rangeOption != null && _rangeOption.HasParameter("horizontal")) || (_rangeOption == null && _optionsRow == null); }
-        }
+        protected bool IsHorizontal => (_rangeOption != null && _rangeOption.HasParameter("horizontal"))
+                                       || (_rowCnt == 1 && _optionsRow == null)
+                                       || _colCnt == 1;
 
         private void VerticalTable(object[] items, FormulaEvaluator evaluator)
         {
@@ -328,17 +328,46 @@ namespace ClosedXML.Report
 
         private void HorizontalTable(object[] items, FormulaEvaluator evaluator)
         {
+            var rangeStart = _buff.NextAddress;
             var tags = _tags.CopyTo(_rowRange);
             for (int i = 0; i < items.Length; i++)
             {
                 var clmnStart = _buff.NextAddress;
+                IXLAddress colEnd = null;
                 foreach (var cell in _cells)
                 {
-                    RenderCell(items, i, evaluator, cell);
+                    colEnd = _buff.PrevAddress;
+
+                    if (cell.CellType != TemplateCellType.NewRow)
+                        RenderCell(items, i, evaluator, cell);
+                    else
+                        _buff.NewRow();
                 }
+
                 var newClmnRng = _buff.GetRange(clmnStart, _buff.PrevAddress);
+                foreach (var mrg in _mergedRanges.Where(r => _optionsRow == null || !_optionsRow.Contains(r)))
+                {
+                    var newMrg = mrg.Relative(_rowRange, newClmnRng);
+                    newMrg.Merge(false);
+                }
+
+                if (_colCnt > 1)
+                {
+                    _buff.AddConditionalFormats(_condFormats, _rowRange, newClmnRng);
+                }
                 tags.Execute(new ProcessingContext(newClmnRng, items[i]));
+
+                if (_colCnt > 1)
+                    _buff.NewColumn();
             }
+
+            var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
+            if (_rowCnt == 1)
+            {
+                var rows = resultRange.RowCount() - (_optionsRowIsEmpty ? 0 : 1);
+                _buff.AddConditionalFormats(_condFormats, _rowRange, resultRange.Offset(0, 0, rows, resultRange.ColumnCount()));
+            }
+
             /*using (var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress))
                 _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));*/
         }
@@ -366,13 +395,13 @@ namespace ClosedXML.Report
                     tags = _tagsEvaluator.Parse(cell.GetString(), range, cell, out newValue);
                     cell.Value = newValue;
                 }
-                if (cell.Row > _rowCnt)
+                if (cell.Row == _rowCnt)
                     _rangeTags.AddRange(tags);
                 else
                     _tags.AddRange(tags);
             }
 
-            _rangeOption = _rangeTags.GetAll<RangeOptionTag>().FirstOrDefault();
+            _rangeOption = _rangeTags.GetAll<RangeOptionTag>().Union(_tags.GetAll<RangeOptionTag>()).FirstOrDefault();
         }
 
         public void RangeTagsApply(IXLRange range, object[] items)

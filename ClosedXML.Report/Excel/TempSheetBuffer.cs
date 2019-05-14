@@ -12,6 +12,8 @@ namespace ClosedXML.Report.Excel
         private IXLWorksheet _sheet;
         private int _row;
         private int _clmn;
+        private int _minRow;
+        private int _minClmn;
         private int _prevrow;
         private int _prevclmn;
 
@@ -21,8 +23,8 @@ namespace ClosedXML.Report.Excel
             Init();
         }
 
-        public IXLAddress NextAddress { get { return _sheet.Cell(_row, _clmn).Address; } }
-        public IXLAddress PrevAddress { get { return _sheet.Cell(_prevrow, _prevclmn).Address; } }
+        public IXLAddress NextAddress => _sheet.Cell(_row, _clmn).Address;
+        public IXLAddress PrevAddress => _sheet.Cell(_prevrow, _prevclmn).Address;
 
         private void Init()
         {
@@ -35,8 +37,8 @@ namespace ClosedXML.Report.Excel
                 }
                 _sheet.Visibility = XLWorksheetVisibility.VeryHidden;
             }
-            _row = _prevrow = 1;
-            _clmn = _prevclmn = 1;
+            _row = _minRow = _prevrow = 1;
+            _clmn = _minClmn = _prevclmn = 1;
             Clear();
             _sheet.Style = _wb.Worksheets.First().Style;
         }
@@ -69,7 +71,16 @@ namespace ClosedXML.Report.Excel
         {
             if (_clmn > 1)
                 _clmn--;
-            ChangeAddress(_row + 1, 1);
+            ChangeAddress(_row + 1, _minClmn);
+            _minRow = _row;
+        }
+
+        public void NewColumn()
+        {
+            if (_clmn > 1)
+                _clmn--;
+            ChangeAddress(1, _clmn + 1);
+            _minClmn = _clmn;
         }
 
         public IXLRange GetRange(IXLAddress startAddr, IXLAddress endAddr)
