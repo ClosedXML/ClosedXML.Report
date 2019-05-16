@@ -333,11 +333,8 @@ namespace ClosedXML.Report
             for (int i = 0; i < items.Length; i++)
             {
                 var clmnStart = _buff.NextAddress;
-                IXLAddress colEnd = null;
                 foreach (var cell in _cells)
                 {
-                    colEnd = _buff.PrevAddress;
-
                     if (cell.CellType != TemplateCellType.NewRow)
                         RenderCell(items, i, evaluator, cell);
                     else
@@ -357,7 +354,7 @@ namespace ClosedXML.Report
                 }
                 tags.Execute(new ProcessingContext(newClmnRng, items[i]));
 
-                if (_colCnt > 1)
+                if (_rowCnt > 1)
                     _buff.NewColumn();
             }
 
