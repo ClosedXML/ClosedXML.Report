@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core.Exceptions;
@@ -333,11 +334,8 @@ namespace ClosedXML.Report
             for (int i = 0; i < items.Length; i++)
             {
                 var clmnStart = _buff.NextAddress;
-                IXLAddress colEnd = null;
                 foreach (var cell in _cells)
                 {
-                    colEnd = _buff.PrevAddress;
-
                     if (cell.CellType != TemplateCellType.NewRow)
                         RenderCell(items, i, evaluator, cell);
                     else
@@ -351,17 +349,31 @@ namespace ClosedXML.Report
                     newMrg.Merge(false);
                 }
 
-                if (_colCnt > 1)
+                if (_rowCnt > 1)
                 {
                     _buff.AddConditionalFormats(_condFormats, _rowRange, newClmnRng);
                 }
                 tags.Execute(new ProcessingContext(newClmnRng, items[i]));
 
-                if (_colCnt > 1)
+                if (_rowCnt > 1)
                     _buff.NewColumn();
             }
 
             var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
+
+            var worksheet = _rowRange.Worksheet;
+            var colNumbers = _cells.Where(xc => xc.XLCell != null)
+                .Select(xc => xc.XLCell.Address.ColumnNumber)
+                .Distinct()
+                .ToArray();
+            var widths = colNumbers
+                .Select(c => worksheet.Column(c).Width)
+                .ToArray();
+            var firstCol = colNumbers.Min();
+            foreach (var col in Enumerable.Range(rangeStart.ColumnNumber, _buff.PrevAddress.ColumnNumber))
+            {
+                worksheet.Column(firstCol + col - 1).Width = widths[(col - 1) % widths.Length];
+            }
             if (_rowCnt == 1)
             {
                 var rows = resultRange.RowCount() - (_optionsRowIsEmpty ? 0 : 1);
