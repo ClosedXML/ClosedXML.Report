@@ -2,7 +2,7 @@
 title: Totals in a Column
 ---
 
-# Итоги по столбцам
+# Totals in a Column
 
 In order to get the totals for the column in ClosedXML.Report there are aggregation tags:
 
