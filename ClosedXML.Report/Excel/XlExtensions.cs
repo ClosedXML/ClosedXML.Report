@@ -258,6 +258,11 @@ namespace ClosedXML.Report.Excel
 
         public static IXLRange Offset(this IXLRange range, int rowsOffset, int columnOffset, int rows, int columns)
         {
+            if (rows<=0)
+                throw new ArgumentOutOfRangeException(nameof(rows), "The height of the range must be greater than 0.");
+            if (columns <= 0)
+                throw new ArgumentOutOfRangeException(nameof(columns), "The width of the range must be greater than 0.");
+
             var sheet = range.Worksheet;
             return sheet.Range(
                 range.RangeAddress.FirstAddress.RowNumber + rowsOffset,
