@@ -50,6 +50,22 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_DisableOutline.xlsx"),
          InlineData("GroupTagTests_FormulasInGroupRow.xlsx"),
         ]
+        public void EmptyDataSource(string templateFile)
+        {
+            XlTemplateTest(templateFile,
+                tpl => tpl.AddVariable("Orders", new order[0]),
+                wb => { });
+        }
+
+        [Theory,
+         InlineData("GroupTagTests_SummaryAbove.xlsx"),
+         InlineData("GroupTagTests_MergeLabels.xlsx"),
+         InlineData("GroupTagTests_MergeLabels2.xlsx"),
+         InlineData("GroupTagTests_PlaceToColumn.xlsx"),
+         InlineData("GroupTagTests_NestedGroups.xlsx"),
+         InlineData("GroupTagTests_DisableOutline.xlsx"),
+         InlineData("GroupTagTests_FormulasInGroupRow.xlsx"),
+        ]
         public void Customers(string templateFile)
         {
             XlTemplateTest(templateFile,

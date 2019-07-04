@@ -107,7 +107,12 @@ namespace ClosedXML.Report.Options
             //   DoGroups
 
             var level = 0;
-            var r = root.Offset(0, 0, root.RowCount() - 1, root.ColumnCount());
+            var rows = root.RowCount() - 1;
+            var columns = root.ColumnCount();
+            if (rows <= 0 || columns <= 0)
+                return;
+
+            var r = root.Offset(0, 0, rows, columns);
 
             using (var subtotal = new Subtotal(r, summaryAbove))
             {

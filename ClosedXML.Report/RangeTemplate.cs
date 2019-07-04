@@ -233,7 +233,8 @@ namespace ClosedXML.Report
             if (_rowCnt == 1)
             {
                 var rows = resultRange.RowCount() - (_optionsRowIsEmpty ? 0 : 1);
-                _buff.AddConditionalFormats(_condFormats, _rowRange, resultRange.Offset(0, 0, rows, resultRange.ColumnCount()));
+                if (rows > 0)
+                    _buff.AddConditionalFormats(_condFormats, _rowRange, resultRange.Offset(0, 0, rows, resultRange.ColumnCount()));
             }
             if (!_optionsRowIsEmpty)
             {
