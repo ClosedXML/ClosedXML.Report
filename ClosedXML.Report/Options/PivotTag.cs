@@ -47,8 +47,8 @@ namespace ClosedXML.Report.Options
             var dataTags = List.GetAll<DataPivotTag>().OrderBy(t => t.Column);
 
             var pivotTag = fields.FirstOrDefault(t => t.Name.ToLower() == "pivot") ?? this;
-            var (tableName, dstSheet, dstCell) = GetDestination(pivotTag, wb, pageTags);
-            var pt = CreatePivot(pivotTag, context, dstSheet, tableName, dstCell);
+            var destination =  GetDestination(pivotTag, wb, pageTags);
+            var pt = CreatePivot(pivotTag, context, destination);
 
             foreach (var optionTag in pageTags)
             {
@@ -160,7 +160,7 @@ namespace ClosedXML.Report.Options
             */
         }
 
-        private (string, IXLWorksheet, IXLCell) GetDestination(PivotTag pivot, XLWorkbook wb, IEnumerable<OptionTag> pageTags)
+        private XLPivotTableDestination GetDestination(PivotTag pivot, XLWorkbook wb, IEnumerable<OptionTag> pageTags)
         {
             string tableName = pivot.GetParameter("name");
             if (tableName.IsNullOrWhiteSpace()) tableName = "PivotTable";
@@ -184,14 +184,14 @@ namespace ClosedXML.Report.Options
                 dstSheet = wb.AddWorksheet(tableName);
                 dstCell = dstSheet.Cell(pageTags.Count() + 3, 2);
             }
-            return (tableName, dstSheet, dstCell);
+            return new XLPivotTableDestination(tableName, dstSheet, dstCell);
         }
 
-        private IXLPivotTable CreatePivot(PivotTag pivot, ProcessingContext context, IXLWorksheet targetSheet, string tableName, IXLCell targetCell)
+        private IXLPivotTable CreatePivot(PivotTag pivot, ProcessingContext context, XLPivotTableDestination destination)
         {
             var rowOffset = context.Range.RangeAddress.FirstAddress.RowNumber > 1 ? -1 : 0;
             IXLRange srcRange = context.Range.Offset(rowOffset, 1, context.Range.RowCount(), context.Range.ColumnCount() - 1);
-            var pt = targetSheet.PivotTables.Add(tableName, targetCell, srcRange);
+            var pt = destination.TargetWorksheet.PivotTables.AddNew(destination.TableName, destination.TargetCell, srcRange);
             pt.MergeAndCenterWithLabels = pivot.HasParameter("MergeLabels");
             pt.ShowExpandCollapseButtons = pivot.HasParameter("ShowButtons");
             pt.ClassicPivotTableLayout = !pivot.HasParameter("TreeLayout");
@@ -209,6 +209,20 @@ namespace ClosedXML.Report.Options
         private static string GetColumnName(ProcessingContext context, OptionTag tag)
         {
             return context.Range.FirstRow().RowAbove().Cell(tag.Column).GetString();
+        }
+
+        private struct XLPivotTableDestination
+        {
+            public XLPivotTableDestination(string tableName, IXLWorksheet targetWorksheet, IXLCell targetCell)
+            {
+                TableName = tableName;
+                TargetWorksheet = targetWorksheet;
+                TargetCell = targetCell;
+            }
+
+            public string TableName { get; }
+            public IXLWorksheet TargetWorksheet { get; }
+            public IXLCell TargetCell { get; }
         }
     }
 
