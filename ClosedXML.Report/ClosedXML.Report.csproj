@@ -15,8 +15,10 @@
     <Product>ClosedXML.Report</Product>
     <PackageReleaseNotes>See https://github.com/ClosedXML/ClosedXML.Report/releases/tag/$(productVersion)</PackageReleaseNotes>
     <Description>ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel. ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>ClosedXML Reporting Excel</PackageTags>
+    <Company>ClosedXML</Company>
     <PackageIconUrl>https://github.com/ClosedXML/ClosedXML.Report/raw/develop/Resources/favicon-01.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
   
