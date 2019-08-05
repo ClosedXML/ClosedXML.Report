@@ -13,16 +13,19 @@ There are certain limitations on range configuration:
 * Cells in ranges may be empty
 
 
-### Range names
 <a name="Range-names"></a>
+### Range names
+
 While building a document ClosedXML.Report finds all named ranges and determines a data sources by their names. Range name should coincide with the name of the variable serving a data source for this range. For nested tables, range name is built using underscore (`_`). E.g. to output values from `Customers[].Orders[].Items[]` the range name must be `Customers_Orders_Items`. This example may be found in the [sample template]({{ site.github.repository_url }}/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx).
 
+<a name="Expressions-within-tables"></a>
 ### Expressions within tables
 To work with tabular data, ClosedXML.Report introduces special variables that you can use in expressions inside tables:
 * `item` - element from the list.
 * `index` - the index of the element in the list (starts with 0).
 * `items` - the entire list of items.
 
+<a name="Vertical-tables"></a>
 ## Vertical tables
 
 **Requirements for vertical tables**
@@ -77,6 +80,7 @@ On the picture below you see the report produced from the specified template. No
 
 ![result](../../images/flat-tables-02.png)
 
+<a name="Horizontal-tables"></a>
 ## Horizontal tables
 
 Horizontal tables do not have such strict requirements as vertical tables do. The named range consisting of a single row (in other words, does not contain an options row) it is assumed to be a horizontal. The horizontal one does not need to have a service column either. In fact, the horizontal table may be defined by a single cell. To explicitly define a range as a horizontal table definition put a special tag `<<Range horizontal>>` into any cell inside the range. You may find the example using the horizontal range [on the GitHub]({{ site.github.repository_url }}/blob/develop/tests/Templates/4.xlsx).
@@ -90,6 +94,7 @@ The result report:
 ![horizontal result](../../images/flat-tables-04.png)
 
 
+<a name="Service-row"></a>
 ## Service row
 
 ClosedXML.Report offers nice features for data post-processing on building report: it sort the data, calculate totals by columns, apply grouping, etc. Which actions to perform may be defined by putting special _tags_ to the template. _Tag_ is a keyword put into double angle brackets along with configuration options. Tags controlling data in tables should be placed in the service row of the table template. Some of the tags are aplied to the range as a whole, the others affect only a column they are put in.
