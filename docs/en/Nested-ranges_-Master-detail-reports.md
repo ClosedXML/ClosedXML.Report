@@ -10,7 +10,7 @@ Consider the example. We want to desing a report in such a way that table `Items
 
 ![step 1](../../images/nested-ranges-01.png)
 
-As you can see, we named the range Customers_Orders_Items. Rules for assigning names to the ranges were explained in the section "[Flat tables#Range-names](Flat-tables#Range%20names)". You also can see that we put a title above the table and left some place to the left of it, but that's just the matter of appearance, you don't have to do it if it's not what need.
+As you can see, we named the range Customers_Orders_Items. Rules for assigning names to the ranges were explained in the section "[Flat tables#Range names](Flat-tables#Range-names)". You also can see that we put a title above the table and left some place to the left of it, but that's just the matter of appearance, you don't have to do it if it's not what need.
 
 Then, the range `Customers_Orders_Items` must be placed inside the range `Customers_Orders`.
 
