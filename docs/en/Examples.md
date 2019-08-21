@@ -4,6 +4,7 @@ title: Report examples
 
 # Report examples
 
+<a name="Simple-Template"></a>
 ### Simple Template
 ![simple](../../images/examples-01.png)
 
@@ -13,6 +14,7 @@ The template: [Simple.xlsx]({{ site.github.repository_url}}/blob/develop/tests/T
 
 The result file: [Simple.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/Simple.xlsx)
 
+<a name="Sorting-Collection"></a>
 ### Sorting the Collection
 ![tlists1_sort](../../images/examples-02.png)
 
@@ -24,6 +26,7 @@ The template: [tLists1_sort.xlsx]({{ site.github.repository_url}}/blob/develop/t
 
 The result file: [tLists1_sort.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/tLists1_sort.xlsx)
 
+<a name="Totals"></a>
 ### Totals
 ![tlists2_sum](../../images/examples-03.png)
 
@@ -35,6 +38,7 @@ The template: [tlists2_sum.xlsx]({{ site.github.repository_url}}/blob/develop/te
 
 The result file: [tlists2_sum.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/tLists2_sum.xlsx)
 
+<a name="Options"></a>
 ### Range and Column Options
 ![tLists3_options](../../images/examples-04.png)
 
@@ -48,6 +52,7 @@ The template: [tLists3_options.xlsx]({{ site.github.repository_url}}/blob/develo
 
 The result file: [tLists3_options.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/tLists3_options.xlsx)
 
+<a name="Complex-Range"></a>
 ### Complex Range
 ![tlists4_complexrange](../../images/examples-05.png)
 
@@ -59,6 +64,7 @@ The template: [tLists4_complexRange.xlsx]({{ site.github.repository_url}}/blob/d
 
 The result file: [tLists4_complexRange.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/tLists4_complexRange.xlsx)
 
+<a name="Grouping"></a>
 ### Grouping
 ![GroupTagTests_Simple](../../images/examples-06.png)
 
@@ -70,6 +76,7 @@ The template: [GroupTagTests_Simple.xlsx]({{ site.github.repository_url}}/blob/d
 
 The result file: [GroupTagTests_Simple.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_Simple.xlsx)
 
+<a name="Collapsed-Groups"></a>
 ### Collapsed Groups
 ![GroupTagTests_Collapse](../../images/examples-07.png)
 
@@ -81,6 +88,7 @@ The template: [GroupTagTests_Collapse.xlsx]({{ site.github.repository_url}}/blob
 
 The result file: [GroupTagTests_Collapse.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_Collapse.xlsx)
 
+<a name="Summary-Above"></a>
 ### Summary Above the Data
 ![GroupTagTests_SummaryAbove](../../images/examples-08.png)
 
@@ -92,6 +100,7 @@ The template: [GroupTagTests_SummaryAbove.xlsx]({{ site.github.repository_url}}/
 
 The result file: [GroupTagTests_SummaryAbove.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_SummaryAbove.xlsx)
 
+<a name="Merged-Cells1"></a>
 ### Merged Cells in Groups (option 1)
 ![GroupTagTests_MergeLabels](../../images/examples-09.png)
 
@@ -103,6 +112,7 @@ The template: [GroupTagTests_MergeLabels.xlsx]({{ site.github.repository_url}}/b
 
 The result file: [GroupTagTests_MergeLabels.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_MergeLabels.xlsx)
 
+<a name="Merged-Cells2"></a>
 ### Merged Cells in Groups (option 2)
 ![GroupTagTests_MergeLabels2](../../images/examples-10.png)
 
@@ -114,6 +124,7 @@ The template: [GroupTagTests_MergeLabels2.xlsx]({{ site.github.repository_url}}/
 
 The result file: [GroupTagTests_MergeLabels2.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_MergeLabels2.xlsx)
 
+<a name="Nested-Groups"></a>
 ### Nested Groups
 ![GroupTagTests_NestedGroups](../../images/examples-11.png)
 
@@ -125,6 +136,7 @@ The template: [GroupTagTests_NestedGroups.xlsx]({{ site.github.repository_url}}/
 
 The result file: [GroupTagTests_NestedGroups.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_NestedGroups.xlsx)
 
+<a name="Disable-Collapsing"></a>
 ### Disable Groups Collapsing
 ![GroupTagTests_DisableOutline](../../images/examples-12.png)
 
@@ -136,6 +148,7 @@ The template: [GroupTagTests_DisableOutline.xlsx]({{ site.github.repository_url}
 
 The result file: [GroupTagTests_DisableOutline.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_DisableOutline.xlsx)
 
+<a name="Location-Group-Captions"></a>
 ### Specifying the Location of Group Captions
 ![GroupTagTests_PlaceToColumn](../../images/examples-13.png)
 
@@ -147,6 +160,7 @@ The template: [GroupTagTests_PlaceToColumn.xlsx]({{ site.github.repository_url}}
 
 The result file: [GroupTagTests_PlaceToColumn.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_PlaceToColumn.xlsx)
 
+<a name="Formulas-in-Group-Line"></a>
 ### Formulas in Group Line
 ![GroupTagTests_FormulasInGroupRow](../../images/examples-14.png)
 
@@ -158,6 +172,7 @@ The template: [GroupTagTests_FormulasInGroupRow.xlsx]({{ site.github.repository_
 
 The result file: [GroupTagTests_FormulasInGroupRow.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_FormulasInGroupRow.xlsx)
 
+<a name="Groups-with-Captions"></a>
 ### Groups with Captions
 ![GroupTagTests_WithHeader](../../images/examples-15.png)
 
@@ -169,6 +184,7 @@ The template: [GroupTagTests_WithHeader.xlsx]({{ site.github.repository_url}}/bl
 
 The result file: [GroupTagTests_WithHeader.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/GroupTagTests_WithHeader.xlsx)
 
+<a name="Nested-Ranges"></a>
 ### Nested Ranges
 ![Subranges_Simple_tMD1](../../images/examples-16.png)
 
@@ -180,6 +196,7 @@ The template: [Subranges_Simple_tMD1.xlsx]({{ site.github.repository_url}}/blob/
 
 The result file: [Subranges_Simple_tMD1.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/Subranges_Simple_tMD1.xlsx)
 
+<a name="Nested-Ranges-with-Subtotals"></a>
 ### Nested Ranges with Subtotals
 ![Subranges_WithSubtotals_tMD2](../../images/examples-17.png)
 
@@ -191,6 +208,7 @@ The template: [Subranges_WithSubtotals_tMD2.xlsx]({{ site.github.repository_url}
 
 The result file: [Subranges_WithSubtotals_tMD2.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/Subranges_WithSubtotals_tMD2.xlsx)
 
+<a name="Nested-Ranges-with-Sorting"></a>
 ### Nested Ranges with Sorting
 ![Subranges_WithSort_tMD3](../../images/examples-18.png)
 
@@ -202,6 +220,7 @@ The template: [Subranges_WithSort_tMD3.xlsx]({{ site.github.repository_url}}/blo
 
 The result file: [Subranges_WithSort_tMD3.xlsx]({{ site.github.repository_url}}/blob/develop/tests/Gauges/Subranges_WithSort_tMD3.xlsx)
 
+<a name="Pivot-Tables"></a>
 ### Pivot Tables
 ![tPivot5_Static](../../images/examples-19.png)
 
