@@ -10,11 +10,11 @@ workbook and transfers values of all fields for the current record. Then it name
 
 Excel formulas, in which _variables_ are added, must be escaped `&`. As an example: {% raw %}`&=CONCATENATE({{Addr1}}, " ", {{Addr2}})`{% endraw %}. 
 Pay attention that escaped formulas must follow international, non-localized syntax which includes English names of functions, comma as a value separator, etc. 
-For example, in Russian version of Excel you could use formula `=СУММ(A1:B2; E1:F2)` for ordinary cells, but escaped formula should be `&=SUM(A1:B2, E1:F2)`.
+For example, in the Russian version of Excel you could use formula `=СУММ(A1:B2; E1:F2)` for ordinary cells, but the escaped formula should be `&=SUM(A1:B2, E1:F2)`.
 
-Cells with field formulas can be formatted by any known way, including conditional formatting.
+Cells with field formulas can be formatted in any known way, including conditional formatting.
 
-Take a simple example:
+Here is a simple example:
 
 ![simpletemplate](../../images/simple-template-01.png)
 

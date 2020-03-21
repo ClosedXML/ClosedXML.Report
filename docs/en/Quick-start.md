@@ -11,13 +11,13 @@ It is a .NET-library for report generation Microsoft Excel without requiring Exc
 
 Excel is an excellent alternative to common report generators, and using Excel’s built-in features
 can make your reports much more responsive.
-Use ClosedXML.Report as a tool for generating files of Excel. Then use Excel visual instruments: formatting (including
-conditional formatting), AutoFilter, Pivot tables to construct a versatile data analysis system. With ClosedXML.Report, you can move a lot of report programming
+Use ClosedXML.Report as a tool for generating Excel files. Then use Excel visual instruments: formatting (including
+conditional formatting), AutoFilter, and Pivot tables to construct a versatile data analysis system. With ClosedXML.Report, you can move a lot of report programming
 and tuning into Excel. ClosedXML.Report templates are simple and our algorithms are fast – we carefully count every
 millisecond – so you waste less time on routine report programming and get surprisingly fast results. If you want
 to master such a versatile tool as Excel – ClosedXML.Report is an excellent choice.
 Furthermore, ClosedXML.Report doesn’t operate with the usual concepts of band-oriented report tools: Footer, Header,
-and Detail. So you get a much greater degree of freedom in report construction and design, and the easiest possible integration of .NET and Microsoft Excel. 
+and Detail. So you get a much greater degree of freedom in report construction and design, and the easiest possible integration of .NET and Microsoft Excel.
 
 ### Install ClosedXML.Report via NuGet
 
@@ -36,7 +36,7 @@ PM> Install-Package ClosedXML.Report.Signed
 ## Features
 
 * Copying cell formatting
-* Propagation conditional formatting
+* Propagation of conditional formatting
 * Vertical and horizontal tables and subranges
 * Ability to implement Excel formulas
 * Using dynamically calculated formulas with the syntax of C # and Linq
