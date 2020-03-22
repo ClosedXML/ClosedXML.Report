@@ -4,11 +4,11 @@ title: Flat Tables
 
 # Flat Tables
 
-Variables or their properties of type `IEnumerable` may be bounded to regions (_flat tables_). To output all values from `IEnumerable` you should create a named range with the same name as variable. ClosedXML.Report searches named ranges and maps variables to them. To establish binding to properties of collection elements use built-in name `item`.
+Variables or their properties of type `IEnumerable` may be bounded to regions (_flat tables_). To output all values from `IEnumerable` you should create a named range with the same name as the variable. ClosedXML.Report searches named ranges and maps variables to them. To establish binding to properties of collection elements use the built-in name `item`.
 
 There are certain limitations on range configuration:
-* Range can only be rectangular
-* Range must not have gaps
+* Ranges can only be rectangular
+* Ranges must not have gaps
 * Cells in ranges may store normal text, ClosedXML.Report _expressions_ (in double curly braces), standard Excel formulas, and formulas escaped with `&` character
 * Cells in ranges may be empty
 
@@ -16,7 +16,7 @@ There are certain limitations on range configuration:
 <a name="Range-names"></a>
 ### Range names
 
-While building a document ClosedXML.Report finds all named ranges and determines a data sources by their names. Range name should coincide with the name of the variable serving a data source for this range. For nested tables, range name is built using underscore (`_`). E.g. to output values from `Customers[].Orders[].Items[]` the range name must be `Customers_Orders_Items`. This example may be found in the [sample template]({{ site.github.repository_url }}/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx).
+While building a document, ClosedXML.Report finds all named ranges and determines data sources by their name. Range name should coincide with the name of the variable serving a data source for this range. For nested tables, the range name is built using an underscore (`_`). E.g., to output values from `Customers[].Orders[].Items[]` the range name must be `Customers_Orders_Items`. This example may be found in the [sample template]({{ site.github.repository_url }}/blob/develop/tests/Templates/Subranges_Simple_tMD1.xlsx).
 
 <a name="Expressions-within-tables"></a>
 ### Expressions within tables
@@ -30,7 +30,7 @@ To work with tabular data, ClosedXML.Report introduces special variables that yo
 
 **Requirements for vertical tables**
 
-Each range specifying the vertical table must have at least two columns and two rows. The leftmost column and the bottom row serve to configuration purposes and are treated the special way. After the report is built the service column is cleared, and the service row is deleted if it is empty.
+Each range specifying the vertical table must have at least two columns and two rows. The leftmost column and the bottom row serve configuration purposes and are treated a special way. After the report is built the service column is cleared, and the service row is deleted if it is empty.
 
 When dealing with vertical tables CLosedXML.Report acts this way:
 * The required number of rows is inserted in the region. Pay attention that cells are added to the range only, not to the entire worksheet. That means, regions located to the right or left of the table won't be affected.
