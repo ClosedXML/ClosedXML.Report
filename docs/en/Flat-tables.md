@@ -30,17 +30,17 @@ To work with tabular data, ClosedXML.Report introduces special variables that yo
 
 **Requirements for vertical tables**
 
-Each range specifying the vertical table must have at least two columns and two rows. The leftmost column and the bottom row serve configuration purposes and are treated a special way. After the report is built the service column is cleared, and the service row is deleted if it is empty.
+Each range specifying a vertical table must have at least two columns and two rows. The leftmost column and bottommost row serve to hold configuration information and are treated specially. After the report is built the service column is cleared, and the service row is deleted if it is empty.
 
-When dealing with vertical tables CLosedXML.Report acts this way:
-* The required number of rows is inserted in the region. Pay attention that cells are added to the range only, not to the entire worksheet. That means, regions located to the right or left of the table won't be affected.
-* Contents of the added cells are filled with data according to template (static text, formulas or _expressions_).
+When dealing with vertical tables, CLosedXML.Report performs the following actions:
+* The required number of rows is inserted in the region. Note that cells are added to the range only, not to the entire worksheet. This means that regions located to the right or left of the table won't be affected.
+* Contents of the added cells are filled with data according to the template (static text, formulas or _expressions_).
 * Styles from the template are applied to the inserted cells.
 * Template cells are deleted.
-* If the service row does not contain any options it is deleted too.
-* If there are options defined in the service row they are processed accordingly, and then the row is either cleared or deleted.
+* If the service row does not contain any options then it is deleted too.
+* If there are options defined in the service row then they are processed accordingly, and then the row is either cleared or deleted.
 
-Take a look into example from the [start page]({{ site.github.repository_url }}). As you can see on the picture, there is a range named `Orders` including a single row with _expressions_, a service row and a service column.
+Look at the example from the [start page]({{ site.github.repository_url }}). As you can see in the picture, there is a range named `Orders` including a single row with _expressions_, a service row and a service column.
 
 ![template](../../images/flat-tables-01.png)
 
@@ -76,14 +76,14 @@ public class order
 }
 ```
 
-On the picture below you see the report produced from the specified template. Note that selected area now contains the data and is named `Orders`. You can use this name to access data in the result report.
+In the picture below you see the report produced from the specified template. Note that selected area now contains the data and is named `Orders`. You can use this name to access data in the result report.
 
 ![result](../../images/flat-tables-02.png)
 
 <a name="Horizontal-tables"></a>
 ## Horizontal tables
 
-Horizontal tables do not have such strict requirements as vertical tables do. The named range consisting of a single row (in other words, does not contain an options row) it is assumed to be a horizontal. The horizontal one does not need to have a service column either. In fact, the horizontal table may be defined by a single cell. To explicitly define a range as a horizontal table definition put a special tag `<<Range horizontal>>` into any cell inside the range. You may find the example using the horizontal range [on the GitHub]({{ site.github.repository_url }}/blob/develop/tests/Templates/4.xlsx).
+Horizontal tables do not have such strict requirements as vertical tables. The named range consists of a single row (in other words, without an options row) and is assumed to be a horizontal table. A horizontal table does not need to have a service column either. In fact, the horizontal table may be defined by a single cell. To explicitly define a range as a horizontal table definition, put a special tag `<<Range horizontal>>` into any cell inside the range. You may find the example using the horizontal range [on the GitHub]({{ site.github.repository_url }}/blob/develop/tests/Templates/4.xlsx).
 
 There two ranges in that template - `dates` and `PlanData_Hours`. Each of these ranges consist of one cell. As has been said, ClosedXML.Report treats such ranges as horizontal table definitions.
 
