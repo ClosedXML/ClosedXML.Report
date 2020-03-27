@@ -21,6 +21,7 @@ namespace ClosedXML.Report.Tests
          InlineData("tLists3_options.xlsx"),
          InlineData("tLists4_complexRange.xlsx"),
          InlineData("tLists5_GlobalVars.xlsx"),
+         InlineData("tLists6_count.xlsx"),
          InlineData("tPage1_options.xlsx"),
         ]
         public void Simple(string templateFile)
