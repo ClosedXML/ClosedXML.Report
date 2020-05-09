@@ -134,7 +134,7 @@ namespace ClosedXML.Report.Tests
                 var actualCell = actual.Cell(address);
                 bool cellsAreEqual = true;
 
-                if (actualCell.Value?.ToString() != expectedCell.Value?.ToString())
+                if (actualCell.FormulaA1 != expectedCell.FormulaA1)
                 {
                     messages.Add($"Cell values are not equal starting from {address}");
                     cellsAreEqual = false;
