@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
+using ClosedXML.Report.Excel;
 using FluentAssertions;
 //using JetBrains.Profiler.Windows.Api;
 using Xunit.Abstractions;
@@ -134,7 +135,7 @@ namespace ClosedXML.Report.Tests
                 var actualCell = actual.Cell(address);
                 bool cellsAreEqual = true;
 
-                if (actualCell.FormulaA1 != expectedCell.FormulaA1)
+                if (actualCell.FormulaA1 != expectedCell.FormulaA1 && actualCell.GetInnerText() != expectedCell.GetInnerText())
                 {
                     messages.Add($"Cell values are not equal starting from {address}");
                     cellsAreEqual = false;
