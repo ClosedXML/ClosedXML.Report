@@ -48,6 +48,11 @@ before_build:
 build:
   verbosity: minimal
 
+test:
+  assemblies:
+    only:
+      - tests/ClosedXML.Report.Tests/bin/%CONFIGURATION%/*/ClosedXML.Report.Tests.dll
+
 configuration:
 - Release
 - Release.Signed
