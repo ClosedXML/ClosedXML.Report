@@ -1,9 +1,8 @@
-﻿using System;
+﻿using ClosedXML.Report.Utils;
+using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
@@ -59,7 +58,7 @@ namespace ClosedXML.Report
                 var parameters = pars.Select(p=>p.ParameterExpression).ToArray();
                 try
                 {
-                    lambda = DynamicExpressionParser.ParseLambda(parameters, typeof(object), expression, _variables).Compile();
+                    lambda = XLDynamicExpressionParser.ParseLambda(parameters, typeof(object), expression, _variables).Compile();
                 }
                 catch (ArgumentException)
                 {
