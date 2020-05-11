@@ -208,11 +208,13 @@ namespace ClosedXML.Report.Excel
             return (string)method.Invoke(cell, new object[] { value });
         }
 
+        private static PropertyInfo _xlCellInnerText;
         internal static string GetInnerText(this IXLCell cell)
         {
-            var type = cell.GetType();
-            var property = type.GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
-            return (string)property.GetValue(cell, null);
+            _xlCellInnerText = _xlCellInnerText ??
+                               cell.GetType()
+                                   .GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
+            return (string)_xlCellInnerText.GetValue(cell, null);
         }
 
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
