@@ -48,10 +48,8 @@ before_build:
 build:
   verbosity: minimal
 
-test:
-  assemblies:
-    only:
-      - tests/ClosedXML.Report.Tests/bin/%CONFIGURATION%/*/ClosedXML.Report.Tests.dll
+test_script:
+  - dotnet test tests/ClosedXML.Report.Tests
 
 configuration:
 - Release
