@@ -3,6 +3,73 @@ using System.Linq;
 
 namespace ClosedXML.Report.Tests.TestModels
 {
+    public class TestOrder
+    {
+        public string OrderNumber { get; set; }
+        public List<OrderItem> ProductsWithQuantities { get; set; } = new List<OrderItem>();
+
+        public TestOrder(string orderNumber)
+        {
+            OrderNumber = orderNumber;
+        }
+
+        public static IEnumerable<TestOrder> GetTestData(int rowCount)
+        {
+            return new[]
+            {
+                new TestOrder("828282")
+                {
+                    ProductsWithQuantities = new List<OrderItem>
+                    {
+                        new OrderItem("Brioche", 10),
+                        new OrderItem("Tart taten", 20),
+                        new OrderItem("Apple pie", 1),
+                        new OrderItem("Creamy croissants", 14),
+                    }
+                },
+                new TestOrder("262654")
+                {
+                    ProductsWithQuantities = new List<OrderItem>
+                    {
+                        new OrderItem("Toast with cream", 4),
+                        new OrderItem("Scramble croissant", 1),
+                    }
+                },
+                new TestOrder("959845")
+                {
+                    ProductsWithQuantities = new List<OrderItem>
+                    {
+                        new OrderItem("Beunier donuts", 8),
+                        new OrderItem("Profiteroles with Mascarpone", 12),
+                        new OrderItem("Creme de parisien", 11),
+                        new OrderItem("Chocolate Fondant", 30),
+                    }
+                },
+                new TestOrder("754126")
+                {
+                    ProductsWithQuantities = new List<OrderItem>
+                    {
+                        new OrderItem("Quiche with bacon", 30),
+                        new OrderItem("Brioche", 40),
+                        new OrderItem("Creamy croissants", 50),
+                    }
+                },
+            }.Take(rowCount);
+        }
+    }
+
+    public class OrderItem
+    {
+        public OrderItem(string productName, decimal quantity)
+        {
+            ProductName = productName;
+            Quantity = quantity;
+        }
+
+        public string ProductName { get; set; }
+        public decimal Quantity { get; set; }
+    }
+
     public class TestEntity
     {
         public string Name { get; set; }
