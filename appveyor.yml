@@ -48,6 +48,9 @@ before_build:
 build:
   verbosity: minimal
 
+test_script:
+  - dotnet test tests/ClosedXML.Report.Tests
+
 configuration:
 - Release
 - Release.Signed

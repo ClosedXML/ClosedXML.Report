@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using ClosedXML.Report.Utils;
+using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Linq.Dynamic.Core.Exceptions;
 using System.Linq.Expressions;
 using FluentAssertions;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace ClosedXML.Report.Tests
@@ -33,7 +32,7 @@ namespace ClosedXML.Report.Tests
             }.AsEnumerable();
 
             string query = "customers.Where(c => c.Id == 1).OrderBy(c=> c.Name)";
-            var lambda = DynamicExpressionParser.ParseLambda(new [] {Expression.Parameter(customers.GetType(), "customers")}, null, query);
+            var lambda = XLDynamicExpressionParser.ParseLambda(new [] {Expression.Parameter(customers.GetType(), "customers")}, null, query);
             var dlg = lambda.Compile();
             dlg.DynamicInvoke(customers).Should().BeAssignableTo<IEnumerable<Customer>>();
             ((IEnumerable<Customer>) dlg.DynamicInvoke(customers)).Should().HaveCount(1);

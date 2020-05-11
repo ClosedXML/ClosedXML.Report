@@ -208,6 +208,15 @@ namespace ClosedXML.Report.Excel
             return (string)method.Invoke(cell, new object[] { value });
         }
 
+        private static PropertyInfo _xlCellInnerText;
+        internal static string GetInnerText(this IXLCell cell)
+        {
+            _xlCellInnerText = _xlCellInnerText ??
+                               cell.GetType()
+                                   .GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
+            return (string)_xlCellInnerText.GetValue(cell, null);
+        }
+
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
             foreach (var sourceFmtRange in format.Ranges)
