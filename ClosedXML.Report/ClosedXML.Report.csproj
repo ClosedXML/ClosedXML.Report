@@ -20,6 +20,16 @@
     <PackageIconUrl>https://github.com/ClosedXML/ClosedXML.Report/raw/develop/Resources/favicon-01.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)'=='Release.Signed'">
@@ -52,7 +62,7 @@
     <PackageReference Include="ClosedXML.Signed" Version="0.95.0" Condition="'$(Configuration)'=='Release.Signed'" />
     <PackageReference Include="ClosedXML" Version="0.95.0" Condition="'$(Configuration)'!='Release.Signed'" />
     <PackageReference Include="morelinq" Version="2.9.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.1" />
   </ItemGroup>
 
 </Project>
