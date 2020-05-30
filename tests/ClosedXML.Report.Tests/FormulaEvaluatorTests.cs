@@ -81,10 +81,27 @@ namespace ClosedXML.Report.Tests
             eval.Evaluate("{{@a+@a}}").Should().Be(2);
         }
 
+        [Fact]
+        public void ExpressionParseTestNullPropagation()
+        {
+            var customers = new Customer[]
+            {
+                new Customer {Id = 1, Name = "Customer1", Manager = new Customer { Id = 3, Name = "Manager1"}},
+                new Customer {Id = 2, Name = "Customer2", Manager = null}
+            };
+            var eval = new FormulaEvaluator();
+            eval.AddVariable("a", customers[0]);
+            eval.AddVariable("b", customers[1]);
+            eval.Evaluate(@"{{np(a.Manager.Name, ""test"")}}").Should().Be("Manager1");
+            eval.Evaluate(@"{{np(b.Manager.Name, ""test"")}}").Should().Be("test");
+            eval.Evaluate(@"{{np(b.Manager.Name, null)}}").Should().BeNull();
+        }
+
         class Customer
         {
             public int Id { get; set; }
             public string Name { get; set; }
+            public Customer Manager { get; set; }
         }
     }
 }
