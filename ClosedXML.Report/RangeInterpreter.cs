@@ -126,6 +126,41 @@ namespace ClosedXML.Report
                     cell.Style.Font.FontColor = XLColor.Red;
                     _errors.Add(new TemplateError(ex.Message, cell.AsRange()));
                 }
+
+                string EvalString(string str)
+                {
+                    try
+                    {
+                        return _evaluator.Evaluate(str, pars).ToString();
+                    }
+                    catch (ParseException ex)
+                    {
+                        _errors.Add(new TemplateError(ex.Message, cell.AsRange()));
+                        return ex.Message;
+                    }
+                }
+
+                if (cell.HasComment)
+                {
+                    var comment = EvalString(cell.Comment.Text);
+                    cell.Comment.ClearText();
+                    cell.Comment.AddText(comment);
+                }
+
+                if (cell.HasHyperlink)
+                {
+                    if (cell.Hyperlink.IsExternal)
+                        cell.Hyperlink.ExternalAddress = new Uri(EvalString(cell.Hyperlink.ExternalAddress.ToString()));
+                    else
+                        cell.Hyperlink.InternalAddress = EvalString(cell.Hyperlink.InternalAddress);
+                }
+
+                if (cell.HasRichText)
+                {
+                    var richText = EvalString(cell.RichText.Text);
+                    cell.RichText.ClearText();
+                    cell.RichText.AddText(richText);
+                }
             }
 
             foreach (var nr in innerRanges)
@@ -149,7 +184,7 @@ namespace ClosedXML.Report
                 {
                     if (pt.SourceRange.Intersects(nrng))
                     {
-                        pt.SourceRange = nrng.Offset(-1, 1, nrng.RowCount(), nrng.ColumnCount() - 1);
+                        pt.SourceRange = nrng.Offset(-1, 1, nrng.RowCount() + 1, nrng.ColumnCount() - 1);
                     }
                 }
             }

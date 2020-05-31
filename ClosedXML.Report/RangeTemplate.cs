@@ -28,13 +28,11 @@ namespace ClosedXML.Report
         private IXLRange _rowRange;
         private IXLRangeRow _optionsRow;
         private bool _optionsRowIsEmpty = true;
-        private IXLConditionalFormat[] _condFormats;
-        private IXLConditionalFormat[] _totalsCondFormats;
         private bool _isSubrange;
         private IDictionary<string, object> _globalVariables;
 
         public string Source { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; }
 
         internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
@@ -91,9 +89,6 @@ namespace ClosedXML.Report
 
             result._mergedRanges = sheet.MergedRanges.Where(x => prng.Contains(x) && !innerRanges.Any(nr=>nr.Ranges.Any(r=>r.Contains(x)))).ToArray();
             sheet.MergedRanges.RemoveAll(result._mergedRanges.Contains);
-            result._condFormats = sheet.ConditionalFormats
-                .Where(f => prng.Contains(f.Range) && !innerRanges.Any(ir => ir.Ranges.Contains(f.Range)))
-                .ToArray();
 
             result.ParseTags(prng);
 
@@ -105,14 +100,7 @@ namespace ClosedXML.Report
                 result._rowRange = prng.Offset(0, 0, result._rowCnt, result._colCnt);
                 result._optionsRow = prng.LastRow();
                 result._optionsRowIsEmpty = !result._optionsRow.CellsUsed(XLCellsUsedOptions.AllContents | XLCellsUsedOptions.MergedRanges).Any();
-                result._totalsCondFormats = sheet.ConditionalFormats
-                    .Where(f => result._optionsRow.Contains(f.Range) && !innerRanges.Any(ir => ir.Ranges.Contains(f.Range)))
-                    .ToArray();
-                var rs = prng.RangeAddress.FirstAddress.RowNumber;
-                result._condFormats = result._condFormats.Where(x => x.Range.RangeAddress.FirstAddress.RowNumber - rs + 1 <= result._rowCnt).ToArray();
             }
-            else
-                result._totalsCondFormats = new IXLConditionalFormat[0];
 
             result._subranges = innerRanges.Select(rng =>
             {
@@ -211,10 +199,6 @@ namespace ClosedXML.Report
                     newMrg.Merge(false);
                 }
 
-                if (_rowCnt > 1)
-                {
-                    _buff.AddConditionalFormats(_condFormats, _rowRange, newRowRng);
-                }
                 tags.Execute(new ProcessingContext(newRowRng, items[i]));
             }
 
@@ -230,12 +214,6 @@ namespace ClosedXML.Report
 
             // Execute range options tags
             var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
-            if (_rowCnt == 1)
-            {
-                var rows = resultRange.RowCount() - (_optionsRowIsEmpty ? 0 : 1);
-                if (rows > 0)
-                    _buff.AddConditionalFormats(_condFormats, _rowRange, resultRange.Offset(0, 0, rows, resultRange.ColumnCount()));
-            }
             if (!_optionsRowIsEmpty)
             {
                 var optionsRow = resultRange.LastRow().AsRange();
@@ -244,7 +222,6 @@ namespace ClosedXML.Report
                     var newMrg = mrg.Relative(_optionsRow, optionsRow);
                     newMrg.Merge();
                 }
-                _buff.AddConditionalFormats(_totalsCondFormats, _optionsRow, optionsRow);
             }
 
             if (_isSubrange)
@@ -262,20 +239,60 @@ namespace ClosedXML.Report
             }
             catch (ParseException ex)
             {
-                _buff.WriteValue(ex.Message, cell.Style);
+                _buff.WriteValue(ex.Message, cell.XLCell);
                 _buff.GetCell(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber).Style.Font.FontColor = XLColor.Red;
                 _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
                 return;
             }
 
+            IXLCell xlCell;
             if (cell.CellType == TemplateCellType.Formula)
             {
                 var r1c1 = cell.XLCell.GetFormulaR1C1(value.ToString());
-                _buff.WriteFormulaR1C1(r1c1, cell.Style);
+                xlCell = _buff.WriteFormulaR1C1(r1c1, cell.XLCell);
             }
             else
-                _buff.WriteValue(value, cell.Style);
+            {
+                xlCell = _buff.WriteValue(value, cell.XLCell);
+            }
+
+            string EvalString(string str)
+            {
+                try
+                {
+                    return evaluator.Evaluate(str, pars).ToString();
+                }
+                catch (ParseException ex)
+                {
+                    _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
+                    return ex.Message;
+                }
+            }
+
+            if (xlCell.HasComment)
+            {
+                var comment = EvalString(xlCell.Comment.Text);
+                xlCell.Comment.ClearText();
+                xlCell.Comment.AddText(comment);
+            }
+
+            if (xlCell.HasHyperlink)
+            {
+                if (xlCell.Hyperlink.IsExternal)
+                    xlCell.Hyperlink.ExternalAddress = new Uri(EvalString(xlCell.Hyperlink.ExternalAddress.ToString()));
+                else
+                    xlCell.Hyperlink.InternalAddress = EvalString(xlCell.Hyperlink.InternalAddress);
+            }
+
+            if (xlCell.HasRichText)
+            {
+                var richText = EvalString(xlCell.RichText.Text);
+                xlCell.RichText.ClearText();
+                xlCell.RichText.AddText(richText);
+            }
         }
+
+
 
         private void RenderCell(object[] items, int i, FormulaEvaluator evaluator, TemplateCell cell)
         {
@@ -285,7 +302,7 @@ namespace ClosedXML.Report
         private void RenderSubrange(object item, FormulaEvaluator evaluator, TemplateCell cell, TagsList tags, ref int iCell, ref int row)
         {
             var start = _buff.NextAddress;
-            // дочерний шаблон, к которому принадлежит ячейка
+            // the child template to which the cell belongs
             var xlCell = _rowRange.Cell(cell.Row, cell.Column);
             var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
             var formula = "{{" + ownRng.Source.ReplaceLast("_", ".") + "}}";
@@ -350,17 +367,11 @@ namespace ClosedXML.Report
                     newMrg.Merge(false);
                 }
 
-                if (_rowCnt > 1)
-                {
-                    _buff.AddConditionalFormats(_condFormats, _rowRange, newClmnRng);
-                }
                 tags.Execute(new ProcessingContext(newClmnRng, items[i]));
 
                 if (_rowCnt > 1)
                     _buff.NewColumn();
             }
-
-            var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
 
             var worksheet = _rowRange.Worksheet;
             var colNumbers = _cells.Where(xc => xc.XLCell != null)
@@ -374,11 +385,6 @@ namespace ClosedXML.Report
             foreach (var col in Enumerable.Range(rangeStart.ColumnNumber, _buff.PrevAddress.ColumnNumber))
             {
                 worksheet.Column(firstCol + col - 1).Width = widths[(col - 1) % widths.Length];
-            }
-            if (_rowCnt == 1)
-            {
-                var rows = resultRange.RowCount() - (_optionsRowIsEmpty ? 0 : 1);
-                _buff.AddConditionalFormats(_condFormats, _rowRange, resultRange.Offset(0, 0, rows, resultRange.ColumnCount()));
             }
 
             /*using (var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress))

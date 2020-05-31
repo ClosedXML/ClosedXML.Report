@@ -17,6 +17,7 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_Simple_WithOutsideLink.xlsx"),
          InlineData("GroupTagTests_Collapse.xlsx"),
          InlineData("tLists1_sort.xlsx"),
+         InlineData("tLists1_cell_setting.xlsx"),
          InlineData("tLists2_sum.xlsx"),
          InlineData("tLists3_options.xlsx"),
          InlineData("tLists4_complexRange.xlsx"),

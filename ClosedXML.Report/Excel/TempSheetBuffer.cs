@@ -43,9 +43,10 @@ namespace ClosedXML.Report.Excel
             _sheet.Style = _wb.Worksheets.First().Style;
         }
 
-        public void WriteValue(object value, IXLStyle cellStyle)
+        public IXLCell WriteValue(object value, IXLCell settingCell)
         {
             var xlCell = _sheet.Cell(_row, _clmn);
+            xlCell.CopyFrom(settingCell);
             try
             {
                 xlCell.SetValue(value);
@@ -55,16 +56,17 @@ namespace ClosedXML.Report.Excel
                 xlCell.SetValue(value?.ToString());
             }
 
-            xlCell.Style = cellStyle ?? _wb.Style;
             ChangeAddress(_row, _clmn + 1);
+            return xlCell;
         }
 
-        public void WriteFormulaR1C1(string formula, IXLStyle cellStyle)
+        public IXLCell WriteFormulaR1C1(string formula, IXLCell settingCell)
         {
             var xlCell = _sheet.Cell(_row, _clmn);
-            xlCell.Style = cellStyle;
+            xlCell.CopyFrom(settingCell);
             xlCell.SetFormulaR1C1(formula);
             ChangeAddress(_row, _clmn + 1);
+            return xlCell;
         }
 
         public void NewRow()
@@ -156,14 +158,6 @@ namespace ClosedXML.Report.Excel
                 row.OutlineLevel = 0;
             }
             _sheet.Clear();
-        }
-
-        public void AddConditionalFormats(IEnumerable<IXLConditionalFormat> formats, IXLRangeBase fromRange, IXLRangeBase toRange)
-        {
-            foreach (var format in formats)
-            {
-                format.CopyRelative(fromRange, toRange, true);
-            }
         }
 
         public void Dispose()
