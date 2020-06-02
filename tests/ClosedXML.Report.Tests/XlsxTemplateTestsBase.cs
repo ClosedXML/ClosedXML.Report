@@ -158,10 +158,10 @@ namespace ClosedXML.Report.Tests
                 {
                     messages.Add($"Cell comments are not equal starting from {address}");
                     messages.Add(expectedCell.HasComment
-                        ? $"Expected comment: {expectedCell.Comment.Text}"
+                        ? $"Expected comment: '{expectedCell.Comment.Text}:{expectedCell.Comment.Style}"
                         : "Expected comment is empty");
                     messages.Add(expectedCell.HasComment
-                        ? $"Actual comment: {actualCell.Comment.Text}"
+                        ? $"Actual comment: '{actualCell.Comment.Text}:{actualCell.Comment.Style}"
                         : "Actual comment is empty");
                     cellsAreEqual = false;
                 }
