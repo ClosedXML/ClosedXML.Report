@@ -284,9 +284,9 @@ namespace ClosedXML.Report.Tests
                    && expectedComment.Position.ColumnOffset == actualComment.Position.ColumnOffset
                    && expectedComment.Position.Row == actualComment.Position.Row
                    && expectedComment.Position.RowOffset == actualComment.Position.RowOffset
-                   && expectedComment.ZOrder == actualComment.ZOrder
+                   && expectedComment.ZOrder == actualComment.ZOrder*/
                    && expectedComment.Author == actualComment.Author
-                   && expectedComment.ShapeId == actualComment.ShapeId
+                   /*&& expectedComment.ShapeId == actualComment.ShapeId
                    && expectedComment.Visible == actualComment.Visible*/;
         }
 
