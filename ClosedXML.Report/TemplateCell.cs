@@ -5,10 +5,9 @@ namespace ClosedXML.Report
     public class TemplateCell
     {
         public TemplateCellType CellType { get; internal set; }
-        public bool IsCalculated { get; private set; }
+        public bool IsCalculated { get; }
         public int Row { get; internal set; }
         public int Column { get; internal set; }
-        public IXLStyle Style { get; private set; }
         public string Formula { get; set; }
         public object Value { get; set; }
         public IXLCell XLCell { get; internal set; }
@@ -26,7 +25,6 @@ namespace ClosedXML.Report
             if (xlCell != null)
             {
                 Value = xlCell.Value;
-                Style = xlCell.Style;
                 if (xlCell.HasFormula)
                 {
                     Formula = xlCell.FormulaA1;

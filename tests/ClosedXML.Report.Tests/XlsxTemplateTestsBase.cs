@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using FluentAssertions;
@@ -18,19 +20,7 @@ namespace ClosedXML.Report.Tests
         {
             Output = output;
             LinqToDB.Common.Configuration.Linq.AllowMultipleQuery = true;
-        }
-
-        // Because different fonts are installed on Unix,
-        // the columns widths after AdjustToContents() will
-        // cause the tests to fail.
-        // Therefore we ignore the width attribute when running on Unix
-        public static bool IsRunningOnUnix
-        {
-            get
-            {
-                int p = (int)Environment.OSVersion.Platform;
-                return ((p == 4) || (p == 6) || (p == 128));
-            }
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         }
 
         protected void XlTemplateTest(string tmplFileName, Action<XLTemplate> arrangeCallback, Action<XLWorkbook> assertCallback)
@@ -153,6 +143,34 @@ namespace ClosedXML.Report.Tests
                     cellsAreEqual = false;
                 }
 
+                if (expectedCell.HasComment != actualCell.HasComment
+                    || (expectedCell.HasComment && !Equals(expectedCell.Comment, actualCell.Comment)))
+                {
+                    messages.Add($"Cell comments are not equal starting from {address}");
+                    cellsAreEqual = false;
+                }
+
+                if (expectedCell.HasHyperlink != actualCell.HasHyperlink
+                    || (expectedCell.HasHyperlink && !Equals(expectedCell.Hyperlink, actualCell.Hyperlink)))
+                {
+                    messages.Add($"Cell Hyperlink are not equal starting from {address}");
+                    cellsAreEqual = false;
+                }
+
+                if (expectedCell.HasRichText != actualCell.HasRichText
+                    || (expectedCell.HasRichText && !expectedCell.RichText.Equals(actualCell.RichText)))
+                {
+                    messages.Add($"Cell RichText are not equal starting from {address}");
+                    cellsAreEqual = false;
+                }
+
+                if (expectedCell.HasDataValidation != actualCell.HasDataValidation
+                    || (expectedCell.HasDataValidation && !Equals(expectedCell.DataValidation, actualCell.DataValidation)))
+                {
+                    messages.Add($"Cell DataValidation are not equal starting from {address}");
+                    cellsAreEqual = false;
+                }
+
                 if (expectedCell.Style.ToString() != actualCell.Style.ToString())
                 {
                     messages.Add($"Cell style are not equal starting from {address}");
@@ -162,6 +180,8 @@ namespace ClosedXML.Report.Tests
                 if (!cellsAreEqual)
                     break; // we don't need thousands of messages
             }
+
+
 
             if (expected.MergedRanges.Count() != actual.MergedRanges.Count())
                 messages.Add("Merged ranges counts differ");
@@ -175,7 +195,7 @@ namespace ClosedXML.Report.Tests
                     .OrderBy(r => r.RangeAddress.FirstAddress.ColumnNumber)
                     .ThenBy(r => r.RangeAddress.FirstAddress.RowNumber)
                     .ToList();
-                for (int i = 0; i < expectedRanges.Count(); i++)
+                for (int i = 0; i < expectedRanges.Count; i++)
                 {
                     var expectedMr = expectedRanges.ElementAt(i);
                     var actualMr = actualRanges.ElementAt(i);
@@ -200,7 +220,7 @@ namespace ClosedXML.Report.Tests
                     .ThenBy(r => r.Range.RangeAddress.FirstAddress.RowNumber)
                     .ToList();
 
-                for (int i = 0; i < expectedFormats.Count(); i++)
+                for (int i = 0; i < expectedFormats.Count; i++)
                 {
                     var expectedCf = expectedFormats.ElementAt(i);
                     var actualCf = actualFormats.ElementAt(i);
@@ -226,6 +246,51 @@ namespace ClosedXML.Report.Tests
             }
 
             return !messages.Any();
+        }
+
+        private bool Equals(XLHyperlink expectedHyperlink, XLHyperlink actualHyperlink)
+        {
+            if (expectedHyperlink == actualHyperlink) return true;
+
+            return expectedHyperlink.IsExternal == actualHyperlink.IsExternal
+                   && expectedHyperlink.ExternalAddress == actualHyperlink.ExternalAddress
+                   && expectedHyperlink.InternalAddress == actualHyperlink.InternalAddress;
+        }
+
+        private bool Equals(IXLComment expectedComment, IXLComment actualComment)
+        {
+            if (expectedComment == actualComment) return true;
+
+            return // TODO expectedComment.Equals(actualComment) // ClosedXML issue #1450
+                    expectedComment.Text == actualComment.Text
+                   /*&& expectedComment.Style!!! == actualComment.Style!!!
+                   && expectedComment.Position.Column == actualComment.Position.Column
+                   && expectedComment.Position.ColumnOffset == actualComment.Position.ColumnOffset
+                   && expectedComment.Position.Row == actualComment.Position.Row
+                   && expectedComment.Position.RowOffset == actualComment.Position.RowOffset
+                   && expectedComment.ZOrder == actualComment.ZOrder*/
+                   && expectedComment.ShapeId == actualComment.ShapeId
+                   /*&& expectedComment.Visible == actualComment.Visible*/;
+        }
+
+        private bool Equals(IXLDataValidation expectedValidation, IXLDataValidation actualValidation)
+        {
+            if (expectedValidation == actualValidation) return true;
+
+            return expectedValidation.IgnoreBlanks == actualValidation.IgnoreBlanks
+                   && expectedValidation.Ranges.ToString() == actualValidation.Ranges.ToString()
+                   && expectedValidation.InCellDropdown == actualValidation.InCellDropdown
+                   && expectedValidation.ShowErrorMessage == actualValidation.ShowErrorMessage
+                   && expectedValidation.ShowInputMessage == actualValidation.ShowInputMessage
+                   && expectedValidation.InputTitle == actualValidation.InputTitle
+                   && expectedValidation.InputMessage == actualValidation.InputMessage
+                   && expectedValidation.ErrorTitle == actualValidation.ErrorTitle
+                   && expectedValidation.ErrorMessage == actualValidation.ErrorMessage
+                   && expectedValidation.ErrorStyle == actualValidation.ErrorStyle
+                   && expectedValidation.AllowedValues == actualValidation.AllowedValues
+                   && expectedValidation.Operator == actualValidation.Operator
+                   && expectedValidation.MinValue == actualValidation.MinValue
+                   && expectedValidation.MaxValue == actualValidation.MaxValue;
         }
     }
 }
