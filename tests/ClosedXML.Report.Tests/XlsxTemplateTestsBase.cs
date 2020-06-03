@@ -147,6 +147,15 @@ namespace ClosedXML.Report.Tests
                     || (expectedCell.HasComment && !Equals(expectedCell.Comment, actualCell.Comment)))
                 {
                     messages.Add($"Cell comments are not equal starting from {address}");
+                    messages.Add(expectedCell.HasComment
+                        ? $"Expected comment: '{expectedCell.Comment.Text}'"
+                        : "Expected comment is empty");
+                    messages.Add(expectedCell.HasComment
+                        ? $"Actual comment: '{actualCell.Comment.Text}'"
+                        : "Actual comment is empty");
+                    messages.Add(expectedCell.Comment.Text == actualCell.Comment.Text
+                        ? "Comments are equals"
+                        : "Comments are different");
                     cellsAreEqual = false;
                 }
 
@@ -270,8 +279,8 @@ namespace ClosedXML.Report.Tests
                    && expectedComment.Position.RowOffset == actualComment.Position.RowOffset
                    && expectedComment.ZOrder == actualComment.ZOrder*/
                    && expectedComment.Author == actualComment.Author
-                   && expectedComment.ShapeId == actualComment.ShapeId
-                    /*&& expectedComment.Visible == actualComment.Visible*/;
+                   /*&& expectedComment.ShapeId == actualComment.ShapeId
+                    && expectedComment.Visible == actualComment.Visible*/;
         }
 
         private bool Equals(IXLDataValidation expectedValidation, IXLDataValidation actualValidation)
