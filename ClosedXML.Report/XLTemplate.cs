@@ -50,14 +50,14 @@ namespace ClosedXML.Report
             TagsRegister.Add<SummaryFuncTag>("VAR", 50);
             TagsRegister.Add<SummaryFuncTag>("VARP", 50);
             TagsRegister.Add<OnlyValuesTag>("OnlyValues", 40);
-            TagsRegister.Add<AutoFilterTag>("AutoFilter", 10);
+            TagsRegister.Add<DeleteTag>("Delete", 5);
+            TagsRegister.Add<AutoFilterTag>("AutoFilter", 0);
             TagsRegister.Add<ColsFitTag>("ColsFit", 0);
             TagsRegister.Add<RowsFitTag>("RowsFit", 0);
             TagsRegister.Add<HiddenTag>("Hidden", 0);
             TagsRegister.Add<HiddenTag>("Hide", 0);
             TagsRegister.Add<PageOptionsTag>("PageOptions", 0);
             TagsRegister.Add<ProtectedTag>("Protected", 0);
-            TagsRegister.Add<DeleteTag>("Delete", 0);
         }
 
         public XLTemplate(string fileName) : this(new XLWorkbook(fileName))
