@@ -14,7 +14,7 @@ namespace ClosedXML.Report.Tests.TestModels
 {
     /// <summary>
     /// Database       : dbdemos
-    /// Data Source    : D:\Sources\SSIV\ClosedXML.Report\tests\ClosedXML.Report.Tests\TestModels\..\..\DB\dbdemos.mdb
+    /// Data Source    : ..\..\DB\dbdemos.mdb
     /// Server Version : 04.00.0000
     /// </summary>
     public partial class DbDemos : LinqToDB.Data.DataConnection

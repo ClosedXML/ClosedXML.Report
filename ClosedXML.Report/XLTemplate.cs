@@ -127,10 +127,34 @@ namespace ClosedXML.Report
             Workbook.SaveAs(file);
         }
 
+        public void SaveAs(string file, SaveOptions options)
+        {
+            CheckIsDisposed();
+            Workbook.SaveAs(file, options);
+        }
+
+        public void SaveAs(string file, bool validate, bool evaluateFormulae = false)
+        {
+            CheckIsDisposed();
+            Workbook.SaveAs(file, validate, evaluateFormulae);
+        }
+
         public void SaveAs(Stream stream)
         {
             CheckIsDisposed();
             Workbook.SaveAs(stream);
+        }
+
+        public void SaveAs(Stream stream, SaveOptions options)
+        {
+            CheckIsDisposed();
+            Workbook.SaveAs(stream, options);
+        }
+
+        public void SaveAs(Stream stream, bool validate, bool evaluateFormulae = false)
+        {
+            CheckIsDisposed();
+            Workbook.SaveAs(stream, validate, evaluateFormulae);
         }
 
         public void Dispose()
