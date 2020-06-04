@@ -106,7 +106,7 @@ namespace ClosedXML.Report.Excel
         public IXLRange CopyTo(IXLRange range)
         {
             var firstCell = _sheet.Cell(1, 1);
-            var lastCell = _sheet.LastCellUsed(XLCellsUsedOptions.All) ?? firstCell;
+            var lastCell = _sheet.Cell(_prevrow, _prevclmn);
             var tempRng = _sheet.Range(firstCell, lastCell);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
