@@ -23,6 +23,7 @@ namespace ClosedXML.Report.Tests
          InlineData("issue#111_autofilter_with_delete.xlsx"),
          InlineData("tLists4_complexRange.xlsx"),
          InlineData("tLists5_GlobalVars.xlsx"),
+         InlineData("tLists6_count.xlsx"),
          InlineData("tPage1_options.xlsx"),
         ]
         public void Simple(string templateFile)
