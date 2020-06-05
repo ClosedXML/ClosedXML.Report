@@ -40,12 +40,13 @@ namespace ClosedXML.Report
         public void ParseTags(IXLRange range, string rangeName)
         {
             var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
-            var cells = from c in range.CellsUsed(c => !c.HasFormula
-                                                    && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange()))
-                                                 )
-                        let value = c.GetString()
-                        where (value.StartsWith("<<") || value.EndsWith(">>"))
-                        select c;
+            var cellsUsed = range.CellsUsed()
+                .Where(c => !c.HasFormula && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())))
+                .ToArray();
+            var cells = from c in cellsUsed
+                let value = c.GetString()
+                where (value.StartsWith("<<") || value.EndsWith(">>"))
+                select c;
 
             if (!_tags.ContainsKey(rangeName))
                 _tags.Add(rangeName, new TagsList(_errors));
