@@ -34,9 +34,9 @@ namespace ClosedXML.Report
         public string Source { get; private set; }
         public string Name { get; }
 
-        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors, IDictionary<string, object> globalVariables)
+        internal RangeTemplate(string name, IXLRange range, TempSheetBuffer buff, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
-            _rowRange = range.Ranges.First();
+            _rowRange = range;
             _cells = new TemplateCells(this);
             _tagsEvaluator = new TagsEvaluator();
             var wb = _rowRange.Worksheet.Workbook;
@@ -45,40 +45,48 @@ namespace ClosedXML.Report
             _globalVariables = globalVariables;
             _tags = new TagsList(_errors);
             _rangeTags = new TagsList(_errors);
-            Name = range.Name;
-            Source = range.Name;
-            wb.NamedRanges.Add(range.Name + "_tpl", range.Ranges);
+            Name = name;
+            Source = name;
+            var rangeName = name + "_tpl";
+            if (wb.NamedRanges.TryGetValue(rangeName, out var namedRange))
+            {
+                namedRange.Add(range);
+            }
+            else
+            {
+                wb.NamedRanges.Add(rangeName, range);
+            }
+
             _evaluator = new FormulaEvaluator();
         }
 
-        internal RangeTemplate(IXLNamedRange range, TempSheetBuffer buff, int rowCnt, int colCnt, TemplateErrors errors, IDictionary<string, object> globalVariables) : this(range, buff, errors, globalVariables)
+        internal RangeTemplate(string name, IXLRange range, TempSheetBuffer buff, int rowCnt, int colCnt, TemplateErrors errors, IDictionary<string, object> globalVariables) : this(name, range, buff, errors, globalVariables)
         {
             _rowCnt = rowCnt;
             _colCnt = colCnt;
         }
 
 
-        public static RangeTemplate Parse(IXLNamedRange range, TemplateErrors errors, IDictionary<string, object> globalVariables)
+        public static RangeTemplate Parse(string name, IXLRange range, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
-            var wb = range.Ranges.First().Worksheet.Workbook;
-            return Parse(range, new TempSheetBuffer(wb), errors, globalVariables);
+            var wb = range.Worksheet.Workbook;
+            return Parse(name, range, new TempSheetBuffer(wb), errors, globalVariables);
         }
 
-        private static RangeTemplate Parse(IXLNamedRange range, TempSheetBuffer buff, TemplateErrors errors, IDictionary<string, object> globalVariables)
+        private static RangeTemplate Parse(string name, IXLRange range, TempSheetBuffer buff, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
-            var prng = range.Ranges.First();
-            var result = new RangeTemplate(range, buff,
-                prng.RowCount(), prng.ColumnCount(), errors, globalVariables);
+            var result = new RangeTemplate(name, range, buff,
+                range.RowCount(), range.ColumnCount(), errors, globalVariables);
 
-            var innerRanges = GetInnerRanges(prng).ToArray();
+            var innerRanges = GetInnerRanges(range).ToArray();
 
-            var sheet = prng.Worksheet;
+            var sheet = range.Worksheet;
 
             for (int iRow = 1; iRow <= result._rowCnt; iRow++)
             {
                 for (int iColumn = 1; iColumn <= result._colCnt; iColumn++)
                 {
-                    var xlCell = prng.Cell(iRow, iColumn);
+                    var xlCell = range.Cell(iRow, iColumn);
                     if (innerRanges.Any(x => x.Ranges.Cells().Contains(xlCell)))
                         xlCell = null;
                     result._cells.Add(iRow, iColumn, xlCell);
@@ -87,29 +95,30 @@ namespace ClosedXML.Report
                     result._cells.AddNewRow();
             }
 
-            result._mergedRanges = sheet.MergedRanges.Where(x => prng.Contains(x) && !innerRanges.Any(nr=>nr.Ranges.Any(r=>r.Contains(x)))).ToArray();
+            result._mergedRanges = sheet.MergedRanges.Where(x => range.Contains(x) && !innerRanges.Any(nr=>nr.Ranges.Any(r=>r.Contains(x)))).ToArray();
             sheet.MergedRanges.RemoveAll(result._mergedRanges.Contains);
 
-            result.ParseTags(prng);
+            result.ParseTags(range);
 
             if (result._rowCnt > 1 && !result.IsHorizontal)
             {
                 // Exclude special row
                 result._rowCnt--;
 
-                result._rowRange = prng.Offset(0, 0, result._rowCnt, result._colCnt);
-                result._optionsRow = prng.LastRow();
+                result._rowRange = range.Offset(0, 0, result._rowCnt, result._colCnt);
+                result._optionsRow = range.LastRow();
                 result._optionsRowIsEmpty = !result._optionsRow.CellsUsed(XLCellsUsedOptions.AllContents | XLCellsUsedOptions.MergedRanges).Any();
             }
 
-            result._subranges = innerRanges.Select(rng =>
-            {
-                var tpl = Parse(rng, buff, errors, globalVariables);
-                tpl._buff = result._buff;
-                tpl._isSubrange = true;
-                tpl._globalVariables = globalVariables;
-                return tpl;
-            }).ToArray();
+            result._subranges = innerRanges.SelectMany(nrng => nrng.Ranges,
+                (nr, rng) =>
+                {
+                    var tpl = Parse(nr.Name, rng, buff, errors, globalVariables);
+                    tpl._buff = result._buff;
+                    tpl._isSubrange = true;
+                    tpl._globalVariables = globalVariables;
+                    return tpl;
+                }).ToArray();
 
             if (result._rangeOption != null)
             {
