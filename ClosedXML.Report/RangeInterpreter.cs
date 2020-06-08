@@ -165,27 +165,32 @@ namespace ClosedXML.Report
             }
 
             foreach (var nr in innerRanges)
+            foreach (var rng in nr.Ranges)
             {
-                if (!(_variables[nr.Name] is IEnumerable datas))
-                    continue;
-
-                var items = datas as object[] ?? datas.Cast<object>().ToArray();
-                var tplt = RangeTemplate.Parse(nr, _errors, _variables);
-                var nrng = nr.Ranges.First();
-                using (var buff = tplt.Generate(items))
                 {
-                    var trgtRng = buff.CopyTo(nrng);
-                    nr.SetRefersTo(trgtRng);
+                    if (!(_variables[nr.Name] is IEnumerable datas))
+                        continue;
 
-                    tplt.RangeTagsApply(trgtRng, items);
-                }
-
-                // refresh ranges for pivot tables
-                foreach (var pt in range.Worksheet.Workbook.Worksheets.SelectMany(sh => sh.PivotTables))
-                {
-                    if (pt.SourceRange.Intersects(nrng))
+                    var items = datas as object[] ?? datas.Cast<object>().ToArray();
+                    var tplt = RangeTemplate.Parse(nr.Name, rng, _errors, _variables);
+                    using (var buff = tplt.Generate(items))
                     {
-                        pt.SourceRange = nrng.Offset(-1, 1, nrng.RowCount() + 1, nrng.ColumnCount() - 1);
+                        var ranges = nr.Ranges;
+                        var trgtRng = buff.CopyTo(rng);
+                        ranges.Remove(rng);
+                        ranges.Add(trgtRng);
+                        nr.SetRefersTo(ranges);
+
+                        tplt.RangeTagsApply(trgtRng, items);
+                    }
+
+                    // refresh ranges for pivot tables
+                    foreach (var pt in range.Worksheet.Workbook.Worksheets.SelectMany(sh => sh.PivotTables))
+                    {
+                        if (pt.SourceRange.Intersects(rng))
+                        {
+                            pt.SourceRange = rng.Offset(-1, 1, rng.RowCount() + 1, rng.ColumnCount() - 1);
+                        }
                     }
                 }
             }
