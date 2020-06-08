@@ -68,6 +68,7 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_NestedGroups.xlsx"),
          InlineData("GroupTagTests_DisableOutline.xlsx"),
          InlineData("GroupTagTests_FormulasInGroupRow.xlsx"),
+         InlineData("GroupTagTests_MultiRanges.xlsx"),
         ]
         public void Customers(string templateFile)
         {
