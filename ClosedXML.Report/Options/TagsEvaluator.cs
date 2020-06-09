@@ -39,13 +39,17 @@ namespace ClosedXML.Report.Options
 
         private OptionTag ParseTag(string str)
         {
-            var reader = new VernoStringReader(str);
-            var name = reader.ReadWord();
-            
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
-            foreach (var pair in reader.ReadNamedValues(" ", "="))
+            string name;
+            Dictionary<string, string> dictionary;
+            using (var reader = new VernoStringReader(str))
             {
-                dictionary.Add(pair.Key.ToLower(), pair.Value);
+                name = reader.ReadWord();
+            
+                dictionary = new Dictionary<string, string>();
+                foreach (var pair in reader.ReadNamedValues(" ", "="))
+                {
+                    dictionary.Add(pair.Key.ToLower(), pair.Value);
+                }
             }
 
             return TagsRegister.CreateOption(name, dictionary);
