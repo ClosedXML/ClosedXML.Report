@@ -55,8 +55,6 @@ before_build:
   - nuget restore
 
 build:
-  parallel: true
-  project: NoBox.sln
   verbosity: minimal
 
 test_script:
