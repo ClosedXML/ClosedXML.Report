@@ -5,7 +5,9 @@ version: 0.2.0.{build}
 pull_requests:
   do_not_increment_build_number: true
 
-image: Visual Studio 2017
+os: Visual Studio 2019
+image: Visual Studio 2019
+skip_branch_with_pr: true
 
 environment:
   AppVeyor: APPVEYOR
@@ -42,19 +44,48 @@ dotnet_csproj:
   file_version: '$(fileVersion)'
   informational_version: '$(productVersion)'
 
-before_build:
-  - nuget restore
 
-build:
-  verbosity: minimal
-
-test_script:
-  - dotnet test tests/ClosedXML.Report.Tests
-
+# platform: Any CPU
 configuration:
 - Release
 - Release.Signed
 
+before_build:
+  - cmd: nuget update -self
+  - nuget restore
+
+build:
+  parallel: true
+  project: NoBox.sln
+  verbosity: minimal
+
+test_script:
+  - dotnet test tests/ClosedXML.Report.Tests
+after_build:
+  - cd ClosedXML.Report/bin/%CONFIGURATION%/
+  - 7z a ClosedXML.Report_%productVersion%.zip */ClosedXML.Report.dll
+  - cd ../../../
+
 artifacts:
-- path: ClosedXML.Report/bin/%CONFIGURATION%/*.nupkg
+- path: ClosedXML.Report/bin/%CONFIGURATION%/*.zip
 - path: ClosedXML.Report/bin/%CONFIGURATION%/*/ClosedXML.Report.dll
+- path: ClosedXML.Report/bin/%CONFIGURATION%/*.nupkg
+
+nuget:
+  project_feed: true
+  disable_publish_on_pr: true
+
+deploy:
+- provider: GitHub
+  artifact: /.*\.(zip|nupkg)/
+  auth_token:
+    secure: pDyyONympYgPQfMzsAlP01i2i17xji0oFlz5sKVmM6n34/TieVjBjvUjSUFxNQEA
+  draft: true
+  on:
+    APPVEYOR_REPO_TAG: true
+- provider: NuGet
+  artifact: /.*\.nupkg/
+  api_key:
+    secure: GZMuY+C0BuVSLsTJ0b2oLNVNXdd8ffaFJapOaUDKlrfOLmrHc0S44AqSE6pjK1yC
+  on:
+    APPVEYOR_REPO_TAG: true

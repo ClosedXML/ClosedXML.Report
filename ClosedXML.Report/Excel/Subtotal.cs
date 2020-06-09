@@ -8,7 +8,7 @@ namespace ClosedXML.Report.Excel
 {
     public class Subtotal : IDisposable
     {
-        private IXLRange _range;
+        private readonly IXLRange _range;
         private readonly bool _summaryAbove;
         private bool _pageBreaks;
         private Func<string, string> _getGroupLabel;
@@ -37,10 +37,7 @@ namespace ClosedXML.Report.Excel
             }
         }
 
-        public SubtotalGroup[] Groups
-        {
-            get { return _groups.ToArray(); }
-        }
+        public SubtotalGroup[] Groups => _groups.ToArray();
 
         public SubtotalGroup AddGrandTotal(SubtotalSummaryFunc[] summaries)
         {
