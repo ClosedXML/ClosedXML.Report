@@ -108,3 +108,12 @@ Now consider the following template.
 The cell in the service row in the `Amount paid` column contains the tag `<<sum>>`. The cell next to it contains a static text "Total". After the report is built the tag `<<sum>>` will be replaced with a formula calculating the sum of the amounts of the entire column. Tag `<<sum>>` belongs to the "column" tags. Such tags are applied to the column they are put in. Other examples of the "column" tags are `<<sort>>` that defines the ordering of the data set by the specified column, or `<<group>>` configuring grouping by the specified field.
 
 Actions that must be performed on the whole range are defined with "range" tags. They are defined in the first (leftmost) cell of the service row. You may experiment a little with the described template. Try to open it and write tags `<<Autofilter>> <<OnlyValues>>` into the first cell of the service row. After you saved the template and rebuilt the report you may see that now it has the auto-filter turned on, and the formula `=SUBTOTAL(9, ...` in the `Amount paid` column has been replaced with the static value.
+
+<a name="Multiple-ranges"></a>
+## Multiple ranges support for Named Ranges
+
+If we need to use one data source for several tables, then we can create a composite named range. In the example below, the Orders range includes two ranges `$A$5:$I$6` и `$A$10:$I$11`.
+
+![image](https://user-images.githubusercontent.com/1150085/84245559-e6017080-ab0d-11ea-9643-b6fc5f3fd3e9.png)
+
+When building a report, ClosedXML.Report will fill both of these ranges with data from the Orders variable.
