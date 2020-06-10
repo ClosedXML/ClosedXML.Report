@@ -27,6 +27,7 @@ init:
       $env:fileVersion = $env:APPVEYOR_BUILD_VERSION -replace '(\d+)\.(\d+)\.([^.]+)\.(\d+)', '$1.$2.999.$4'
       $env:productVersion = $env:fileVersion
     }
+    $env:signed = $env:CONFIGURATION.Substring(7)
     
     Update-AppveyorBuild -Version $env:fileVersion
     
@@ -61,7 +62,7 @@ test_script:
   - dotnet test tests/ClosedXML.Report.Tests
 after_build:
   - cd ClosedXML.Report/bin/%CONFIGURATION%/
-  - 7z a ClosedXML.Report_%productVersion%.zip */ClosedXML.Report.dll
+  - 7z a ClosedXML.Report%signed%_%productVersion%.zip */ClosedXML.Report.dll
   - cd ../../../
 
 artifacts:
@@ -83,6 +84,7 @@ deploy:
     APPVEYOR_REPO_TAG: true
 - provider: NuGet
   artifact: /.*\.nupkg/
+  skip_symbols: false
   api_key:
     secure: GZMuY+C0BuVSLsTJ0b2oLNVNXdd8ffaFJapOaUDKlrfOLmrHc0S44AqSE6pjK1yC
   on:
