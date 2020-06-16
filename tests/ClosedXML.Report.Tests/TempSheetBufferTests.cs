@@ -45,5 +45,35 @@ namespace ClosedXML.Report.Tests
                 ws.Cell("B4").Value.Should().Be("");
             }
         }
+
+        [Fact]
+        public void InnerRange()
+        {
+            using (var wb = new XLWorkbook())
+            {
+                // Arrange.
+                const string rangeName = "List";
+                const string innerRangeName = "CustomTotals";
+                const string totalsName = "Totals";
+                var list = new List<string> { "Value1", "Value2" };
+                var ws = wb.AddWorksheet("Sheet1");
+                ws.Cell("B1").Value = "Header";
+                ws.Range("A2:C3").AddToNamed(rangeName);
+                ws.Cell("B2").Value = "{{index+1}}";
+                ws.Cell("C2").Value = "{{item}}";
+                ws.Cell("B3").Value = totalsName;
+                ws.Range("C3:C3").AddToNamed(innerRangeName);
+
+                // Act.
+                var template = new XLTemplate(wb);
+                template.AddVariable(rangeName, list);
+                template.AddVariable(innerRangeName, list.Count);
+                template.Generate();
+
+                // Assert.
+                ws.Cell("B4").Value.Should().Be(totalsName);
+                ws.Cell("C4").Value.Should().Be(list.Count);
+            }
+        }
     }
 }
