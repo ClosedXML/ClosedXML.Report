@@ -72,7 +72,8 @@ namespace ClosedXML.Report.Tests
 
                 // Assert.
                 ws.Cell("B4").Value.Should().Be(totalsName);
-                ws.Cell("C4").Value.Should().Be(list.Count);
+                ws.Range(rangeName).RowCount().Should().Be(3);
+                ws.Range(rangeName).ColumnCount().Should().Be(3);
             }
         }
     }

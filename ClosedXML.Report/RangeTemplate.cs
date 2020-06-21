@@ -239,6 +239,12 @@ namespace ClosedXML.Report
 
         private void RenderCell(FormulaEvaluator evaluator, TemplateCell cell, params Parameter[] pars)
         {
+            if (cell.CellType != TemplateCellType.Formula && cell.CellType != TemplateCellType.Value)
+            {
+                _buff.WriteValue(null, null);
+                return;
+            }
+
             object value;
             try
             {
@@ -363,7 +369,9 @@ namespace ClosedXML.Report
                 var clmnStart = _buff.NextAddress;
                 foreach (var cell in _cells)
                 {
-                    if (cell.CellType != TemplateCellType.NewRow)
+                    if (cell.CellType == TemplateCellType.None)
+                        throw new NotSupportedException("Horizontal range does not support subranges.");
+                    else if (cell.CellType != TemplateCellType.NewRow)
                         RenderCell(items, i, evaluator, cell);
                     else
                         _buff.NewRow();

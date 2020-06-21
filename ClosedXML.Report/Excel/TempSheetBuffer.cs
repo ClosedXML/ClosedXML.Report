@@ -46,7 +46,11 @@ namespace ClosedXML.Report.Excel
         public IXLCell WriteValue(object value, IXLCell settingCell)
         {
             var xlCell = _sheet.Cell(_row, _clmn);
-            xlCell.CopyFrom(settingCell);
+            if (settingCell != null)
+            {
+                xlCell.CopyFrom(settingCell);
+            }
+
             try
             {
                 xlCell.SetValue(value);
