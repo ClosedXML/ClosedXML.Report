@@ -36,7 +36,7 @@
                     .AdjustToContents(xlRange.FirstRowUsed().RowNumber()-1, xlRange.LastRowUsed().RowNumber());
             }
             // range column
-            if (IsSpecialRangeRow(xlCell))
+            else if (IsSpecialRangeRow(xlCell))
             {
                 ws.Column(cellClmn).AdjustToContents(xlRange.FirstRowUsed().RowNumber(), xlRange.LastRowUsed().RowNumber());
             }
