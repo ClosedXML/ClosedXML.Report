@@ -43,6 +43,20 @@ namespace ClosedXML.Report.Tests
         }
 
         [Fact]
+        public void ColsFit_option_should_FitWidth()
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
+            XlTemplateTest("5_options.xlsx",
+                tpl => { },
+                wb =>
+                {
+                    var worksheet = wb.Worksheet(1);
+                    worksheet.Column(4).Width.Should().BeInRange(4.969999, 497009);
+                    worksheet.Column(5).Width.Should().BeInRange(13.57999, 13.58001);
+                });
+        }
+
+        [Fact]
         public void Sort_option_should_sort_range()
         {
             XlTemplateTest("8_sort.xlsx",
