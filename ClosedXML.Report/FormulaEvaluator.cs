@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Report.Utils;
+using DocumentFormat.OpenXml.Bibliography;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,6 +28,20 @@ namespace ClosedXML.Report
                 formula = formula.Replace(expr, ObjToString(val));
             }
             return formula;
+        }
+
+        public bool TryEvaluate(string formula, out object result, params Parameter[] pars)
+        {
+            try
+            {
+                result = Evaluate(formula, pars);
+                return true;
+            }
+            catch
+            {
+                result = null;
+                return false;
+            }
         }
 
         public void AddVariable(string name, object value)
