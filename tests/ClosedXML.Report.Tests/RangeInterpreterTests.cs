@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,6 +55,91 @@ namespace ClosedXML.Report.Tests
                     new { Name = "Carl", Count = 3 },
                 };
             }
+        }
+
+        [Fact]
+        public void CanBindRangesToRootVariableFields()
+        {
+            var entity = new Parent();
+            var template = CreateBaseTemplate();
+            var ws = template.Workbook.Worksheets.First();
+            ws.Range("A3:B4").AddToNamed("Children");
+            ws.Range("E2:E2").AddToNamed("Container_ItemsInContainer");
+
+            template.AddVariable(entity);
+            template.Generate();
+
+            AssertResultIsCorrect(ws);
+        }
+
+        [Fact]
+        public void CanBindRangesToAliasedVariableFields()
+        {
+            var entity = new Parent();
+            var template = CreateBaseTemplate();
+            var ws = template.Workbook.Worksheets.First();
+            ws.Range("A3:B4").AddToNamed("Model_Children");
+            ws.Range("E2:E2").AddToNamed("Model_Container_ItemsInContainer");
+
+            template.AddVariable("Model", entity);
+            template.Generate();
+
+            AssertResultIsCorrect(ws);
+        }
+
+        private XLTemplate CreateBaseTemplate()
+        {
+            var wbTemplate = new XLWorkbook();
+            var ws = wbTemplate.AddWorksheet();
+
+            ws.Cell("B1").Value = "{{Model.Name}}";
+            ws.Cell("B2").Value = "Children:";
+            ws.Cell("B3").Value = "{{item.ChildName}}";
+            
+            ws.Cell("D2").Value = "Items in container:";
+            ws.Cell("E2").Value = "{{item.ChildName}}";
+
+            return new XLTemplate(wbTemplate);
+        }
+
+        private void AssertResultIsCorrect(IXLWorksheet ws)
+        {
+            ws.Cell("B3").Value.Should().Be("Child 1");
+            ws.Cell("B5").Value.Should().Be("Child 3");
+            ws.Cell("E2").Value.Should().Be("Item in container 1");
+            ws.Cell("G2").Value.Should().Be("Item in container 3");
+        }
+
+
+        private class Parent
+        {
+            public string Name => "Parent Name";
+            public Container Container = new Container();
+            public List<Child> Children { get; } = new List<Child>
+            {
+                new Child("Child 1"),
+                new Child("Child 2"),
+                new Child("Child 3"),
+            };
+        }
+
+        public class Child
+        {
+            public string ChildName { get; }
+            public Child(string childName)
+            {
+                ChildName = childName;
+            }
+        }
+
+        public class Container
+        {
+            public List<Child> ItemsInContainer { get; } = new List<Child>
+            {
+                new Child("Item in container 1"),
+                new Child("Item in container 2"),
+                new Child("Item in container 3"),
+            };
         }
     }
 }

@@ -94,11 +94,15 @@ namespace ClosedXML.Report
             {
                 AddParameter(parameter.Value);
             }
-            var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
+            var innerRanges = range.GetContainingNames()
+                .Select(BindToVariable)
+                .Where(nr => nr != null)
+                .ToArray();
+
             var cells = range.CellsUsed()
                 .Where(c => !c.HasFormula
                             && c.GetString().Contains("{{")
-                            && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())))
+                            && !innerRanges.Any(nr => nr.NamedRange.Ranges.Contains(c.AsRange())))
                 .ToArray();
 
             foreach (var cell in cells)
@@ -165,21 +169,18 @@ namespace ClosedXML.Report
             }
 
             foreach (var nr in innerRanges)
-            foreach (var rng in nr.Ranges)
             {
+                foreach (var rng in nr.NamedRange.Ranges)
                 {
-                    if (!(_variables[nr.Name] is IEnumerable datas))
-                        continue;
-
-                    var items = datas as object[] ?? datas.Cast<object>().ToArray();
-                    var tplt = RangeTemplate.Parse(nr.Name, rng, _errors, _variables);
+                    var items = nr.RangeData as object[] ?? nr.RangeData.Cast<object>().ToArray();
+                    var tplt = RangeTemplate.Parse(nr.NamedRange.Name, rng, _errors, _variables);
                     using (var buff = tplt.Generate(items))
                     {
-                        var ranges = nr.Ranges;
+                        var ranges = nr.NamedRange.Ranges;
                         var trgtRng = buff.CopyTo(rng);
                         ranges.Remove(rng);
                         ranges.Add(trgtRng);
-                        nr.SetRefersTo(ranges);
+                        nr.NamedRange.SetRefersTo(ranges);
 
                         tplt.RangeTagsApply(trgtRng, items);
                     }
@@ -221,6 +222,34 @@ namespace ClosedXML.Report
         {
             _variables.Add(alias, value);
             _evaluator.AddVariable(alias, value);
+        }
+
+        private BoundRange BindToVariable(IXLNamedRange namedRange)
+        {
+            if (_variables.TryGetValue(namedRange.Name, out var variableValue) &&
+                variableValue is IEnumerable data1)
+                return new BoundRange(namedRange, data1);
+
+            var expression = "{{" + namedRange.Name.Replace("_", ".") +"}}";
+
+            if (_evaluator.TryEvaluate(expression, out var res) &&
+                res is IEnumerable data2)
+                return new BoundRange(namedRange, data2);
+
+            return null;
+        }
+
+        private class BoundRange
+        {
+            public IXLNamedRange NamedRange { get; }
+
+            public IEnumerable RangeData { get; }
+
+            public BoundRange(IXLNamedRange namedRange, IEnumerable rangeData)
+            {
+                NamedRange = namedRange;
+                RangeData = rangeData;
+            }
         }
     }
 }
