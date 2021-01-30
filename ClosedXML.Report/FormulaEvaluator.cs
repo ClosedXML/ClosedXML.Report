@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Report.Utils;
 using DocumentFormat.OpenXml.Bibliography;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,7 +24,13 @@ namespace ClosedXML.Report
             {
                 var val = Eval(expr.Substring(2, expr.Length - 4), pars);
                 if (expr == formula)
+                {
+                    if (val is JValue token)
+                    {
+                        return token.GetJTokenVal();
+                    }
                     return val;
+                }
 
                 formula = formula.Replace(expr, ObjToString(val));
             }

@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -98,13 +99,17 @@ namespace ClosedXML.Report
                     AddVariable(entry.Key.ToString(), entry.Value);
                 }
             }
+            else if (value is JToken token)
+            {
+                AddVariable(token);
+            }
             else
             {
                 var type = value.GetType();
                 var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
-                    .Select(f => new {f.Name, val = f.GetValue(value), type = f.FieldType})
+                    .Select(f => new { f.Name, val = f.GetValue(value), type = f.FieldType })
                     .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
-                        .Select(f => new {f.Name, val = f.GetValue(value, new object[] { }), type = f.PropertyType}));
+                        .Select(f => new { f.Name, val = f.GetValue(value, new object[] { }), type = f.PropertyType }));
 
                 foreach (var field in fields)
                 {
@@ -120,6 +125,70 @@ namespace ClosedXML.Report
                 value = ((DataTable) value).Rows.Cast<DataRow>();
             _interpreter.AddVariable(alias, value);
         }
+
+        public void AddVariable(JToken token)
+        {
+            if (token is JObject ob)
+            {
+                foreach (var p in ob.Properties())
+                {
+                    switch (p.Value.Type)
+                    {
+                        case JTokenType.Object:
+                            //((IDictionary<string, object>)obj).Add(p.Name, JTokenToObject(p.Value));
+                            AddVariable(p.Name, p.Value);
+                            break;
+                        case JTokenType.Array:
+                            //var result = new DataTable();
+                            //JArray arr = p.Value as JArray;
+                            //if (arr == null) continue;
+                            //foreach (var row in arr)
+                            //{
+                            //    foreach (var jToken in row)
+                            //    {
+                            //        var jproperty = jToken as JProperty;
+                            //        if (jproperty == null) continue;
+                            //        if (result.Columns[jproperty.Name] == null)
+                            //            result.Columns.Add(jproperty.Name, typeof(string));
+                            //    }
+                            //}
+                            //foreach (var row in arr)
+                            //{
+                            //    var datarow = result.NewRow();
+                            //    foreach (var jToken in row)
+                            //    {
+                            //        var jProperty = jToken as JProperty;
+                            //        if (jProperty == null) continue;
+                            //        datarow[jProperty.Name] = jProperty.Value.ToString();
+                            //    }
+                            //    result.Rows.Add(datarow);
+                            //}
+                            AddVariable(p.Name, p.Value);
+                            break;
+                        case JTokenType.Integer:
+                            AddVariable(p.Name, (int)p.Value);
+                            break;
+                        case JTokenType.Float:
+                            AddVariable(p.Name, (float)p.Value);
+                            break;
+                        case JTokenType.String:
+                            AddVariable(p.Name, p.Value.ToString());
+                            break;
+                        case JTokenType.Boolean:
+                            AddVariable(p.Name, (bool)p.Value);
+                            break;
+                        case JTokenType.Date:
+                            AddVariable(p.Name, (DateTime)p.Value);
+                            break;
+                        case JTokenType.Guid:
+                            AddVariable(p.Name, p.Value.ToString());
+                            break;
+                    }
+
+                }
+            }
+        }
+
 
         public void SaveAs(string file)
         {

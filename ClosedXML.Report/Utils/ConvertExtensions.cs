@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Globalization;
 using System.Linq;
 
@@ -6,6 +7,25 @@ namespace ClosedXML.Report.Utils
 {
     public static class ConvertExtensions
     {
+        public static object GetJTokenVal(this JValue token)
+        {
+            switch (token.Type)
+            {
+                case JTokenType.Integer:
+                    return (Int64)token.Value;
+                case JTokenType.Float:
+                    return (float)token.Value;
+                case JTokenType.String:
+                    return token.ToString();
+                case JTokenType.Boolean:
+                    return (bool)token.Value;
+                case JTokenType.Date:
+                    return (DateTime)token.Value;
+                case JTokenType.Guid:
+                    return token.Value.ToString();
+            }
+            return null;
+        }
         public static T As<T>(this object obj)
         {
             return (T)obj;
