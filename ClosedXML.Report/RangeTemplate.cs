@@ -343,6 +343,7 @@ namespace ClosedXML.Report
                     row += ownRng._rowCnt - 1;
                     while (_cells[iCell].Row <= row+1)
                         iCell++;
+                    row = _cells[iCell].Row;
 
                     int shiftLen = ownRng._rowCnt * (valArr.Length - 1);
                     tags.Where(tag => tag.Cell.Row > cell.Row)

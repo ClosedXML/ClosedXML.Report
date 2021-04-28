@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
@@ -22,23 +23,40 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var items = db.items.ToList().GroupBy(i=>i.OrderNo).ToDictionary(x=>x.Key);
-                        var parts = db.parts.ToList().ToDictionary(x=>x.PartNo);
-                        customer[] custs = db.customers.LoadWith(x => x.Orders).OrderBy(x=>x.CustNo).ToArray();
-                        foreach (var customer in custs)
-                        {
-                            customer.Orders.Sort((x, y) => x.OrderNo.CompareTo(y.OrderNo));
-                            foreach (var o in customer.Orders)
-                            {
-                                var order = o;
-                                o.Items = items[order.OrderNo].ToList();
-                                o.Items.Sort((x,y)=>x.ItemNo.Value.CompareTo(y.ItemNo));
-                                foreach (var item in o.Items)
-                                    item.Part = parts[item.PartNo.Value];
-                            }
-                        }
-                        //var cust = db.Customers.Include(x => x.Orders.Select(o=>o.Items.Select(i=>i.Part)));
+                        var custs = GetCustomers(db);
                         tpl.AddVariable("Customers", custs);
+                    }
+                },
+                wb =>
+                {
+                    CompareWithGauge(wb, templateFile);
+                });
+        }
+
+        [Fact]
+        public void MultipleSubRanges()
+        {
+            var random = new Random(1234);
+            var templateFile = "Subranges_Multiple.xlsx";
+            XlTemplateTest(templateFile,
+                tpl =>
+                {
+                    using (var db = new DbDemos())
+                    {
+                        var custs = GetCustomers(db).Select(cust =>
+                        new {
+                            CustNo = cust.CustNo,
+                            Company = cust.Company,
+                            Orders = cust.Orders,
+                            Visitors = new List<dynamic>
+                            {
+                                new { Name = "Alice", Age = random.Next(0, 100), Gender = "F" },
+                                new { Name = "Bob", Age = random.Next(0, 100), Gender = "M" },
+                                new { Name = "John", Age = random.Next(0, 100), Gender = "M" },
+                            }
+                        });
+                        tpl.AddVariable("Customers", custs);
+                        tpl.AddVariable("user", "John Doe");
                     }
                 },
                 wb =>
@@ -88,6 +106,27 @@ namespace ClosedXML.Report.Tests
                 {
                     CompareWithGauge(wb, "SingleEmptySubset.xlsx");
                 });
+        }
+
+        private static customer[] GetCustomers(DbDemos db)
+        {
+            var items = db.items.ToList().GroupBy(i => i.OrderNo).ToDictionary(x => x.Key);
+            var parts = db.parts.ToList().ToDictionary(x => x.PartNo);
+            customer[] custs = db.customers.LoadWith(x => x.Orders).OrderBy(x => x.CustNo).ToArray();
+            foreach (var customer in custs)
+            {
+                customer.Orders.Sort((x, y) => x.OrderNo.CompareTo(y.OrderNo));
+                foreach (var o in customer.Orders)
+                {
+                    var order = o;
+                    o.Items = items[order.OrderNo].ToList();
+                    o.Items.Sort((x, y) => x.ItemNo.Value.CompareTo(y.ItemNo));
+                    foreach (var item in o.Items)
+                        item.Part = parts[item.PartNo.Value];
+                }
+            }
+            //var cust = db.Customers.Include(x => x.Orders.Select(o=>o.Items.Select(i=>i.Part)));
+            return custs;
         }
 
         private IEnumerable<dynamic> GenerateVisitors()
