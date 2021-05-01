@@ -1,7 +1,9 @@
 ﻿using ClosedXML.Report.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Dynamic.Core.Exceptions;
+using System.Linq.Dynamic.Core.CustomTypeProviders;
 using System.Linq.Expressions;
 using FluentAssertions;
 using Xunit;
@@ -97,11 +99,38 @@ namespace ClosedXML.Report.Tests
             eval.Evaluate(@"{{np(b.Manager.Name, null)}}").Should().BeNull();
         }
 
+        [Fact]
+        public void UsingDynamicLinqTypeTest()
+        {
+            var eval = new FormulaEvaluator();
+            eval.AddVariable("a", "1");
+            eval.Evaluate("{{a.ParseAsInt().IncrementMe()}}").Should().Be(2);
+        }
+
         class Customer
         {
             public int Id { get; set; }
             public string Name { get; set; }
             public Customer Manager { get; set; }
+        }
+    }
+
+    [DynamicLinqType]
+    public static class EvaluateUtils
+    {
+        public static int ParseAsInt(this string value)
+        {
+            if (value == null)
+            {
+                return 0;
+            }
+
+            return int.Parse(value);
+        }
+
+        public static int IncrementMe(this int values)
+        {
+            return values + 1;
         }
     }
 }

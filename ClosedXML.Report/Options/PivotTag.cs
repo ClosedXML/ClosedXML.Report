@@ -191,7 +191,7 @@ namespace ClosedXML.Report.Options
         {
             var rowOffset = context.Range.RangeAddress.FirstAddress.RowNumber > 1 ? -1 : 0;
             IXLRange srcRange = context.Range.Offset(rowOffset, 1, context.Range.RowCount(), context.Range.ColumnCount() - 1);
-            var pt = destination.TargetWorksheet.PivotTables.AddNew(destination.TableName, destination.TargetCell, srcRange);
+            var pt = destination.TargetWorksheet.PivotTables.Add(destination.TableName, destination.TargetCell, srcRange);
             pt.MergeAndCenterWithLabels = pivot.HasParameter("MergeLabels");
             pt.ShowExpandCollapseButtons = pivot.HasParameter("ShowButtons");
             pt.ClassicPivotTableLayout = !pivot.HasParameter("TreeLayout");
