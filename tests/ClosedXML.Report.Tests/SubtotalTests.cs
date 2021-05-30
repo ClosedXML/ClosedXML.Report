@@ -2,6 +2,7 @@
 using System.IO;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
+using ClosedXML.Report.Options;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -89,7 +90,7 @@ namespace ClosedXML.Report.Tests
             LoadTemplate("91_plaindata.xlsx");
             using (var subtotal = new Subtotal(_rng))
             {
-                var summaries = new [] {new SubtotalSummaryFunc("sum", 7), };
+                var summaries = new[] { new SummaryFuncTag { Name = "sum", Cell=new TemplateCell { Column = 7 } } };//{new SubtotalSummaryFunc("sum", 7), };
                 subtotal.AddGrandTotal(summaries);
                 subtotal.GroupBy(2, summaries, true);
                 subtotal.GroupBy(3, summaries, true);

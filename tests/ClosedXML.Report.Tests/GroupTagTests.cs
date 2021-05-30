@@ -51,7 +51,7 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_PlaceToColumn.xlsx"),
          InlineData("GroupTagTests_NestedGroups.xlsx"),
          InlineData("GroupTagTests_DisableOutline.xlsx"),
-         InlineData("GroupTagTests_FormulasInGroupRow.xlsx"),
+         InlineData("GroupTagTests_FormulasWithTagsInGroupRow.xlsx"),
         ]
         public void EmptyDataSource(string templateFile)
         {
@@ -69,7 +69,8 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_DisableOutline.xlsx"),
          InlineData("GroupTagTests_FormulasInGroupRow.xlsx"),
          InlineData("GroupTagTests_MultiRanges.xlsx"),
-        ]
+         InlineData("GroupTagTests_FormulasWithTagsInGroupRow.xlsx"),
+       ]
         public void Customers(string templateFile)
         {
             XlTemplateTest(templateFile,
@@ -77,7 +78,7 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var orders = db.orders.LoadWith(x => x.Customer);
+                        var orders = db.orders.LoadWith(x => x.Customer).Where(x => x.Customer.Company == "Action Club" || x.Customer.Company == "Action Diver Supply ");
                         tpl.AddVariable("Orders", orders);
                     }
                 },

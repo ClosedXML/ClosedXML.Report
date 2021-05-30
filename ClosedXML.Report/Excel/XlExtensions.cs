@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
+using ClosedXML.Report.Options;
 using ClosedXML.Report.Utils;
 
 namespace ClosedXML.Report.Excel
@@ -157,7 +158,7 @@ namespace ClosedXML.Report.Excel
             {
                 if (replace)
                     subtotal.Unsubtotal();
-                var summaries = totalList.Select(x => new SubtotalSummaryFunc(function, x)).ToArray();
+                var summaries = totalList.Select(x => new SummaryFuncTag { Cell=new TemplateCell {Formula=function.ToLower() } }).ToArray();
                 subtotal.AddGrandTotal(summaries);
                 subtotal.GroupBy(groupBy, summaries, pageBreaks);
             }
@@ -165,7 +166,7 @@ namespace ClosedXML.Report.Excel
 
         public static bool IsSummary(this IXLRangeRow row)
         {
-            return row.Cells(x => x.HasFormula && x.FormulaA1.ToLower().StartsWith("subtotal(")).Any();
+            return row.Cells(x => x.HasFormula && x.FormulaA1.ToLower().Contains("subtotal(")).Any();
         }
 
         public static void CopyStylesFrom(this IXLRangeBase trgtRow, IXLRangeBase srcRow)
