@@ -154,6 +154,20 @@ namespace ClosedXML.Report.Excel
             return range;
         }
 
+        public void SetPrevCellToLastUsed()
+        {
+            var lastUsed = _sheet.LastCellUsed();
+            //if (_prevclmn == lastUsed.Address.ColumnNumber && _prevrow == lastUsed.Address.RowNumber)
+            //    return;
+
+            var clmn = _clmn < lastUsed.Address.ColumnNumber
+                ? lastUsed.Address.ColumnNumber + 1
+                : _clmn;
+
+            ChangeAddress(lastUsed.Address.RowNumber, clmn);
+            NewRow();
+        }
+
         public void Clear()
         {
             var srcRows = _sheet.RowsUsed(XLCellsUsedOptions.All);

@@ -234,7 +234,10 @@ namespace ClosedXML.Report
             }
 
             if (_isSubrange)
+            {
                 _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
+                _buff.SetPrevCellToLastUsed();
+            }
         }
 
         private void RenderCell(FormulaEvaluator evaluator, TemplateCell cell, params Parameter[] pars)
