@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ClosedXML.Excel;
+using ClosedXML.Report.Options;
 using MoreLinq;
 
 namespace ClosedXML.Report.Excel
@@ -39,7 +40,7 @@ namespace ClosedXML.Report.Excel
 
         public SubtotalGroup[] Groups => _groups.ToArray();
 
-        public SubtotalGroup AddGrandTotal(SubtotalSummaryFunc[] summaries)
+        public SubtotalGroup AddGrandTotal(SummaryFuncTag[] summaries)
         {
             if (Sheet.Row(_range.Row(2).RowNumber()).OutlineLevel == 0)
             {
@@ -63,7 +64,7 @@ namespace ClosedXML.Report.Excel
             else return null;
         }
 
-        public void GroupBy(int groupBy, SubtotalSummaryFunc[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
+        public void GroupBy(int groupBy, SummaryFuncTag[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
         {
             _pageBreaks = pageBreaks;
             _getGroupLabel = getGroupLabel;
@@ -251,7 +252,7 @@ namespace ClosedXML.Report.Excel
             Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
         }
 
-        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SubtotalSummaryFunc[] summaries, bool pageBreaks)
+        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SummaryFuncTag[] summaries, bool pageBreaks)
         {
             var firstRow = groupRng.RangeAddress.FirstAddress.RowNumber;
             var lastRow = groupRng.RangeAddress.LastAddress.RowNumber;
@@ -273,9 +274,9 @@ namespace ClosedXML.Report.Excel
             summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); //TODO Check if the issue persists (ClosedXML issue 844)
             summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " "+ TotalLabel;
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
-
-            foreach (var summ in summaries)
+            foreach (var item in summaries)
             {
+                var summ = item.GetFunc();
                 /*if (summ.FuncNum == 0)
                 {
                     summRow.Cell(summ.Column).Value = summ.Calculate(groupRng);
@@ -283,7 +284,7 @@ namespace ClosedXML.Report.Excel
                 else */if (summ.FuncNum > 0)
                 {
                     var funcRngAddr = groupRng.Column(summ.Column).RangeAddress;
-                    summRow.Cell(summ.Column).FormulaA1 = $"Subtotal({summ.FuncNum},{funcRngAddr.ToStringRelative()})";
+                    summRow.Cell(summ.Column).FormulaA1 =(string.IsNullOrWhiteSpace(item.Cell.Formula) ?string.Empty: $"{item.Cell.Formula} & ")+$"Subtotal({summ.FuncNum},{funcRngAddr.ToStringRelative()})";
                 }
                 else
                 {
