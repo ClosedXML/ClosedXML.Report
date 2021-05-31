@@ -343,9 +343,12 @@ namespace ClosedXML.Report
                 }
                 else
                 {
-                    row += ownRng._rowCnt - 1;
-                    while (_cells[iCell].Row <= row+1)
+                    row += ownRng._rowCnt+1;
+                    while (_cells[iCell].Row <= row-1)
                         iCell++;
+
+                    iCell--; // roll back. After it became clear that it was too much, we must go back.
+                    //row += _cells.Count(x => x.CellType == TemplateCellType.NewRow);
 
                     int shiftLen = ownRng._rowCnt * (valArr.Length - 1);
                     tags.Where(tag => tag.Cell.Row > cell.Row)
