@@ -234,7 +234,11 @@ namespace ClosedXML.Report
             }
 
             if (_isSubrange)
+            {
                 _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
+                // if the range was increased by processing tags (for example, Group), move the buffer to the last cell
+                _buff.SetPrevCellToLastUsed(); 
+            }
         }
 
         private void RenderCell(FormulaEvaluator evaluator, TemplateCell cell, params Parameter[] pars)
@@ -340,9 +344,12 @@ namespace ClosedXML.Report
                 }
                 else
                 {
-                    row += ownRng._rowCnt - 1;
-                    while (_cells[iCell].Row <= row+1)
+                    // move current template cell to next (skip subrange)
+                    row += ownRng._rowCnt+1;
+                    while (_cells[iCell].Row <= row-1)
                         iCell++;
+
+                    iCell--; // roll back. After it became clear that it was too much, we must go back.
 
                     int shiftLen = ownRng._rowCnt * (valArr.Length - 1);
                     tags.Where(tag => tag.Cell.Row > cell.Row)
