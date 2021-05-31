@@ -45,7 +45,6 @@ namespace ClosedXML.Report.Tests
                     template.Generate();
                     Output.WriteLine(DateTime.Now.Subtract(start).ToString());
                     //MemoryProfiler.Dump();
-                    template.SaveAs($@".\output\{tmplFileName}");
                     template.SaveAs(file);
                     //MemoryProfiler.Dump();
                     file.Position = 0;

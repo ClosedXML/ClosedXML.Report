@@ -78,7 +78,7 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var orders = db.orders.LoadWith(x => x.Customer).Where(x => x.Customer.Company == "Action Club" || x.Customer.Company == "Action Diver Supply ");
+                        var orders = db.orders.LoadWith(x => x.Customer);
                         tpl.AddVariable("Orders", orders);
                     }
                 },

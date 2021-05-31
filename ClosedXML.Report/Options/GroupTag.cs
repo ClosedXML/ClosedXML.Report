@@ -180,10 +180,10 @@ namespace ClosedXML.Report.Options
 
             if (subGroup.SummaryRow != null)
             {
-                //foreach (var cell in groupRow.Cells(c => c.HasFormula))
-                //{
-                //    subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell;
-                //}
+                foreach (var cell in groupRow.Cells(c => c.HasFormula && !(c.GetCellText()?.Contains("<<sum>>")??false)))
+                {
+                    subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell;
+                }
 
                 subGroup.SummaryRow.Clear(XLClearOptions.AllFormats);
                 subGroup.SummaryRow.CopyStylesFrom(groupRow);

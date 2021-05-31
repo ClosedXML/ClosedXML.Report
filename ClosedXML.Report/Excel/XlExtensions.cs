@@ -158,7 +158,7 @@ namespace ClosedXML.Report.Excel
             {
                 if (replace)
                     subtotal.Unsubtotal();
-                var summaries = totalList.Select(x => new SummaryFuncTag { Cell=new TemplateCell {Formula=function.ToLower() } }).ToArray();
+                var summaries = totalList.Select(x => new SummaryFuncTag {Name=function.ToLower(), Cell = new TemplateCell { Column = x } }).ToArray();
                 subtotal.AddGrandTotal(summaries);
                 subtotal.GroupBy(groupBy, summaries, pageBreaks);
             }
@@ -217,7 +217,13 @@ namespace ClosedXML.Report.Excel
                                    .GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
             return (string)_xlCellInnerText.GetValue(cell, null);
         }
-
+        internal static string GetCellText(this IXLCell cell)
+        {
+            var field = cell.GetType().GetField("_cellValue",
+                         BindingFlags.NonPublic |
+                         BindingFlags.Instance);
+            return (string)field.GetValue(cell);
+        }
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
             foreach (var sourceFmtRange in format.Ranges)

@@ -274,9 +274,9 @@ namespace ClosedXML.Report.Excel
             summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); //TODO Check if the issue persists (ClosedXML issue 844)
             summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " "+ TotalLabel;
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
-            var funcs= summaries.Select(x => x.GetFunc()).ToArray();
-            foreach (var summ in funcs)
+            foreach (var item in summaries)
             {
+                var summ = item.GetFunc();
                 /*if (summ.FuncNum == 0)
                 {
                     summRow.Cell(summ.Column).Value = summ.Calculate(groupRng);
@@ -284,7 +284,7 @@ namespace ClosedXML.Report.Excel
                 else */if (summ.FuncNum > 0)
                 {
                     var funcRngAddr = groupRng.Column(summ.Column).RangeAddress;
-                    summRow.Cell(summ.Column).FormulaA1 = $"\"Total2: \" & "+$"Subtotal({summ.FuncNum},{funcRngAddr.ToStringRelative()})";
+                    summRow.Cell(summ.Column).FormulaA1 =(string.IsNullOrWhiteSpace(item.Cell.Formula) ?string.Empty: $"{item.Cell.Formula} & ")+$"Subtotal({summ.FuncNum},{funcRngAddr.ToStringRelative()})";
                 }
                 else
                 {
