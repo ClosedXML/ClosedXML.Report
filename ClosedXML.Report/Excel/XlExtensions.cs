@@ -159,8 +159,8 @@ namespace ClosedXML.Report.Excel
                 if (replace)
                     subtotal.Unsubtotal();
                 var summaries = totalList.Select(x => new SummaryFuncTag {Name=function.ToLower(), Cell = new TemplateCell { Column = x } }).ToArray();
-                subtotal.AddGrandTotal(summaries);
-                subtotal.GroupBy(groupBy, summaries, pageBreaks);
+                subtotal.AddGrandTotal(null,summaries);
+                subtotal.GroupBy(groupBy, null,summaries, pageBreaks);
             }
         }
 

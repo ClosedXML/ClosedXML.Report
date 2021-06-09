@@ -17,7 +17,7 @@ namespace ClosedXML.Report.Excel
         private IXLWorksheet _tempSheet;
         private readonly List<SubtotalGroup> _groups = new List<SubtotalGroup>();
         public string TotalLabel { get; set; } = "Total";
-        public string GrandLabel { get; set; } = "Grand";
+        public string GrandLabel { get; set; } = "Grand Total";
 
         public Subtotal(IXLRange range) : this(range, false)
         {
@@ -40,7 +40,7 @@ namespace ClosedXML.Report.Excel
 
         public SubtotalGroup[] Groups => _groups.ToArray();
 
-        public SubtotalGroup AddGrandTotal(SummaryFuncTag[] summaries)
+        public SubtotalGroup AddGrandTotal(GroupTag[] groups,SummaryFuncTag[] summaries)
         {
             if (Sheet.Row(_range.Row(2).RowNumber()).OutlineLevel == 0)
             {
@@ -49,13 +49,13 @@ namespace ClosedXML.Report.Excel
                 {
                     var rangeAddress = _range.ShiftRows(1).RangeAddress;
                     _range.InsertRowsAbove(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups,summaries, false,true);
                 }
                 else
                 {
                     var rangeAddress = _range.RangeAddress;
                     _range.InsertRowsBelow(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups,summaries, false,true);
                 }
                 gr.Column = 0;
                 _groups.Add(gr);
@@ -64,7 +64,7 @@ namespace ClosedXML.Report.Excel
             else return null;
         }
 
-        public void GroupBy(int groupBy, SummaryFuncTag[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
+        public void GroupBy(int groupBy, GroupTag[] groups,SummaryFuncTag[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
         {
             _pageBreaks = pageBreaks;
             _getGroupLabel = getGroupLabel;
@@ -87,7 +87,7 @@ namespace ClosedXML.Report.Excel
             foreach (var moveData in grRanges)
             {
                 if (moveData.Type == RangeType.DataRange)
-                    _groups.Add(CreateGroup(Sheet.Range(moveData.TargetAddress), groupBy, level, moveData.GroupTitle, summaries, _pageBreaks));
+                    _groups.Add(CreateGroup(Sheet.Range(moveData.TargetAddress), groupBy, level, moveData.GroupTitle, groups,summaries, _pageBreaks));
             }
             ArrangePageBreaks(Groups, grRanges);
         }
@@ -252,7 +252,7 @@ namespace ClosedXML.Report.Excel
             Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
         }
 
-        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SummaryFuncTag[] summaries, bool pageBreaks)
+        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, GroupTag[] groups,SummaryFuncTag[] summaries, bool pageBreaks,bool isGrandTotal=false)
         {
             var firstRow = groupRng.RangeAddress.FirstAddress.RowNumber;
             var lastRow = groupRng.RangeAddress.LastAddress.RowNumber;
@@ -272,7 +272,9 @@ namespace ClosedXML.Report.Excel
             }
 
             summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); //TODO Check if the issue persists (ClosedXML issue 844)
-            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + " "+ TotalLabel;
+            //TODO: Remove the extra space if we can change the existing gauge files
+            //summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + (isGrandTotal?null: (string.IsNullOrWhiteSpace(groups?.Where(x => x.Column == groupClmn).Select(x => x.TotalLabel).FirstOrDefault())?null:" ") + (groups?.Where(x => x.Column == groupClmn).Select(x=>x.TotalLabel).FirstOrDefault()??TotalLabel));
+            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + (isGrandTotal ? null : " " + (groups?.Where(x => x.Column == groupClmn).Select(x => x.TotalLabel).FirstOrDefault() ?? TotalLabel));
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
             foreach (var item in summaries)
             {
