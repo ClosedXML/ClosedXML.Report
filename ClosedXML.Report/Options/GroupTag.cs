@@ -121,7 +121,7 @@ namespace ClosedXML.Report.Options
                 if (GrandLabel != null) subtotal.GrandLabel = GrandLabel;
                 if (!disableGrandTotal)
                 {
-                    var total = subtotal.AddGrandTotal(groups,summaries);
+                    var total = subtotal.AddGrandTotal(groups, summaries);
                     total.SummaryRow.Cell(2).Value = total.SummaryRow.Cell(1).Value;
                     total.SummaryRow.Cell(1).Value = null;
                     level++;

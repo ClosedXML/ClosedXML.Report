@@ -40,7 +40,7 @@ namespace ClosedXML.Report.Excel
 
         public SubtotalGroup[] Groups => _groups.ToArray();
 
-        public SubtotalGroup AddGrandTotal(GroupTag[] groups,SummaryFuncTag[] summaries)
+        public SubtotalGroup AddGrandTotal(GroupTag[] groups, SummaryFuncTag[] summaries)
         {
             if (Sheet.Row(_range.Row(2).RowNumber()).OutlineLevel == 0)
             {
@@ -49,13 +49,13 @@ namespace ClosedXML.Report.Excel
                 {
                     var rangeAddress = _range.ShiftRows(1).RangeAddress;
                     _range.InsertRowsAbove(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups,summaries, false,true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups, summaries, false,true);
                 }
                 else
                 {
                     var rangeAddress = _range.RangeAddress;
                     _range.InsertRowsBelow(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups,summaries, false,true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups, summaries, false,true);
                 }
                 gr.Column = 0;
                 _groups.Add(gr);
@@ -64,7 +64,7 @@ namespace ClosedXML.Report.Excel
             else return null;
         }
 
-        public void GroupBy(int groupBy, GroupTag[] groups,SummaryFuncTag[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
+        public void GroupBy(int groupBy, GroupTag[] groups, SummaryFuncTag[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
         {
             _pageBreaks = pageBreaks;
             _getGroupLabel = getGroupLabel;
@@ -87,7 +87,7 @@ namespace ClosedXML.Report.Excel
             foreach (var moveData in grRanges)
             {
                 if (moveData.Type == RangeType.DataRange)
-                    _groups.Add(CreateGroup(Sheet.Range(moveData.TargetAddress), groupBy, level, moveData.GroupTitle, groups,summaries, _pageBreaks));
+                    _groups.Add(CreateGroup(Sheet.Range(moveData.TargetAddress), groupBy, level, moveData.GroupTitle, groups, summaries, _pageBreaks));
             }
             ArrangePageBreaks(Groups, grRanges);
         }
@@ -252,7 +252,7 @@ namespace ClosedXML.Report.Excel
             Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
         }
 
-        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, GroupTag[] groups,SummaryFuncTag[] summaries, bool pageBreaks,bool isGrandTotal=false)
+        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, GroupTag[] groups, SummaryFuncTag[] summaries, bool pageBreaks,bool isGrandTotal=false)
         {
             var firstRow = groupRng.RangeAddress.FirstAddress.RowNumber;
             var lastRow = groupRng.RangeAddress.LastAddress.RowNumber;
