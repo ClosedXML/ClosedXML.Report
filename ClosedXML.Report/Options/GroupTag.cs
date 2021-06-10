@@ -121,7 +121,7 @@ namespace ClosedXML.Report.Options
                 if (GrandLabel != null) subtotal.GrandLabel = GrandLabel;
                 if (!disableGrandTotal)
                 {
-                    var total = subtotal.AddGrandTotal(summaries);
+                    var total = subtotal.AddGrandTotal(groups, summaries);
                     total.SummaryRow.Cell(2).Value = total.SummaryRow.Cell(1).Value;
                     total.SummaryRow.Cell(1).Value = null;
                     level++;
@@ -136,7 +136,7 @@ namespace ClosedXML.Report.Options
                     if (g.MergeLabels == MergeMode.Merge2 && funcs.Length == 0)
                         subtotal.ScanForGroups(g.Column);
                     else
-                        subtotal.GroupBy(g.Column, g.DisableSubtotals ? new SummaryFuncTag[0] : summaries, g.PageBreaks, labFormat);
+                        subtotal.GroupBy(g.Column, groups, g.DisableSubtotals ? new SummaryFuncTag[0] : summaries, g.PageBreaks, labFormat);
 
                     g.Level = ++level;
                 }
