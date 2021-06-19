@@ -15,7 +15,7 @@ namespace ClosedXML.Report.Tests
             FillData();
 
             var tag = CreateNotInRangeTag<ColsFitTag>(_ws.Cell("A2"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
 
             _ws.Column(1).Width.Should().BeGreaterThan(3);
             _ws.Column(2).Width.Should().BeGreaterThan(3);
@@ -32,7 +32,7 @@ namespace ClosedXML.Report.Tests
             var rng = FillData();
 
             var tag = CreateInRangeTag<ColsFitTag>(rng, rng.Cell(2, 1));
-            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0]), new FormulaEvaluator()));
 
             _ws.Column(1).Width.Should().Be(3);
             _ws.Column(2).Width.Should().BeGreaterThan(3);
@@ -49,7 +49,7 @@ namespace ClosedXML.Report.Tests
             var rng = FillData();
 
             var tag = CreateInRangeTag<ColsFitTag>(rng, rng.Cell(2, 3));
-            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0]), new FormulaEvaluator()));
 
             _ws.Column(1).Width.Should().Be(3);
             _ws.Column(2).Width.Should().Be(3);

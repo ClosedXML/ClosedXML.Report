@@ -104,13 +104,13 @@ namespace ClosedXML.Report.Utils
 
         public static decimal AsDecimal(this string value)
         {
-            return AsDecimal(value, 0);
+            return AsDecimal(value, 0, CultureInfo.CurrentCulture);
         }
 
-        public static decimal AsDecimal(this string value, decimal def, CultureInfo culture = null)
+        public static decimal AsDecimal(this string value, decimal def, CultureInfo culture)
         {
             culture = culture ?? CultureInfo.CurrentCulture;
-            value = ReplaceNumberFormat(value);
+            value = ReplaceNumberFormat(value, culture);
             try
             {
                 if (!string.IsNullOrEmpty(value))
@@ -124,14 +124,14 @@ namespace ClosedXML.Report.Utils
 
         public static double AsDouble(this string value)
         {
-            return AsDouble(value, 0);
+            return AsDouble(value, 0, CultureInfo.CurrentCulture);
         }
 
-        public static double AsDouble(this string value, double def, CultureInfo culture = null)
+        public static double AsDouble(this string value, double def, CultureInfo culture)
         {
-            value = ReplaceNumberFormat(value);
+            value = ReplaceNumberFormat(value, culture);
             if (!string.IsNullOrEmpty(value) &&
-                double.TryParse(value, NumberStyles.AllowThousands, culture, out var result))
+                double.TryParse(value, NumberStyles.Any, culture, out var result))
             {
                 return result;
             }
@@ -141,12 +141,12 @@ namespace ClosedXML.Report.Utils
 
         public static float AsFloat(this string value)
         {
-            return AsFloat(value, 0);
+            return AsFloat(value, 0, CultureInfo.CurrentCulture);
         }
 
-        public static float AsFloat(this string value, float def, CultureInfo culture = null)
+        public static float AsFloat(this string value, float def, CultureInfo culture)
         {
-            value = ReplaceNumberFormat(value);
+            value = ReplaceNumberFormat(value, culture);
             if (!string.IsNullOrEmpty(value) &&
                 float.TryParse(value, NumberStyles.AllowThousands, culture, out var result))
             {
@@ -156,9 +156,9 @@ namespace ClosedXML.Report.Utils
             return def;
         }
 
-        public static string ReplaceNumberFormat(string value)
+        public static string ReplaceNumberFormat(string value, CultureInfo cultureInfo)
         {
-            var sep = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            var sep = cultureInfo.NumberFormat.NumberDecimalSeparator;
             value = value.Replace(".", sep).Replace(",", sep);
             return value;
         }
