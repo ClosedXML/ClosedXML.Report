@@ -32,7 +32,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("sum", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => e.Compile();
             sum.DataSource = new DataSource(new object[] { new Test(1), new Test(2), new Test(3) });
 
             sum.Calculate(sum.DataSource).Should().Be(6);
@@ -43,7 +43,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("sum", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => e.Compile();
             sum.DataSource = new DataSource(new object[] { new Test(1.5), new Test(2d), new Test(3.5) });
 
             sum.Calculate(sum.DataSource).Should().Be(7d);
@@ -54,7 +54,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("sum", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(TimeSpan.FromHours(1)), new Test(TimeSpan.FromHours(2)), new Test(TimeSpan.FromHours(3)) });
 
             sum.Calculate(sum.DataSource).Should().Be(TimeSpan.FromHours(6));
@@ -65,7 +65,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("average", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(1), new Test(2), new Test(3) });
 
             sum.Calculate(sum.DataSource).Should().Be(2);
@@ -76,7 +76,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("average", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(1.5), new Test(2d), new Test(3.5), new Test(4.5) });
 
             sum.Calculate(sum.DataSource).Should().Be(2.875);
@@ -87,7 +87,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("average", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(TimeSpan.FromHours(1)), new Test(TimeSpan.FromHours(2)), new Test(TimeSpan.FromHours(3)) });
 
             sum.Calculate(sum.DataSource).Should().Be(TimeSpan.FromHours(2));
@@ -98,7 +98,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("min", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(2), new Test(1), new Test(3) });
 
             sum.Calculate(sum.DataSource).Should().Be(1);
@@ -109,7 +109,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("min", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(2d), new Test(0.5), new Test(3.5) });
 
             sum.Calculate(sum.DataSource).Should().Be(0.5);
@@ -120,7 +120,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("min", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(new DateTime(2017, 01, 01)), new Test(new DateTime(2016, 01, 01)), new Test(new DateTime(2018, 01, 01)) });
 
             sum.Calculate(sum.DataSource).Should().Be(new DateTime(2016, 01, 01));
@@ -131,7 +131,7 @@ namespace ClosedXML.Report.Tests
         {
             var sum = new SubtotalSummaryFunc("stdev", 1);
             Expression<Func<Test, object>> e = o => o.val;
-            sum.GetExpression = type => (e);
+            sum.GetCalculateDelegate = type => (e.Compile());
             sum.DataSource = new DataSource(new object[] { new Test(10d), new Test(20d), new Test(30d), new Test(40d), new Test(50d), new Test(60d), new Test(70d) });
 
             ((double)sum.Calculate(sum.DataSource)).Should().BeInRange(21.6, 21.61);

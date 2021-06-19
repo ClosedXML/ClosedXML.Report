@@ -11,6 +11,8 @@ namespace ClosedXML.Report.Excel
     {
         private readonly IXLRange _range;
         private readonly bool _summaryAbove;
+        private readonly GroupTag[] _groupTags;
+        private readonly FormulaEvaluator _evaluator;
         private bool _pageBreaks;
         private Func<string, string> _getGroupLabel;
         private IXLWorksheet Sheet => _range.Worksheet;
@@ -23,10 +25,12 @@ namespace ClosedXML.Report.Excel
         {
         }
 
-        public Subtotal(IXLRange range, bool summaryAbove)
+        public Subtotal(IXLRange range, bool summaryAbove, GroupTag[] groupTags = null, FormulaEvaluator evaluator = null)
         {
             _range = range;
             _summaryAbove = summaryAbove;
+            _groupTags = groupTags;
+            _evaluator = evaluator;
             Sheet.Outline.SummaryVLocation = _summaryAbove ? XLOutlineSummaryVLocation.Top : XLOutlineSummaryVLocation.Bottom;
             var workbook = Sheet.Workbook;
             const string tempsheet = "__tempsheet";
@@ -40,7 +44,7 @@ namespace ClosedXML.Report.Excel
 
         public SubtotalGroup[] Groups => _groups.ToArray();
 
-        public SubtotalGroup AddGrandTotal(GroupTag[] groups, SummaryFuncTag[] summaries)
+        public SubtotalGroup AddGrandTotal(SummaryFuncTag[] summaries)
         {
             if (Sheet.Row(_range.Row(2).RowNumber()).OutlineLevel == 0)
             {
@@ -49,13 +53,13 @@ namespace ClosedXML.Report.Excel
                 {
                     var rangeAddress = _range.ShiftRows(1).RangeAddress;
                     _range.InsertRowsAbove(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups, summaries, false,true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false,true);
                 }
                 else
                 {
                     var rangeAddress = _range.RangeAddress;
                     _range.InsertRowsBelow(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, groups, summaries, false,true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false,true);
                 }
                 gr.Column = 0;
                 _groups.Add(gr);
@@ -64,7 +68,7 @@ namespace ClosedXML.Report.Excel
             else return null;
         }
 
-        public void GroupBy(int groupBy, GroupTag[] groups, SummaryFuncTag[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
+        public void GroupBy(int groupBy, SummaryFuncTag[] summaries, bool pageBreaks = false, Func<string, string> getGroupLabel = null)
         {
             _pageBreaks = pageBreaks;
             _getGroupLabel = getGroupLabel;
@@ -87,7 +91,7 @@ namespace ClosedXML.Report.Excel
             foreach (var moveData in grRanges)
             {
                 if (moveData.Type == RangeType.DataRange)
-                    _groups.Add(CreateGroup(Sheet.Range(moveData.TargetAddress), groupBy, level, moveData.GroupTitle, groups, summaries, _pageBreaks));
+                    _groups.Add(CreateGroup(Sheet.Range(moveData.TargetAddress), groupBy, level, moveData.GroupTitle, summaries, _pageBreaks));
             }
             ArrangePageBreaks(Groups, grRanges);
         }
@@ -252,7 +256,7 @@ namespace ClosedXML.Report.Excel
             Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
         }
 
-        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, GroupTag[] groups, SummaryFuncTag[] summaries, bool pageBreaks,bool isGrandTotal=false)
+        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SummaryFuncTag[] summaries, bool pageBreaks,bool isGrandTotal=false)
         {
             var firstRow = groupRng.RangeAddress.FirstAddress.RowNumber;
             var lastRow = groupRng.RangeAddress.LastAddress.RowNumber;
@@ -274,24 +278,12 @@ namespace ClosedXML.Report.Excel
             summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); //TODO Check if the issue persists (ClosedXML issue 844)
             //TODO: Remove the extra space if we can change the existing gauge files
             //summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + (isGrandTotal?null: (string.IsNullOrWhiteSpace(groups?.Where(x => x.Column == groupClmn).Select(x => x.TotalLabel).FirstOrDefault())?null:" ") + (groups?.Where(x => x.Column == groupClmn).Select(x=>x.TotalLabel).FirstOrDefault()??TotalLabel));
-            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + (isGrandTotal ? null : " " + (groups?.Where(x => x.Column == groupClmn).Select(x => x.TotalLabel).FirstOrDefault() ?? TotalLabel));
+            summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + (isGrandTotal ? null : " " + (_groupTags?.Where(x => x.Column == groupClmn).Select(x => x.TotalLabel).FirstOrDefault() ?? TotalLabel));
             Sheet.Row(summRow.RowNumber()).OutlineLevel = level - 1;
-            foreach (var item in summaries)
+            foreach (var summ in summaries)
             {
-                var summ = item.GetFunc();
-                /*if (summ.FuncNum == 0)
-                {
-                    summRow.Cell(summ.Column).Value = summ.Calculate(groupRng);
-                }
-                else */if (summ.FuncNum > 0)
-                {
-                    var funcRngAddr = groupRng.Column(summ.Column).RangeAddress;
-                    summRow.Cell(summ.Column).FormulaA1 =(string.IsNullOrWhiteSpace(item.Cell.Formula) ?string.Empty: $"{item.Cell.Formula} & ")+$"Subtotal({summ.FuncNum},{funcRngAddr.ToStringRelative()})";
-                }
-                else
-                {
-                    throw new NotSupportedException($"Aggregate function {summ.FuncName} not supported.");
-                }
+                var rngDataSource = summ.DataSource; // TODO Get data source from mapping row-item
+                summ.Execute(new SummaryProcessingContext(groupRng, summRow, rngDataSource, _evaluator));
             }
 
             var rows = Sheet.Rows(firstRow, lastRow);

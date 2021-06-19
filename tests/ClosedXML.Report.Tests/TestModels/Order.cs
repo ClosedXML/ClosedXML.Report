@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using LinqToDB.Mapping;
 
 namespace ClosedXML.Report.Tests.TestModels
@@ -11,5 +12,7 @@ namespace ClosedXML.Report.Tests.TestModels
 
         [Association(ThisKey = "OrderNo", OtherKey = "OrderNo", IsBackReference = true)]
         public List<item> Items { get; set; }
+
+        public Bitmap PaymentImage { get; set; }
     }
 }
