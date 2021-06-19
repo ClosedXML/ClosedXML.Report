@@ -12,7 +12,7 @@ namespace ClosedXML.Report
     public class FormulaEvaluator
     {
         private static readonly Regex ExprMatch = new Regex(@"\{\{.+?\}\}");
-        //  private readonly Interpreter _interpreter; !!! переделать на DynamicLinq
+
         private readonly Dictionary<string, Delegate> _lambdaCache = new Dictionary<string, Delegate>();
         private readonly Dictionary<string, object> _variables = new Dictionary<string, object>();
 
@@ -46,7 +46,7 @@ namespace ClosedXML.Report
 
         public void AddVariable(string name, object value)
         {
-            _variables[name]=value;
+            _variables[name] = value;
         }
 
         private string ObjToString(object val)
@@ -98,8 +98,7 @@ namespace ClosedXML.Report
         {
             var parameters = pars.Select(p => p.ParameterExpression).ToArray();
             var lambda = ParseExpression(expression, parameters);
-
-            return lambda.DynamicInvoke(pars.Select(p => p.Value).ToArray());
+            return lambda?.DynamicInvoke(pars.Select(p => p.Value).ToArray());
         }
     }
 
