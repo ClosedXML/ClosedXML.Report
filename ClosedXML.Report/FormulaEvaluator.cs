@@ -9,10 +9,10 @@ using System.Text.RegularExpressions;
 
 namespace ClosedXML.Report
 {
-    internal class FormulaEvaluator
+    public class FormulaEvaluator
     {
         private static readonly Regex ExprMatch = new Regex(@"\{\{.+?\}\}");
-        //  private readonly Interpreter _interpreter; !!! переделать на DynamicLinq
+
         private readonly Dictionary<string, Delegate> _lambdaCache = new Dictionary<string, Delegate>();
         private readonly Dictionary<string, object> _variables = new Dictionary<string, object>();
 
@@ -21,7 +21,7 @@ namespace ClosedXML.Report
             var expressions = GetExpressions(formula);
             foreach (var expr in expressions)
             {
-                var val = Eval(expr.Substring(2, expr.Length - 4), pars);
+                var val = Eval(Trim(expr), pars);
                 if (expr == formula)
                     return val;
 
@@ -46,7 +46,7 @@ namespace ClosedXML.Report
 
         public void AddVariable(string name, object value)
         {
-            _variables[name]=value;
+            _variables[name] = value;
         }
 
         private string ObjToString(object val)
@@ -63,31 +63,46 @@ namespace ClosedXML.Report
         private IEnumerable<string> GetExpressions(string cellValue)
         {
             var matches = ExprMatch.Matches(cellValue);
+            if (matches.Count == 0)
+                return new[] { cellValue };
             return from Match match in matches select match.Value;
         }
 
-        private object Eval(string expression, Parameter[] pars)
+        private string Trim(string formula)
         {
-            if (!_lambdaCache.TryGetValue(expression, out var lambda))
+            if (formula.StartsWith("{{"))
+                return formula.Substring(2, formula.Length - 4);
+            else
+                return formula;
+        }
+
+        internal Delegate ParseExpression(string formula, ParameterExpression[] parameters)
+        {
+            if (!_lambdaCache.TryGetValue(formula, out var lambda))
             {
-                var parameters = pars.Select(p=>p.ParameterExpression).ToArray();
                 try
                 {
-                    lambda = XLDynamicExpressionParser.ParseLambda(parameters, typeof(object), expression, _variables).Compile();
+                    lambda = XLDynamicExpressionParser.ParseLambda(parameters, typeof(object), formula, _variables).Compile();
                 }
                 catch (ArgumentException)
                 {
                     return null;
                 }
 
-                _lambdaCache.Add(expression, lambda);
+                _lambdaCache.Add(formula, lambda);
             }
+            return lambda;
+        }
 
-            return lambda.DynamicInvoke(pars.Select(p => p.Value).ToArray());
+        private object Eval(string expression, Parameter[] pars)
+        {
+            var parameters = pars.Select(p => p.ParameterExpression).ToArray();
+            var lambda = ParseExpression(expression, parameters);
+            return lambda?.DynamicInvoke(pars.Select(p => p.Value).ToArray());
         }
     }
 
-    internal class Parameter
+    public class Parameter
     {
         public Parameter(string name, object value)
         {

@@ -13,7 +13,7 @@ namespace ClosedXML.Report.Tests
         public void TagInA2CellShouldDeleteWorksheet()
         {
             var tag = CreateNotInRangeTag<DeleteTag>(_ws.Cell("A2"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
 
             _wb.Worksheets.Count.Should().Be(0);
         }
@@ -25,7 +25,7 @@ namespace ClosedXML.Report.Tests
             _ws.Cell("C5").Value = 3.0;
             _ws.Cell("D5").Value = 4.0;
             var tag = CreateNotInRangeTag<DeleteTag>(_ws.Cell("C1"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
 
             _ws.Cell("B5").Value.Should().Be(2.0);
             _ws.Cell("C5").Value.Should().Be(4.0);
@@ -38,7 +38,7 @@ namespace ClosedXML.Report.Tests
             _ws.Cell("D4").Value = 4.0;
             _ws.Cell("D5").Value = 5.0;
             var tag = CreateNotInRangeTag<DeleteTag>(_ws.Cell("A4"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
 
             _ws.Cell("D3").Value.Should().Be(3.0);
             _ws.Cell("D4").Value.Should().Be(5.0);
@@ -50,7 +50,7 @@ namespace ClosedXML.Report.Tests
             var rng = FillData();
 
             var tag = CreateInRangeTag<DeleteTag>(rng, rng.Cell("B2"));
-            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0]), new FormulaEvaluator()));
 
             rng.Cell("A1").Value.Should().Be("Alice");
             rng.Cell("B1").Value.Should().Be("Wonderland");

@@ -52,11 +52,11 @@ namespace ClosedXML.Report.Excel
             {
                 if (_func == null)
                     _func = GetFunc(FuncName);
-                return GetExpression != null ? 0 : _func.FuncNum;
+                return GetCalculateDelegate != null ? 0 : _func.FuncNum;
             }
         }
 
-        public Func<Type, LambdaExpression> GetExpression;
+        public Func<Type, Delegate> GetCalculateDelegate;
 
         internal object Calculate(IDataSource dataSource)
         {
@@ -69,8 +69,8 @@ namespace ClosedXML.Report.Excel
 
             var agg = _func.CreateAggregator();
 
-            var lambda = GetExpression(items[0].GetType());
-            var dlg = lambda.Compile();
+            var dlg = GetCalculateDelegate(items[0].GetType());
+            //var dlg = lambda.Compile();
             foreach (var item in items)
             {
                 try

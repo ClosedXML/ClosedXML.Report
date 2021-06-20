@@ -91,9 +91,9 @@ namespace ClosedXML.Report.Tests
             using (var subtotal = new Subtotal(_rng))
             {
                 var summaries = new[] { new SummaryFuncTag { Name = "sum", Cell=new TemplateCell { Column = 7 } } };//{new SubtotalSummaryFunc("sum", 7), };
-                subtotal.AddGrandTotal(null, summaries);
-                subtotal.GroupBy(2, null, summaries, true);
-                subtotal.GroupBy(3, null, summaries, true);
+                subtotal.AddGrandTotal(summaries);
+                subtotal.GroupBy(2, summaries, true);
+                subtotal.GroupBy(3, summaries, true);
                 subtotal.AddHeaders(2);
                 subtotal.AddHeaders(3);
             }

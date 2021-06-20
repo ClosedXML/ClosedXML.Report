@@ -141,6 +141,15 @@ namespace ClosedXML.Report.Excel
 
             var tgtSheet = range.Worksheet;
             var tgtStartRow = range.RangeAddress.FirstAddress.RowNumber;
+
+            foreach (var picture in _sheet.Pictures)
+            {
+                var tgtPic = picture.CopyTo(tgtSheet);
+                //var relAddress = picture.TopLeftCell.Relative(range.RangeAddress.FirstAddress);
+                var tgtCell = range.RangeAddress.FirstAddress.Offset(picture.TopLeftCell.Address);
+                tgtPic.MoveTo(tgtCell);
+            }
+
             var srcRows = _sheet.Rows(tempRng.RangeAddress.FirstAddress.RowNumber, tempRng.RangeAddress.LastAddress.RowNumber);
             foreach (var row in srcRows)
             {

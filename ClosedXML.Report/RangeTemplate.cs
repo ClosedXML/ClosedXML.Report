@@ -208,7 +208,7 @@ namespace ClosedXML.Report
                     newMrg.Merge(false);
                 }
 
-                tags.Execute(new ProcessingContext(newRowRng, items[i]));
+                tags.Execute(new ProcessingContext(newRowRng, items[i], evaluator));
             }
 
             // Render options row
@@ -235,7 +235,7 @@ namespace ClosedXML.Report
 
             if (_isSubrange)
             {
-                _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));
+                _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items), evaluator));
                 // if the range was increased by processing tags (for example, Group), move the buffer to the last cell
                 _buff.SetPrevCellToLastUsed(); 
             }
@@ -324,7 +324,7 @@ namespace ClosedXML.Report
             // the child template to which the cell belongs
             var xlCell = _rowRange.Cell(cell.Row, cell.Column);
             var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
-            var formula = "{{" + ownRng.Source.ReplaceLast("_", ".") + "}}";
+            var formula = ownRng.Source.ReplaceLast("_", ".");
 
             if (evaluator.Evaluate(formula, new Parameter(Name, item)) is IEnumerable value)
             {
@@ -391,7 +391,7 @@ namespace ClosedXML.Report
                     newMrg.Merge(false);
                 }
 
-                tags.Execute(new ProcessingContext(newClmnRng, items[i]));
+                tags.Execute(new ProcessingContext(newClmnRng, items[i], evaluator));
 
                 if (_rowCnt > 1)
                     _buff.NewColumn();
@@ -449,7 +449,7 @@ namespace ClosedXML.Report
 
         public void RangeTagsApply(IXLRange range, object[] items)
         {
-            _rangeTags.Execute(new ProcessingContext(range, new DataSource(items)));
+            _rangeTags.Execute(new ProcessingContext(range, new DataSource(items), _evaluator));
         }
     }
 }

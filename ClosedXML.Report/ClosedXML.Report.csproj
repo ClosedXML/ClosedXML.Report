@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net40;net46</TargetFrameworks>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>Latest</LangVersion>
     <AssemblyName>ClosedXML.Report</AssemblyName>
     <PackageId>ClosedXML.Report</PackageId>
     <Configurations>Debug;Release;Release.Signed</Configurations>

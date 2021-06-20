@@ -36,6 +36,7 @@ namespace ClosedXML.Report
             TagsRegister.Add<SortTag>("Sort", 128);
             TagsRegister.Add<SortTag>("Asc", 128);
             TagsRegister.Add<DescTag>("Desc", 128);
+            TagsRegister.Add<ImageTag>("Image", 100);
             TagsRegister.Add<SummaryFuncTag>("SUM", 50);
             TagsRegister.Add<SummaryFuncTag>("AVG", 50);
             TagsRegister.Add<SummaryFuncTag>("AVERAGE", 50);

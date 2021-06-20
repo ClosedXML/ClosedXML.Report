@@ -13,7 +13,7 @@ namespace ClosedXML.Report.Tests
             var rng = _ws.Range("B5", "I6");
             var tag = CreateInRangeTag<AutoFilterTag>(rng, _ws.Cell("B6"));
 
-            tag.Execute(new ProcessingContext(_ws.Range("B5", "I15"), new DataSource(new object[0])));
+            tag.Execute(new ProcessingContext(_ws.Range("B5", "I15"), new DataSource(new object[0]), new FormulaEvaluator()));
 
             var headerRng = rng.Range(rng.FirstCell().CellRight(), rng.LastCell())
                 .FirstRow().RowAbove();
@@ -26,7 +26,7 @@ namespace ClosedXML.Report.Tests
         {
             var tag = CreateNotInRangeTag<AutoFilterTag>(_ws.Cell("B6"));
 
-            tag.Execute(new ProcessingContext(_ws.AsRange(), null));
+            tag.Execute(new ProcessingContext(_ws.AsRange(), null, new FormulaEvaluator()));
 
             _ws.AutoFilter.Range.Should().BeNull("AutoFilter is specified.");
         }

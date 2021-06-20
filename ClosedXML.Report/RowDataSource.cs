@@ -2,7 +2,7 @@ using ClosedXML.Excel;
 
 namespace ClosedXML.Report
 {
-    internal interface IDataSource
+    public interface IDataSource
     {
         object GetValue(IXLRangeRow row);
         object[] GetAll();
