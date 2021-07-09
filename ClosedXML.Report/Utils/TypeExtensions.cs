@@ -50,10 +50,18 @@ namespace ClosedXML.Report.Utils
             if (result != typeof(object))
                 return result;
 
-            var item = sourceList.Cast<object>().First();
+            var item = sourceList.Cast<object>().FirstOrDefault(x => x != null);
             if (item == null)
                 return typeof(object);
-            return item.GetType();
+            var itemType = item.GetType();
+            return !sourceList.IsAllItemsAssignableFrom(itemType)
+                ? typeof(object)
+                : itemType;
+        }
+
+        public static bool IsAllItemsAssignableFrom(this IEnumerable list, Type type)
+        {
+            return list.Cast<object>().All(item => item.GetType().IsAssignableFrom(type));
         }
 
         internal static bool IsNumeric(this Type type)
