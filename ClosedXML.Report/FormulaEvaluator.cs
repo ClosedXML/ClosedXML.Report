@@ -78,7 +78,8 @@ namespace ClosedXML.Report
 
         internal Delegate ParseExpression(string formula, ParameterExpression[] parameters)
         {
-            if (!_lambdaCache.TryGetValue(formula, out var lambda))
+            var cacheKey = GetCacheKey(formula, parameters);
+            if (!_lambdaCache.TryGetValue(cacheKey, out var lambda))
             {
                 try
                 {
@@ -89,9 +90,14 @@ namespace ClosedXML.Report
                     return null;
                 }
 
-                _lambdaCache.Add(formula, lambda);
+                _lambdaCache.Add(cacheKey, lambda);
             }
             return lambda;
+        }
+
+        private string GetCacheKey(string formula, ParameterExpression[] parameters)
+        {
+            return formula + string.Join("+", parameters.Select(x => x.Type.Name));
         }
 
         private object Eval(string expression, Parameter[] pars)

@@ -99,7 +99,7 @@ namespace ClosedXML.Report.Tests
             eval.Evaluate(@"{{np(b.Manager.Name, null)}}").Should().BeNull();
         }
 
-        [Fact(Skip = "It doesn't work yet")]
+        [Fact]
         public void EvalDictionaryParams()
         {
             Parameter CreateDicParameter(string name) => new Parameter("item", new Dictionary<string, object>
@@ -110,7 +110,7 @@ namespace ClosedXML.Report.Tests
             eval.Evaluate("{{item.Name.FirstName}}", CreateDicParameter("John")).Should().Be("John");
         }
 
-        [Fact(Skip = "It doesn't work yet")]
+        [Fact]
         public void EvalDictionaryParams2()
         {
             object CreateDicParameter(string name) => new Dictionary<string, object>
@@ -132,6 +132,25 @@ namespace ClosedXML.Report.Tests
             var eval = new FormulaEvaluator();
             eval.AddVariable("a", "1");
             eval.Evaluate("{{EvaluateUtils.ParseAsInt(a).IncrementMe()}}").Should().Be(2);
+        }
+
+        [Fact]
+        public void EvalMixedArray()
+        {
+            var mixed = new object[] {
+                "string",
+                1,
+                0.1,
+                System.DateTime.Today,
+            };
+
+            var eval = new FormulaEvaluator();
+            eval.AddVariable("mixed", mixed);
+            eval.Evaluate("{{mixed.Count()}}").Should().Be(4);
+            foreach (var item in mixed)
+            {
+                eval.Evaluate("{{item}}", new Parameter("item", item));
+            }
         }
 
         class Customer
