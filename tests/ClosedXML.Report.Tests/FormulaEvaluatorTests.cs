@@ -153,6 +153,21 @@ namespace ClosedXML.Report.Tests
             }
         }
 
+        [Fact]
+        public void UsingLambdaExpressionsIssue212()
+        {
+            var customers = new object[10000];
+            for (int i = 0; i < customers.Length; i++)
+            {
+                customers[i] = new Customer { Id = i, Name = "Customer"+i };
+            }
+
+            var eval = new FormulaEvaluator();
+            eval.AddVariable("items", customers);
+            eval.Evaluate("{{items.Count(c => c.Id == 9999)}}").Should().Be(1);
+            eval.Evaluate("{{items.Select(i => i.Name).Skip(1000).First()}}").Should().Be("Customer1000");
+        }
+
         class Customer
         {
             public int Id { get; set; }

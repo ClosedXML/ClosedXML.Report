@@ -1,10 +1,12 @@
 ﻿using ClosedXML.Report.Utils;
 using DocumentFormat.OpenXml.Bibliography;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace ClosedXML.Report
@@ -46,7 +48,27 @@ namespace ClosedXML.Report
 
         public void AddVariable(string name, object value)
         {
-            _variables[name] = value;
+            if (value != null && !value.GetType().IsGenericType && value is IEnumerable enumerable)
+            {
+                var itemType = enumerable.GetItemType();
+                var newEnumerable = EnumerableCastTo(enumerable, itemType);
+                _variables[name] = newEnumerable;
+            }
+            else
+                _variables[name] = value;
+        }
+
+        private IEnumerable EnumerableCastTo(IEnumerable enumerable, Type itemType)
+        {
+            ParameterExpression source = Expression.Parameter(typeof(IEnumerable));
+
+            MethodInfo method = typeof(Enumerable).GetMethod(nameof(Enumerable.Cast), BindingFlags.Public | BindingFlags.Static);
+            MethodInfo castGenericMethod = method.MakeGenericMethod(itemType);
+            var castExpr = Expression.Call(null, castGenericMethod, source);
+
+            var lambda = Expression.Lambda<Func<IEnumerable, IEnumerable>>(castExpr, source);
+
+            return lambda.Compile().Invoke(enumerable);
         }
 
         private string ObjToString(object val)
