@@ -61,7 +61,10 @@ namespace ClosedXML.Report.Utils
 
         public static bool IsAllItemsAssignableFrom(this IEnumerable list, Type type)
         {
-            return list.Cast<object>().All(item => item.GetType().IsAssignableFrom(type));
+            return list.Cast<object>().All(item =>
+                type.IsValueType
+                    ? item != null && item.GetType().IsAssignableFrom(type)
+                    : item == null || item.GetType().IsAssignableFrom(type));
         }
 
         internal static bool IsNumeric(this Type type)
