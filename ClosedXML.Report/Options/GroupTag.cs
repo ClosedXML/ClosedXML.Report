@@ -101,7 +101,7 @@ namespace ClosedXML.Report.Options
 
         private bool DisableGrandTotal => List.HasTag("disablegrandtotal") || !List.GetAll<SummaryFuncTag>().Any();
 
-        private void Process(ProcessingContext context, GroupTag[] groups, bool summaryAbove, SummaryFuncTag[] summaries , bool disableGrandTotal)
+        private void Process(ProcessingContext context, GroupTag[] groups, bool summaryAbove, SummaryFuncTag[] summaries, bool disableGrandTotal)
         {
             var root = context.Range;
             var groupRow = root.LastRow();
