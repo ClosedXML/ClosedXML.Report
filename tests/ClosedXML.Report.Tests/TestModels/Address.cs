@@ -2,7 +2,10 @@ namespace ClosedXML.Report.Tests.TestModels
 {
     public class Address
     {
-        /// <inheritdoc />
+        public Address()
+        {
+        }
+
         public Address(string country, string city, string street)
         {
             City = city;

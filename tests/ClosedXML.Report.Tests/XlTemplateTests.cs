@@ -77,45 +77,47 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void Add_enumerable_variable_should_fill_range()
         {
+            var testData = TestEntity.GetTestData(3).ToArray();
             XlTemplateTest("4.xlsx",
                 tpl => tpl.AddVariable(new
                 {
                     title = "title from test",
                     dates = new[] { DateTime.Parse("2013-01-01"), DateTime.Parse("2013-01-02"), DateTime.Parse("2013-01-03") },
-                    PlanData = TestEntity.GetTestData(3)
+                    PlanData = testData
                 }),
                 wb =>
                 {
+                    wb.SaveAs("Output\\4.xlsx");
                     var sheet = wb.Worksheet(1);
                     sheet.Cell("G1").GetValue<string>().Should().Be("title from test");
                     sheet.Cell("B4").GetValue<string>().Should().Be("1");
                     sheet.Cell("B5").GetValue<string>().Should().Be("2");
                     sheet.Cell("B6").GetValue<string>().Should().Be("3");
-                    sheet.Cell("C4").GetValue<string>().Should().Be("John Smith");
-                    sheet.Cell("C5").GetValue<string>().Should().Be("James Smith");
-                    sheet.Cell("C6").GetValue<string>().Should().Be("Jim Smith");
-                    sheet.Cell("D4").GetValue<string>().Should().Be("Developer");
-                    sheet.Cell("D5").GetValue<string>().Should().Be("Analyst");
-                    sheet.Cell("D6").GetValue<string>().Should().Be("Manager");
-                    sheet.Cell("E4").GetValue<int>().Should().Be(24);
-                    sheet.Cell("E5").GetValue<int>().Should().Be(37);
-                    sheet.Cell("E6").GetValue<int>().Should().Be(31);
-                    sheet.Cell("F4").GetValue<string>().Should().Be("NY");
-                    sheet.Cell("F5").GetValue<string>().Should().Be("Dallas");
-                    sheet.Cell("F6").GetValue<string>().Should().Be("Miami");
+                    sheet.Cell("C4").GetValue<string>().Should().Be(testData[0].Name);
+                    sheet.Cell("C5").GetValue<string>().Should().Be(testData[1].Name);
+                    sheet.Cell("C6").GetValue<string>().Should().Be(testData[2].Name);
+                    sheet.Cell("D4").GetValue<string>().Should().Be(testData[0].Role);
+                    sheet.Cell("D5").GetValue<string>().Should().Be(testData[1].Role);
+                    sheet.Cell("D6").GetValue<string>().Should().Be(testData[2].Role);
+                    sheet.Cell("E4").GetValue<int>().Should().Be(testData[0].Age);
+                    sheet.Cell("E5").GetValue<int>().Should().Be(testData[1].Age);
+                    sheet.Cell("E6").GetValue<int>().Should().Be(testData[2].Age);
+                    sheet.Cell("F4").GetValue<string>().Should().Be(testData[0].Address.City);
+                    sheet.Cell("F5").GetValue<string>().Should().Be(testData[1].Address.City);
+                    sheet.Cell("F6").GetValue<string>().Should().Be(testData[2].Address.City);
                     wb.NamedRange("PlanData").Ranges.First().RangeAddress.ToStringRelative().Should().Be("A4:J6");
-                    sheet.Cell("G4").GetValue<int>().Should().Be(6);
-                    sheet.Cell("G5").GetValue<int>().Should().Be(3);
-                    sheet.Cell("G6").GetValue<int>().Should().Be(2);
-                    sheet.Cell("H4").GetValue<int>().Should().Be(8);
-                    sheet.Cell("H5").GetValue<int>().Should().Be(5);
-                    sheet.Cell("H6").GetValue<int>().Should().Be(9);
-                    sheet.Cell("I4").GetValue<int>().Should().Be(4);
-                    sheet.Cell("I5").GetValue<int>().Should().Be(7);
-                    sheet.Cell("I6").GetValue<int>().Should().Be(1);
-                    sheet.Cell("J4").GetValue<int>().Should().Be(18);
-                    sheet.Cell("J5").GetValue<int>().Should().Be(15);
-                    sheet.Cell("J6").GetValue<int>().Should().Be(12);
+                    sheet.Cell("G4").GetValue<int>().Should().Be(testData[0].Hours[0]);
+                    sheet.Cell("G5").GetValue<int>().Should().Be(testData[1].Hours[0]);
+                    sheet.Cell("G6").GetValue<int>().Should().Be(testData[2].Hours[0]);
+                    sheet.Cell("H4").GetValue<int>().Should().Be(testData[0].Hours[1]);
+                    sheet.Cell("H5").GetValue<int>().Should().Be(testData[1].Hours[1]);
+                    sheet.Cell("H6").GetValue<int>().Should().Be(testData[2].Hours[1]);
+                    sheet.Cell("I4").GetValue<int>().Should().Be(testData[0].Hours[2]);
+                    sheet.Cell("I5").GetValue<int>().Should().Be(testData[1].Hours[2]);
+                    sheet.Cell("I6").GetValue<int>().Should().Be(testData[2].Hours[2]);
+                    sheet.Cell("J4").GetValue<int>().Should().Be(testData[0].Hours.Sum());
+                    sheet.Cell("J5").GetValue<int>().Should().Be(testData[1].Hours.Sum());
+                    sheet.Cell("J6").GetValue<int>().Should().Be(testData[2].Hours.Sum());
                     sheet.Cell("D8").GetValue<int>().Should().Be(15);
                     sheet.Cell("K6").GetValue<int>().Should().Be(4);
                 });
@@ -350,27 +352,66 @@ namespace ClosedXML.Report.Tests
                     sheet.Cell(4, 3).Value.Should().Be("Customer 3");
                 });
         }
-        
+
+        [Fact]
+        public void HorizontalSimpleRangeTest()
+        {
+            string[] GetRowData(IXLWorksheet sheet, int idx, int itemCnt, int offset)
+            {
+                var clmNumber = (char) ('a' + itemCnt * 2);
+                var row = idx * 3 + offset;
+                return sheet.Range($"B{row}:{clmNumber}{row}").Cells().Select(x => x.GetString()).ToArray();
+            }
+
+            var testData = TestOrder.GetTestData(4).ToArray();
+            XlTemplateTest("Horizontal_SimpleTemplate.xlsx",
+                tpl => tpl.AddVariable("Orders", testData),
+                wb =>
+                {
+                    var sheet = wb.Worksheet(1);
+                    for (int i = 0; i < testData.Length; i++)
+                    {
+                        var itemCnt = testData[i].ProductsWithQuantities.Count;
+                        sheet.Cell("B" + (i * 3 + 1)).Value.Should().Be(testData[i].OrderNumber);
+                        var header = GetRowData(sheet, i, itemCnt, 2);
+                        header.Length.Should().Be(itemCnt * 2);
+                        for (int j = 0; j < itemCnt; j += 2)
+                        {
+                            header[j].Should().Be("Name");
+                            header[j+1].Should().Be("Quantity");
+                        }
+                        var data = GetRowData(sheet, i, itemCnt, 3);
+                        data.Length.Should().Be(itemCnt * 2);
+                        for (int j = 0; j < itemCnt; j++)
+                        {
+                            data[j*2].Should().Be(testData[i].ProductsWithQuantities[j].ProductName);
+                            data[j*2+1].Should().Be(testData[i].ProductsWithQuantities[j].Quantity.ToString());
+                        }
+                    }
+                });
+        }
+
         [Fact]
         public void HorizontalRangeTest()
         {
+            var testData = TestEntity.GetTestData(3).ToArray();
             XlTemplateTest("HorizontalRange.xlsx",
-                tpl => tpl.AddVariable("Datas", TestEntity.GetTestData(3)),
+                tpl => tpl.AddVariable("Datas", testData),
                 wb =>
                 {
                     var sheet = wb.Worksheet(1);
                     sheet.Cell("C3").Value.Should().Be(1d);
                     sheet.Cell("E3").Value.Should().Be(2d);
                     sheet.Cell("G3").Value.Should().Be(3d);
-                    sheet.Cell("C4").Value.Should().Be("Developer");
-                    sheet.Cell("D4").Value.Should().Be("John Smith");
-                    sheet.Cell("E4").Value.Should().Be("Analyst");
-                    sheet.Cell("F4").Value.Should().Be("James Smith");
-                    sheet.Cell("G4").Value.Should().Be("Manager");
-                    sheet.Cell("H4").Value.Should().Be("Jim Smith");
-                    sheet.Cell("C5").Value.Should().Be("NY");
-                    sheet.Cell("E5").Value.Should().Be("Dallas");
-                    sheet.Cell("G5").Value.Should().Be("Miami");
+                    sheet.Cell("C4").Value.Should().Be(testData[0].Role);
+                    sheet.Cell("D4").Value.Should().Be(testData[0].Name);
+                    sheet.Cell("E4").Value.Should().Be(testData[1].Role);
+                    sheet.Cell("F4").Value.Should().Be(testData[1].Name);
+                    sheet.Cell("G4").Value.Should().Be(testData[2].Role);
+                    sheet.Cell("H4").Value.Should().Be(testData[2].Name);
+                    sheet.Cell("C5").Value.Should().Be(testData[0].Address.City);
+                    sheet.Cell("E5").Value.Should().Be(testData[1].Address.City);
+                    sheet.Cell("G5").Value.Should().Be(testData[2].Address.City);
                 });
         }
 
