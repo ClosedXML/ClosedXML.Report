@@ -59,17 +59,19 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void Sort_option_should_sort_range()
         {
+            var testEntities = TestEntity.GetTestData(6).ToArray();
             XlTemplateTest("8_sort.xlsx",
                 tpl => tpl.AddVariable(new
                 {
-                    data = TestEntity.GetTestData(6),
+                    data = testEntities,
                     dates = new[] { DateTime.Parse("2013-01-01"), DateTime.Parse("2013-01-02"), DateTime.Parse("2013-01-03") }
                 }),
                 wb =>
                 {
                     var worksheet = wb.Worksheet(1);
-                    worksheet.Range("D5:D10").Cells().Select(x=>x.GetValue<int>()).ToArray().Should().ContainInOrder(new [] { 37, 31, 71, 24, 63, 76});
-                    worksheet.Range("E5:E10").Cells().Select(x=>x.GetString()).ToArray().Should().ContainInOrder("Dallas", "Miami", "Montana", "NY", "NY", "Oklahoma");
+                    var expectedOrder = testEntities.OrderBy(x=>x.Address.City).ThenBy(x=>x.Age).ToArray();
+                    worksheet.Range("D5:D10").Cells().Select(x=>x.GetValue<int>()).ToArray().Should().ContainInOrder(expectedOrder.Select(x => x.Age));
+                    worksheet.Range("E5:E10").Cells().Select(x=>x.GetString()).ToArray().Should().ContainInOrder(expectedOrder.Select(x => x.Address.City));
                 });
         }
 

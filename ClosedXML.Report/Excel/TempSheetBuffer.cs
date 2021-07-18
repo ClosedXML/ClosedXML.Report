@@ -81,11 +81,19 @@ namespace ClosedXML.Report.Excel
             _minRow = _row;
         }
 
-        public void NewColumn()
+        public void NewRow(IXLAddress startAddr)
         {
             if (_clmn > 1)
                 _clmn--;
-            ChangeAddress(1, _clmn + 1);
+            ChangeAddress(_row + 1, startAddr.ColumnNumber);
+            _minRow = _row;
+        }
+
+        public void NewColumn(IXLAddress startAddr)
+        {
+            if (_clmn > 1)
+                _clmn--;
+            ChangeAddress(startAddr.RowNumber, _clmn + 1);
             _minClmn = _clmn;
         }
 
@@ -110,8 +118,7 @@ namespace ClosedXML.Report.Excel
         public IXLRange CopyTo(IXLRange range)
         {
             var firstCell = _sheet.Cell(1, 1);
-            var lastCell = _sheet.Cell(_prevrow, _prevclmn);
-            var tempRng = _sheet.Range(firstCell, lastCell);
+            var tempRng = _sheet.Range(firstCell, LastCell);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)
@@ -161,6 +168,17 @@ namespace ClosedXML.Report.Excel
                     xlRow.Expand();
             }
             return range;
+        }
+
+        public IXLCell LastCell
+        {
+            get
+            {
+                var rowNumber = Math.Max(_prevrow, _sheet.RowsUsed().LastOrDefault()?.RowNumber() ?? 1);
+                var columnNumber = Math.Max(_prevclmn, _sheet.ColumnsUsed().LastOrDefault()?.ColumnNumber() ?? 1);
+                var lastCell = GetCell(rowNumber, columnNumber); //_sheet.Cell(_prevrow, _prevclmn);
+                return lastCell;
+            }
         }
 
         public void SetPrevCellToLastUsed()

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using Bogus;
 
 namespace ClosedXML.Report.Tests.TestModels
 {
@@ -8,6 +8,10 @@ namespace ClosedXML.Report.Tests.TestModels
         public string OrderNumber { get; set; }
         public List<OrderItem> ProductsWithQuantities { get; set; } = new List<OrderItem>();
 
+        public TestOrder()
+        {
+        }
+
         public TestOrder(string orderNumber)
         {
             OrderNumber = orderNumber;
@@ -15,51 +19,30 @@ namespace ClosedXML.Report.Tests.TestModels
 
         public static IEnumerable<TestOrder> GetTestData(int rowCount)
         {
-            return new[]
+            var products = new[]
             {
-                new TestOrder("828282")
-                {
-                    ProductsWithQuantities = new List<OrderItem>
-                    {
-                        new OrderItem("Brioche", 10),
-                        new OrderItem("Tart taten", 20),
-                        new OrderItem("Apple pie", 1),
-                        new OrderItem("Creamy croissants", 14),
-                    }
-                },
-                new TestOrder("262654")
-                {
-                    ProductsWithQuantities = new List<OrderItem>
-                    {
-                        new OrderItem("Toast with cream", 4),
-                        new OrderItem("Scramble croissant", 1),
-                    }
-                },
-                new TestOrder("959845")
-                {
-                    ProductsWithQuantities = new List<OrderItem>
-                    {
-                        new OrderItem("Beunier donuts", 8),
-                        new OrderItem("Profiteroles with Mascarpone", 12),
-                        new OrderItem("Creme de parisien", 11),
-                        new OrderItem("Chocolate Fondant", 30),
-                    }
-                },
-                new TestOrder("754126")
-                {
-                    ProductsWithQuantities = new List<OrderItem>
-                    {
-                        new OrderItem("Quiche with bacon", 30),
-                        new OrderItem("Brioche", 40),
-                        new OrderItem("Creamy croissants", 50),
-                    }
-                },
-            }.Take(rowCount);
+                "Brioche", "Tart taten", "Apple pie", "Creamy croissants", "Toast with cream", "Scramble croissant",
+                "Beunier donuts", "Profiteroles with Mascarpone", "Creme de parisien", "Chocolate Fondant", "Quiche with bacon", 
+            };
+
+            var orderItemFaker = new Faker<OrderItem>()
+                .RuleFor(x => x.ProductName, f => f.PickRandom(products))
+                .RuleFor(x => x.Quantity, f => f.Random.Number(1, 50));
+
+            var orderFaker = new Faker<TestOrder>()
+                .RuleFor(x => x.OrderNumber, f => f.Random.Number(100000, 999999).ToString())
+                .RuleFor(x => x.ProductsWithQuantities, f => orderItemFaker.Generate(f.Random.Number(2, 10)));
+
+            return orderFaker.Generate(rowCount);
         }
     }
 
     public class OrderItem
     {
+        public OrderItem()
+        {
+        }
+
         public OrderItem(string productName, decimal quantity)
         {
             ProductName = productName;
@@ -78,6 +61,10 @@ namespace ClosedXML.Report.Tests.TestModels
         public int[] Hours { get; set; }
         public Address Address { get; set; }
 
+        public TestEntity()
+        {
+        }
+
         public TestEntity(string name, string role, int age, int[] hours)
         {
             Hours = hours;
@@ -88,15 +75,21 @@ namespace ClosedXML.Report.Tests.TestModels
 
         public static IEnumerable<TestEntity> GetTestData(int rowCount)
         {
-            return new[]
-            {
-                new TestEntity("John Smith", "Developer", 24, new [] { 6, 8, 4 }) {Address = new Address("USA", "NY", "94, Reade St")},
-                new TestEntity("James Smith", "Analyst", 37, new [] { 3, 5, 7 }) {Address = new Address("USA", "Dallas", "5, Ross ave")},
-                new TestEntity("Jim Smith", "Manager", 31, new[] { 2, 9, 1 }) {Address = new Address("USA", "Miami", "16, Indian Creek Dr")},
-                new TestEntity("Chuck Norris", "Actor", 76, new [] { 7, 14, 2 }) {Address = new Address("USA", "Oklahoma", "9, Reade Rd")},
-                new TestEntity("Dirk Benedict", "Actor", 71, new [] { 4, 9, 1 }) {Address = new Address("USA", "Montana", "7, Ross St, Helena")},
-                new TestEntity("Kenneth Lauren Burns", "Producer", 63, new[] { 9, 1, 2 }) {Address = new Address("USA", "NY", "13, Indian Creek Dr, Brooklyn")},
-            }.Take(rowCount);
+            //var roles = new[] { "Developer", "Analyst", "Manager", "Actor", "Producer" };
+            var addressFaker = new Faker<Address>()
+                .RuleFor(o => o.Country, f => f.Address.Country())
+                .RuleFor(o => o.City, f => f.Address.City())
+                .RuleFor(o => o.Street, f => f.Address.StreetAddress());
+
+            var testEntity = new Faker<TestEntity>()
+                .StrictMode(true)
+                .RuleFor(o => o.Name, f => f.Name.FullName())
+                .RuleFor(o => o.Role, f => f.Name.JobTitle())
+                .RuleFor(o => o.Age, f => f.Random.Number(20, 70))
+                .RuleFor(o => o.Address, () => addressFaker)
+                .RuleFor(o => o.Hours, f => new []{ f.Random.Number(2, 14), f.Random.Number(2, 14), f.Random.Number(2, 14) });
+
+            return testEntity.Generate(rowCount);
         }
     }
 }

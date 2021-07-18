@@ -171,10 +171,11 @@ namespace ClosedXML.Report
             var rangeStart = _buff.NextAddress;
             for (int i = 0; i < items.Length; i++)
             {
-                var rowStart = _buff.NextAddress;
+                var startAddr = _buff.NextAddress;
                 IXLAddress rowEnd = null;
                 int row = 1;
                 var tags = _tags.CopyTo(_rowRange);
+                var renderedSubranges = new List<string>();
 
                 // render row cells
                 for (var iCell = 0; iCell < _cells.Count; iCell++)
@@ -185,13 +186,19 @@ namespace ClosedXML.Report
 
                     if (cell.CellType == TemplateCellType.None)
                     {
-                        RenderSubrange(items[i], evaluator, cell, tags, ref iCell, ref row);
+                        var xlCell = _rowRange.Cell(cell.Row, cell.Column);
+                        var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
+                        if (!renderedSubranges.Contains(ownRng.Name))
+                        {
+                            RenderSubrange(ownRng, items[i], evaluator, cell, tags, ref iCell, ref row);
+                            renderedSubranges.Add(ownRng.Name);
+                        }
                     }
                     else if (cell.CellType == TemplateCellType.NewRow)
                     {
                         row++;
                         rowEnd = _buff.PrevAddress;
-                        _buff.NewRow();
+                        _buff.NewRow(startAddr);
                         if (row > _rowCnt)
                             break;
                     }
@@ -201,7 +208,7 @@ namespace ClosedXML.Report
                     }
                 }
 
-                var newRowRng = _buff.GetRange(rowStart, rowEnd);
+                var newRowRng = _buff.GetRange(startAddr, rowEnd);
                 foreach (var mrg in _mergedRanges.Where(r=>!_optionsRow.Contains(r)))
                 {
                     var newMrg = mrg.Relative(_rowRange, newRowRng);
@@ -218,7 +225,7 @@ namespace ClosedXML.Report
                 {
                     RenderCell(evaluator, cell);
                 }
-                _buff.NewRow();
+                _buff.NewRow(rangeStart);
             }
 
             // Execute range options tags
@@ -318,12 +325,11 @@ namespace ClosedXML.Report
             RenderCell(evaluator, cell, new Parameter("item", items[i]), new Parameter("index", i));
         }
 
-        private void RenderSubrange(object item, FormulaEvaluator evaluator, TemplateCell cell, TagsList tags, ref int iCell, ref int row)
+        private void RenderSubrange(RangeTemplate ownRng, object item, FormulaEvaluator evaluator, TemplateCell cell,
+            TagsList tags, ref int iCell, ref int row)
         {
             var start = _buff.NextAddress;
             // the child template to which the cell belongs
-            var xlCell = _rowRange.Cell(cell.Row, cell.Column);
-            var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
             var formula = ownRng.Source.ReplaceLast("_", ".");
 
             if (evaluator.Evaluate(formula, new Parameter(Name, item)) is IEnumerable value)
@@ -333,7 +339,6 @@ namespace ClosedXML.Report
 
                 if (ownRng.IsHorizontal)
                 {
-                    iCell += ownRng._colCnt - 1;
                     int shiftLen = ownRng._colCnt * (valArr.Length - 1);
                     tags.Where(tag => tag.Cell.Row == cell.Row && tag.Cell.Column > cell.Column)
                         .ForEach(t =>
@@ -373,7 +378,7 @@ namespace ClosedXML.Report
             var tags = _tags.CopyTo(_rowRange);
             for (int i = 0; i < items.Length; i++)
             {
-                var clmnStart = _buff.NextAddress;
+                var startAddr = _buff.NextAddress;
                 foreach (var cell in _cells)
                 {
                     if (cell.CellType == TemplateCellType.None)
@@ -381,10 +386,10 @@ namespace ClosedXML.Report
                     else if (cell.CellType != TemplateCellType.NewRow)
                         RenderCell(items, i, evaluator, cell);
                     else
-                        _buff.NewRow();
+                        _buff.NewRow(startAddr);
                 }
 
-                var newClmnRng = _buff.GetRange(clmnStart, _buff.PrevAddress);
+                var newClmnRng = _buff.GetRange(startAddr, _buff.PrevAddress);
                 foreach (var mrg in _mergedRanges.Where(r => _optionsRow == null || !_optionsRow.Contains(r)))
                 {
                     var newMrg = mrg.Relative(_rowRange, newClmnRng);
@@ -394,7 +399,7 @@ namespace ClosedXML.Report
                 tags.Execute(new ProcessingContext(newClmnRng, items[i], evaluator));
 
                 if (_rowCnt > 1)
-                    _buff.NewColumn();
+                    _buff.NewColumn(startAddr);
             }
 
             var worksheet = _rowRange.Worksheet;
