@@ -48,13 +48,13 @@ namespace ClosedXML.Report
             Name = name;
             Source = name;
             var rangeName = name + "_tpl";
-            if (wb.NamedRanges.TryGetValue(rangeName, out var namedRange))
+            if (range.Worksheet.NamedRanges.TryGetValue(rangeName, out var namedRange) || wb.NamedRanges.TryGetValue(rangeName, out namedRange))
             {
                 namedRange.Add(range);
             }
             else
             {
-                wb.NamedRanges.Add(rangeName, range);
+                range.Worksheet.NamedRanges.Add(rangeName, range);
             }
 
             _evaluator = new FormulaEvaluator();

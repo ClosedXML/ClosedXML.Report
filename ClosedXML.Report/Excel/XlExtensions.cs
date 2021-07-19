@@ -40,7 +40,8 @@ namespace ClosedXML.Report.Excel
         /// <param name="range">range</param>
         public static IEnumerable<IXLNamedRange> GetContainerNames(this IXLRange range)
         {
-            return range.Worksheet.Workbook.NamedRanges.Where(x => x.Ranges.Where(r => !r.Equals(range)).Any(r => r.Contains(range)));
+            return range.Worksheet.Workbook.NamedRanges.Where(x => GetContainingRanges(x, range))
+                .Union(range.Worksheet.NamedRanges.Where(x => GetContainingRanges(x, range)));
         }
 
         public static bool Contains(this IXLRangeAddress rangeAddress, IXLAddress address)
@@ -121,8 +122,13 @@ namespace ClosedXML.Report.Excel
         /// <param name="range">range</param>
         public static IEnumerable<IXLNamedRange> GetContainingNames(this IXLRange range)
         {
-            return range.Worksheet.Workbook.NamedRanges.Where(x => x.Ranges.Where(r => r.Worksheet.Position == range.Worksheet.Position
-                                                                                       && !r.Equals(range)).Any(range.Contains));
+            return range.Worksheet.NamedRanges.Where(x => GetContainingRanges(x, range))
+                .Union(range.Worksheet.Workbook.NamedRanges.Where(x => GetContainingRanges(x, range)));
+        }
+
+        private static bool GetContainingRanges(IXLNamedRange x, IXLRange xlRange)
+        {
+            return x.Ranges.Where(r => r.Worksheet.Position == xlRange.Worksheet.Position && !r.Equals(xlRange)).Any(xlRange.Contains);
         }
 
         /// <summary>
