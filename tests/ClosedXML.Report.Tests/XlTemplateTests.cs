@@ -87,7 +87,6 @@ namespace ClosedXML.Report.Tests
                 }),
                 wb =>
                 {
-                    wb.SaveAs("Output\\4.xlsx");
                     var sheet = wb.Worksheet(1);
                     sheet.Cell("G1").GetValue<string>().Should().Be("title from test");
                     sheet.Cell("B4").GetValue<string>().Should().Be("1");

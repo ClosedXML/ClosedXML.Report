@@ -45,7 +45,7 @@ namespace ClosedXML.Report
                 .ToArray();
             var cells = from c in cellsUsed
                 let value = c.GetString()
-                where (value.StartsWith("<<") || value.EndsWith(">>"))
+                where TagExtensions.HasTag(value)
                 select c;
 
             if (!_tags.ContainsKey(rangeName))
@@ -183,6 +183,9 @@ namespace ClosedXML.Report
                         nr.NamedRange.SetRefersTo(ranges);
 
                         tplt.RangeTagsApply(trgtRng, items);
+                        var isOptionsRowEmpty = trgtRng.IsOptionsRowEmpty();
+                        if (isOptionsRowEmpty)
+                            trgtRng.LastRow().Delete(XLShiftDeletedCells.ShiftCellsUp);
                     }
 
                     // refresh ranges for pivot tables

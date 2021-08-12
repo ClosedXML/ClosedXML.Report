@@ -27,7 +27,7 @@ namespace ClosedXML.Report
         private TempSheetBuffer _buff;
         private IXLRange _rowRange;
         private IXLRangeRow _optionsRow;
-        private bool _optionsRowIsEmpty = true;
+        private bool _isOptionsRowEmpty = true;
         private bool _isSubrange;
         private IDictionary<string, object> _globalVariables;
 
@@ -107,7 +107,7 @@ namespace ClosedXML.Report
 
                 result._rowRange = range.Offset(0, 0, result._rowCnt, result._colCnt);
                 result._optionsRow = range.LastRow();
-                result._optionsRowIsEmpty = !result._optionsRow.CellsUsed(XLCellsUsedOptions.AllContents | XLCellsUsedOptions.MergedRanges).Any();
+                result._isOptionsRowEmpty = range.IsOptionsRowEmpty();
             }
 
             result._subranges = innerRanges.SelectMany(nrng => nrng.Ranges,
@@ -219,7 +219,7 @@ namespace ClosedXML.Report
             }
 
             // Render options row
-            if (!_optionsRowIsEmpty)
+            if (!_isOptionsRowEmpty)
             {
                 foreach (var cell in _cells.Where(c => c.Row == _rowCnt + 1).OrderBy(c => c.Column))
                 {
@@ -230,7 +230,7 @@ namespace ClosedXML.Report
 
             // Execute range options tags
             var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
-            if (!_optionsRowIsEmpty)
+            if (!_isOptionsRowEmpty)
             {
                 var optionsRow = resultRange.LastRow().AsRange();
                 foreach (var mrg in _mergedRanges.Where(r => _optionsRow.Contains(r)))
@@ -425,8 +425,8 @@ namespace ClosedXML.Report
             var innerRanges = range.GetContainingNames().ToArray();
             var cells = from c in _cells
                         let value = c.GetString()
-                        where (value.StartsWith("<<") || value.EndsWith(">>"))
-                            && !innerRanges.Any(nr => nr.Ranges.Contains(c.XLCell.AsRange()))
+                        where TagExtensions.HasTag(value)
+                              && !innerRanges.Any(nr => nr.Ranges.Contains(c.XLCell.AsRange()))
                         select c;
 
             foreach (var cell in cells)
