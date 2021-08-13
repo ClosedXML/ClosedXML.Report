@@ -27,6 +27,8 @@ namespace ClosedXML.Report.Options
 
                 switch (imgValue)
                 {
+                    case "":
+                    case null: return;
                     case Stream stream: picture = xlCell.Worksheet.AddPicture(stream); break;
                     case string path: picture = xlCell.Worksheet.AddPicture(path); break;
                     case Bitmap image: picture = xlCell.Worksheet.AddPicture(image); break;

@@ -1,4 +1,5 @@
-﻿using LinqToDB.Mapping;
+﻿using System.Drawing;
+using LinqToDB.Mapping;
 
 namespace ClosedXML.Report.Tests.TestModels
 {
@@ -9,5 +10,7 @@ namespace ClosedXML.Report.Tests.TestModels
 
         [Association(ThisKey = "OrderNo", OtherKey = "OrderNo")]
         public order Order { get; set; }
+
+        public Bitmap IsOk => Resource.checkmark;
     }
 }
