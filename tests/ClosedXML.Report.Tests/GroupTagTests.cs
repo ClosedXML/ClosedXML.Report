@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
@@ -27,6 +28,7 @@ namespace ClosedXML.Report.Tests
          InlineData("tLists6_count.xlsx"),
          InlineData("tLists7_image.xlsx"),
          InlineData("tPage1_options.xlsx"),
+         InlineData("tLists7_horizontal_images.xlsx"),
         ]
         public void Simple(string templateFile)
         {
@@ -35,19 +37,11 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var cust = db.customers.LoadWith(x => x.Orders).OrderBy(c => c.CustNo).First(x=>x.CustNo == 1356);
+                        var cust = db.customers.LoadWith(x=>x.Orders.First().Items).OrderBy(c => c.CustNo).First(x=>x.CustNo == 1356);
                         cust.Logo = Resource.toms_diving_center;
-                        cust.Orders.ForEach(x =>
-                        {
-                            switch (x.PaymentMethod)
-                            {
-                                case "Visa": x.PaymentImage = Resource.card; break;
-                                case "Cash": x.PaymentImage = Resource.cash; break;
-                                case "Credit": x.PaymentImage = Resource.bank; break;
-                            }
-                        });
                         tpl.AddVariable("MoreOrders", cust.Orders.Take(5));
                         tpl.AddVariable(cust);
+                        tpl.AddVariable("ItemsHeader", Enumerable.Range(1, cust.Orders.Max(x => x.Items.Count)).Select(x => $"Item {x}"));
                     }
                     tpl.AddVariable("Tax", 13);
                 },

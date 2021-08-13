@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Options;
 using ClosedXML.Report.Utils;
+using MoreLinq;
 
 namespace ClosedXML.Report.Excel
 {
@@ -122,13 +123,29 @@ namespace ClosedXML.Report.Excel
         /// <param name="range">range</param>
         public static IEnumerable<IXLNamedRange> GetContainingNames(this IXLRange range)
         {
-            return range.Worksheet.NamedRanges.Where(x => GetContainingRanges(x, range))
-                .Union(range.Worksheet.Workbook.NamedRanges.Where(x => GetContainingRanges(x, range)));
+            return range.Worksheet.NamedRanges
+                .Union(range.Worksheet.Workbook.NamedRanges)
+                .Where(x => GetContainingRanges(x, range));
         }
 
         private static bool GetContainingRanges(IXLNamedRange x, IXLRange xlRange)
         {
-            return x.Ranges.Where(r => r.Worksheet.Position == xlRange.Worksheet.Position && !r.Equals(xlRange)).Any(xlRange.Contains);
+            return x.Ranges.Select(GrowToMergedRanges)
+                .Where(r => r.Worksheet.Position == xlRange.Worksheet.Position && !r.Equals(xlRange))
+                .Any(xlRange.Contains);
+        }
+
+        public static IXLRange GrowToMergedRanges(this IXLRange range)
+        {
+            var sheet = range.Worksheet;
+            sheet.MergedRanges.Where(range.Intersects)
+                .ForEach(x =>
+                {
+                    var xlCells = range.Union(x).Select(c => c.Address)
+                        .OrderBy(c => c.RowNumber).ThenBy(c => c.ColumnNumber).ToArray();
+                    range = sheet.Range(xlCells.First().ToStringFixed(), xlCells.Last().ToStringFixed());
+                });
+            return range;
         }
 
         /// <summary>
