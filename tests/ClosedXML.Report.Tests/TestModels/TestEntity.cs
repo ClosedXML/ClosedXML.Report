@@ -60,6 +60,7 @@ namespace ClosedXML.Report.Tests.TestModels
         public int Age { get; set; }
         public int[] Hours { get; set; }
         public Address Address { get; set; }
+        public string Email { get; set; }
 
         public TestEntity()
         {
@@ -83,10 +84,11 @@ namespace ClosedXML.Report.Tests.TestModels
 
             var testEntity = new Faker<TestEntity>()
                 .StrictMode(true)
-                .RuleFor(o => o.Name, f => f.Name.FullName())
+                .RuleFor(o => o.Name, f => f.Person.FullName)
                 .RuleFor(o => o.Role, f => f.Name.JobTitle())
                 .RuleFor(o => o.Age, f => f.Random.Number(20, 70))
                 .RuleFor(o => o.Address, () => addressFaker)
+                .RuleFor(o => o.Email, f => f.Internet.Email(f.Person.FirstName, f.Person.LastName))
                 .RuleFor(o => o.Hours, f => new []{ f.Random.Number(2, 14), f.Random.Number(2, 14), f.Random.Number(2, 14) });
 
             return testEntity.Generate(rowCount);
