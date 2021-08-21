@@ -78,7 +78,7 @@ deploy:
 - provider: GitHub
   artifact: /.*\.(zip|nupkg)/
   auth_token:
-    secure: pDyyONympYgPQfMzsAlP01i2i17xji0oFlz5sKVmM6n34/TieVjBjvUjSUFxNQEA
+    secure: pZC+7BY7BvbgHFsxahDIvkxktSwo+A9PHZtXDJnGcE4wnVg5FhkF06yB6mjIzt5T
   draft: true
   on:
     APPVEYOR_REPO_TAG: true
