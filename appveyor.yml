@@ -86,6 +86,6 @@ deploy:
   artifact: /.*\.nupkg/
   skip_symbols: false
   api_key:
-    secure: GZMuY+C0BuVSLsTJ0b2oLNVNXdd8ffaFJapOaUDKlrfOLmrHc0S44AqSE6pjK1yC
+    secure: bWn4IjqQoIVrWRy2cflptZsTQe4VEIFV1BbyOsh08lbGerE8W4TiiPtXxhE7G1j9
   on:
     APPVEYOR_REPO_TAG: true
