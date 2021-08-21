@@ -308,21 +308,29 @@ namespace ClosedXML.Report.Excel
 
                 var groupRng = Sheet.Range(moveData.SourceAddress);
 
-                var cuttingGroups = _groups.Where(g => moveData.SourceAddress.Contains(g.Range.RangeAddress.LastAddress)).ToArray();
+                var cuttingGroups = _groups.Select(g => g.Range.RangeAddress.LastAddress)
+                    .Distinct()
+                    .Where(address => moveData.SourceAddress.Contains(address))
+                    .OrderBy(address => address.RowNumber)
+                    .ToArray();
                 if (cuttingGroups.Any())
                 {
                     var startAddress = moveData.SourceAddress.FirstAddress;
                     foreach (var g in cuttingGroups)
                     {
-                        groupRng = Sheet.Range(startAddress, g.Range.RangeAddress.LastAddress);
+                        groupRng = Sheet.Range(startAddress, g);
                         result.Add(new SubtotalGroup(level, groupBy, moveData.GroupTitle, groupRng, null, false));
-                        startAddress = g.Range.LastCell().WorksheetRow().RowBelow()
+                        startAddress = Sheet.Cell(g).WorksheetRow().RowBelow()
                             .Cell(startAddress.ColumnNumber).Address;
                     }
-                    groupRng = Sheet.Range(startAddress, moveData.SourceAddress.LastAddress);
+
+                    groupRng = startAddress.RowNumber <= moveData.SourceAddress.LastAddress.RowNumber
+                        ? Sheet.Range(startAddress, moveData.SourceAddress.LastAddress)
+                        : null;
                 }
 
-                result.Add(new SubtotalGroup(level, groupBy, moveData.GroupTitle, groupRng, null, false));
+                if (groupRng != null)
+                    result.Add(new SubtotalGroup(level, groupBy, moveData.GroupTitle, groupRng, null, false));
             }
 
             _groups.AddRange(result);
