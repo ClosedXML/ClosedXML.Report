@@ -45,7 +45,7 @@ namespace ClosedXML.Report
                 .ToArray();
             var cells = from c in cellsUsed
                 let value = c.GetString()
-                where (value.StartsWith("<<") || value.EndsWith(">>"))
+                where TagExtensions.HasTag(value)
                 select c;
 
             if (!_tags.ContainsKey(rangeName))
@@ -172,25 +172,29 @@ namespace ClosedXML.Report
             {
                 foreach (var rng in nr.NamedRange.Ranges)
                 {
+                    var growedRange = rng.GrowToMergedRanges();
                     var items = nr.RangeData as object[] ?? nr.RangeData.Cast<object>().ToArray();
-                    var tplt = RangeTemplate.Parse(nr.NamedRange.Name, rng, _errors, _variables);
+                    var tplt = RangeTemplate.Parse(nr.NamedRange.Name, growedRange, _errors, _variables);
                     using (var buff = tplt.Generate(items))
                     {
                         var ranges = nr.NamedRange.Ranges;
-                        var trgtRng = buff.CopyTo(rng);
+                        var trgtRng = buff.CopyTo(growedRange);
                         ranges.Remove(rng);
                         ranges.Add(trgtRng);
                         nr.NamedRange.SetRefersTo(ranges);
 
                         tplt.RangeTagsApply(trgtRng, items);
+                        var isOptionsRowEmpty = trgtRng.IsOptionsRowEmpty();
+                        if (isOptionsRowEmpty)
+                            trgtRng.LastRow().Delete(XLShiftDeletedCells.ShiftCellsUp);
                     }
 
                     // refresh ranges for pivot tables
                     foreach (var pt in range.Worksheet.Workbook.Worksheets.SelectMany(sh => sh.PivotTables))
                     {
-                        if (pt.SourceRange.Intersects(rng))
+                        if (pt.SourceRange.Intersects(growedRange))
                         {
-                            pt.SourceRange = rng.Offset(-1, 1, rng.RowCount() + 1, rng.ColumnCount() - 1);
+                            pt.SourceRange = growedRange.Offset(-1, 1, growedRange.RowCount() + 1, growedRange.ColumnCount() - 1);
                         }
                     }
                 }

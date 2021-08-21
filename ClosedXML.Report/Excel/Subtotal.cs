@@ -304,12 +304,33 @@ namespace ClosedXML.Report.Excel
 
             foreach (var moveData in grRanges)
             {
-                if (moveData.Type == RangeType.DataRange)
+                if (moveData.Type != RangeType.DataRange) continue;
+
+                var groupRng = Sheet.Range(moveData.SourceAddress);
+
+                var cuttingGroups = _groups.Select(g => g.Range.RangeAddress.LastAddress)
+                    .Distinct()
+                    .Where(address => moveData.SourceAddress.Contains(address))
+                    .OrderBy(address => address.RowNumber)
+                    .ToArray();
+                if (cuttingGroups.Any())
                 {
-                    var groupRng = Sheet.Range(moveData.SourceAddress);
-                    var gr = new SubtotalGroup(level, groupBy, moveData.GroupTitle, groupRng, null, false);
-                    result.Add(gr);
+                    var startAddress = moveData.SourceAddress.FirstAddress;
+                    foreach (var g in cuttingGroups)
+                    {
+                        groupRng = Sheet.Range(startAddress, g);
+                        result.Add(new SubtotalGroup(level, groupBy, moveData.GroupTitle, groupRng, null, false));
+                        startAddress = Sheet.Cell(g).WorksheetRow().RowBelow()
+                            .Cell(startAddress.ColumnNumber).Address;
+                    }
+
+                    groupRng = startAddress.RowNumber <= moveData.SourceAddress.LastAddress.RowNumber
+                        ? Sheet.Range(startAddress, moveData.SourceAddress.LastAddress)
+                        : null;
                 }
+
+                if (groupRng != null)
+                    result.Add(new SubtotalGroup(level, groupBy, moveData.GroupTitle, groupRng, null, false));
             }
 
             _groups.AddRange(result);

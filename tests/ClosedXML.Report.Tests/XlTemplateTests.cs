@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ClosedXML.Report.Excel;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -87,9 +88,9 @@ namespace ClosedXML.Report.Tests
                 }),
                 wb =>
                 {
-                    wb.SaveAs("Output\\4.xlsx");
+                    wb.SaveAs(".\\Output\\4.xlsx");
                     var sheet = wb.Worksheet(1);
-                    sheet.Cell("G1").GetValue<string>().Should().Be("title from test");
+                    sheet.Cell("H1").GetValue<string>().Should().Be("title from test");
                     sheet.Cell("B4").GetValue<string>().Should().Be("1");
                     sheet.Cell("B5").GetValue<string>().Should().Be("2");
                     sheet.Cell("B6").GetValue<string>().Should().Be("3");
@@ -102,24 +103,27 @@ namespace ClosedXML.Report.Tests
                     sheet.Cell("E4").GetValue<int>().Should().Be(testData[0].Age);
                     sheet.Cell("E5").GetValue<int>().Should().Be(testData[1].Age);
                     sheet.Cell("E6").GetValue<int>().Should().Be(testData[2].Age);
-                    sheet.Cell("F4").GetValue<string>().Should().Be(testData[0].Address.City);
-                    sheet.Cell("F5").GetValue<string>().Should().Be(testData[1].Address.City);
-                    sheet.Cell("F6").GetValue<string>().Should().Be(testData[2].Address.City);
-                    wb.NamedRange("PlanData").Ranges.First().RangeAddress.ToStringRelative().Should().Be("A4:J6");
-                    sheet.Cell("G4").GetValue<int>().Should().Be(testData[0].Hours[0]);
-                    sheet.Cell("G5").GetValue<int>().Should().Be(testData[1].Hours[0]);
-                    sheet.Cell("G6").GetValue<int>().Should().Be(testData[2].Hours[0]);
-                    sheet.Cell("H4").GetValue<int>().Should().Be(testData[0].Hours[1]);
-                    sheet.Cell("H5").GetValue<int>().Should().Be(testData[1].Hours[1]);
-                    sheet.Cell("H6").GetValue<int>().Should().Be(testData[2].Hours[1]);
-                    sheet.Cell("I4").GetValue<int>().Should().Be(testData[0].Hours[2]);
-                    sheet.Cell("I5").GetValue<int>().Should().Be(testData[1].Hours[2]);
-                    sheet.Cell("I6").GetValue<int>().Should().Be(testData[2].Hours[2]);
-                    sheet.Cell("J4").GetValue<int>().Should().Be(testData[0].Hours.Sum());
-                    sheet.Cell("J5").GetValue<int>().Should().Be(testData[1].Hours.Sum());
-                    sheet.Cell("J6").GetValue<int>().Should().Be(testData[2].Hours.Sum());
+                    sheet.Cell("F4").FormulaA1.Should().Be($"HYPERLINK(\"mailto:{testData[0].Email}\",\"{testData[0].Email}\")");
+                    sheet.Cell("F5").FormulaA1.Should().Be($"HYPERLINK(\"mailto:{testData[1].Email}\",\"{testData[1].Email}\")");
+                    sheet.Cell("F6").FormulaA1.Should().Be($"HYPERLINK(\"mailto:{testData[2].Email}\",\"{testData[2].Email}\")");
+                    sheet.Cell("G4").GetValue<string>().Should().Be(testData[0].Address.City);
+                    sheet.Cell("G5").GetValue<string>().Should().Be(testData[1].Address.City);
+                    sheet.Cell("G6").GetValue<string>().Should().Be(testData[2].Address.City);
+                    wb.NamedRange("PlanData").Ranges.First().RangeAddress.ToStringRelative().Should().Be("A4:K6");
+                    sheet.Cell("H4").GetValue<int>().Should().Be(testData[0].Hours[0]);
+                    sheet.Cell("H5").GetValue<int>().Should().Be(testData[1].Hours[0]);
+                    sheet.Cell("H6").GetValue<int>().Should().Be(testData[2].Hours[0]);
+                    sheet.Cell("I4").GetValue<int>().Should().Be(testData[0].Hours[1]);
+                    sheet.Cell("I5").GetValue<int>().Should().Be(testData[1].Hours[1]);
+                    sheet.Cell("I6").GetValue<int>().Should().Be(testData[2].Hours[1]);
+                    sheet.Cell("J4").GetValue<int>().Should().Be(testData[0].Hours[2]);
+                    sheet.Cell("J5").GetValue<int>().Should().Be(testData[1].Hours[2]);
+                    sheet.Cell("J6").GetValue<int>().Should().Be(testData[2].Hours[2]);
+                    sheet.Cell("K4").GetValue<int>().Should().Be(testData[0].Hours.Sum());
+                    sheet.Cell("K5").GetValue<int>().Should().Be(testData[1].Hours.Sum());
+                    sheet.Cell("K6").GetValue<int>().Should().Be(testData[2].Hours.Sum());
                     sheet.Cell("D8").GetValue<int>().Should().Be(15);
-                    sheet.Cell("K6").GetValue<int>().Should().Be(4);
+                    sheet.Cell("L6").GetValue<int>().Should().Be(4);
                 });
         }
 

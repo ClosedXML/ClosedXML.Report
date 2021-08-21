@@ -27,7 +27,7 @@ namespace ClosedXML.Report
         private TempSheetBuffer _buff;
         private IXLRange _rowRange;
         private IXLRangeRow _optionsRow;
-        private bool _optionsRowIsEmpty = true;
+        private bool _isOptionsRowEmpty = true;
         private bool _isSubrange;
         private IDictionary<string, object> _globalVariables;
 
@@ -81,7 +81,6 @@ namespace ClosedXML.Report
             var innerRanges = GetInnerRanges(range).ToArray();
 
             var sheet = range.Worksheet;
-
             for (int iRow = 1; iRow <= result._rowCnt; iRow++)
             {
                 for (int iColumn = 1; iColumn <= result._colCnt; iColumn++)
@@ -107,7 +106,7 @@ namespace ClosedXML.Report
 
                 result._rowRange = range.Offset(0, 0, result._rowCnt, result._colCnt);
                 result._optionsRow = range.LastRow();
-                result._optionsRowIsEmpty = !result._optionsRow.CellsUsed(XLCellsUsedOptions.AllContents | XLCellsUsedOptions.MergedRanges).Any();
+                result._isOptionsRowEmpty = range.IsOptionsRowEmpty();
             }
 
             result._subranges = innerRanges.SelectMany(nrng => nrng.Ranges,
@@ -219,7 +218,7 @@ namespace ClosedXML.Report
             }
 
             // Render options row
-            if (!_optionsRowIsEmpty)
+            if (!_isOptionsRowEmpty)
             {
                 foreach (var cell in _cells.Where(c => c.Row == _rowCnt + 1).OrderBy(c => c.Column))
                 {
@@ -230,7 +229,7 @@ namespace ClosedXML.Report
 
             // Execute range options tags
             var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress);
-            if (!_optionsRowIsEmpty)
+            if (!_isOptionsRowEmpty)
             {
                 var optionsRow = resultRange.LastRow().AsRange();
                 foreach (var mrg in _mergedRanges.Where(r => _optionsRow.Contains(r)))
@@ -238,6 +237,21 @@ namespace ClosedXML.Report
                     var newMrg = mrg.Relative(_optionsRow, optionsRow);
                     newMrg.Merge();
                 }
+            }
+
+            // arrage rows height
+            var worksheet = _rowRange.Worksheet;
+            var rowNumbers = _cells.Where(xc => xc.XLCell != null && xc.Row <= _rowCnt)
+                .Select(xc => xc.XLCell.Address.RowNumber)
+                .Distinct()
+                .ToArray();
+            var heights = rowNumbers
+                .Select(c => worksheet.Row(c).Height)
+                .ToArray();
+            var firstRow = rowNumbers.Min();
+            foreach (var row in Enumerable.Range(rangeStart.RowNumber, _buff.PrevAddress.RowNumber))
+            {
+                worksheet.Row(firstRow + row - 1).Height = heights[(row - 1) % heights.Length];
             }
 
             if (_isSubrange)
@@ -397,6 +411,7 @@ namespace ClosedXML.Report
                 }
 
                 tags.Execute(new ProcessingContext(newClmnRng, items[i], evaluator));
+                tags.Reset();
 
                 if (_rowCnt > 1)
                     _buff.NewColumn(startAddr);
@@ -425,8 +440,8 @@ namespace ClosedXML.Report
             var innerRanges = range.GetContainingNames().ToArray();
             var cells = from c in _cells
                         let value = c.GetString()
-                        where (value.StartsWith("<<") || value.EndsWith(">>"))
-                            && !innerRanges.Any(nr => nr.Ranges.Contains(c.XLCell.AsRange()))
+                        where TagExtensions.HasTag(value)
+                              && !innerRanges.Any(nr => nr.Ranges.Contains(c.XLCell.AsRange()))
                         select c;
 
             foreach (var cell in cells)
@@ -443,7 +458,7 @@ namespace ClosedXML.Report
                     tags = _tagsEvaluator.Parse(cell.GetString(), range, cell, out newValue);
                     cell.Value = newValue;
                 }
-                if (cell.Row == _rowCnt)
+                if (cell.Row > 1 && cell.Row == _rowCnt)
                     _rangeTags.AddRange(tags);
                 else
                     _tags.AddRange(tags);

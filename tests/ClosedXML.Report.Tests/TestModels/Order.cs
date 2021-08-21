@@ -13,6 +13,18 @@ namespace ClosedXML.Report.Tests.TestModels
         [Association(ThisKey = "OrderNo", OtherKey = "OrderNo", IsBackReference = true)]
         public List<item> Items { get; set; }
 
-        public Bitmap PaymentImage { get; set; }
+        public Bitmap PaymentImage
+        {
+            get
+            {
+                switch (PaymentMethod)
+                {
+                    case "Visa": return Resource.card;
+                    case "Cash": return Resource.cash;
+                    case "Credit": return Resource.bank;
+                    default: return null;
+                }
+            }
+        }
     }
 }
