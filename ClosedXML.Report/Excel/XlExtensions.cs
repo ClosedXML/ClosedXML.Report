@@ -138,11 +138,11 @@ namespace ClosedXML.Report.Excel
         public static IXLRange GrowToMergedRanges(this IXLRange range)
         {
             var sheet = range.Worksheet;
-            sheet.MergedRanges.Where(range.Intersects)
+            sheet.MergedRanges.Where(range.Intersects).Where(x => !range.Contains(x))
                 .ForEach(x =>
                 {
                     var xlCells = range.Union(x).Select(c => c.Address)
-                        .OrderBy(c => c.RowNumber).ThenBy(c => c.ColumnNumber).ToArray();
+                        .OrderBy(c => c.RowNumber).ThenBy(c => c.ColumnNumber);
                     range = sheet.Range(xlCells.First().ToStringFixed(), xlCells.Last().ToStringFixed());
                 });
             return range;
