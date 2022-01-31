@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Options;
+using ClosedXML.Report.Utils;
 using MoreLinq;
 
 namespace ClosedXML.Report.Excel
@@ -336,7 +337,7 @@ namespace ClosedXML.Report.Excel
         {
             _calcEngineProperty ??= worksheet.GetType()
                 .GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic);
-            var calcEngine = _calcEngineProperty.GetValue(worksheet, Array.Empty<object>());
+            var calcEngine = _calcEngineProperty.GetValue(worksheet, EmptyArray.New<object>());
 
             _cacheExpressionsProperty ??= calcEngine.GetType()
                 .GetProperty("CacheExpressions");
