@@ -8,6 +8,7 @@ using System.Reflection;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
+using ClosedXML.Report.Utils;
 
 namespace ClosedXML.Report
 {
@@ -105,7 +106,7 @@ namespace ClosedXML.Report
                 var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
                     .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value)))
                     .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
-                        .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value, Array.Empty<string>()))));
+                        .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value, EmptyArray.New<object>()))));
 
                 foreach (var field in fields)
                 {
