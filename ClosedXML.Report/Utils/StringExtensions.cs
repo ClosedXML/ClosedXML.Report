@@ -77,7 +77,7 @@ namespace ClosedXML.Report.Utils
                 howMany = input.Length + howMany;
             return howMany >= value.Length ? value : input.Substring(0, howMany);
         }
-         
+
         private static readonly Regex IsNumberRegex = new Regex(@"^[+-]?\d+$", RegexOptions.IgnoreCase);
         public static bool IsNumber(this string input)
         {
@@ -119,11 +119,6 @@ namespace ClosedXML.Report.Utils
             return stringValues.Any(otherValue => String.CompareOrdinal(value, otherValue) == 0);
         }
 
-        public static bool IsNullOrWhiteSpace(this string input)
-        {
-            return string.IsNullOrEmpty(input) || input.Trim() == string.Empty;
-        }
-
         /// <summary>
         /// Formats the string according to the specified mask
         /// </summary>
@@ -132,7 +127,7 @@ namespace ClosedXML.Report.Utils
         /// <returns>The formatted string</returns>
         public static string FormatWithMask(this string input, string mask)
         {
-            if (input.IsNullOrWhiteSpace()) return input;
+            if (string.IsNullOrWhiteSpace(input)) return input;
             var output = string.Empty;
             var index = 0;
             foreach (var m in mask)

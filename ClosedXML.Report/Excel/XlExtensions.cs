@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Options;
-using ClosedXML.Report.Utils;
 using MoreLinq;
 
 namespace ClosedXML.Report.Excel
@@ -35,6 +34,14 @@ namespace ClosedXML.Report.Excel
             //+ @"(?=\W)" // End with non word
             , RegexOptions.Compiled);
 
+        private static PropertyInfo _xlCellInnerText;
+        private static MethodInfo _getFormulaA1Method;
+        private static MethodInfo _getFormulaR1C1Method;
+        private static FieldInfo _cellValueField;
+        private static PropertyInfo _calcEngineProperty;
+        private static PropertyInfo _cacheExpressionsProperty;
+        private static MethodInfo _copyFromMethod;
+
         /// <summary>
         /// Find ranges within which contains the specified range (completely).
         /// </summary>
@@ -55,7 +62,8 @@ namespace ClosedXML.Report.Excel
 
         public static bool Contains(this IXLRangeAddress rangeAddress, IXLRangeAddress address)
         {
-            return rangeAddress.Contains(address.FirstAddress) && rangeAddress.Contains(address.LastAddress);
+            return rangeAddress.Contains(address.FirstAddress)
+                && rangeAddress.Contains(address.LastAddress);
         }
 
         internal static IXLRange ShiftRows(this IXLRangeBase range, int rowCount)
@@ -77,8 +85,7 @@ namespace ClosedXML.Report.Excel
                 var lastAddress = range.RangeAddress.LastAddress;
                 return range.Worksheet.Range(
                     range.RangeAddress.FirstAddress,
-                    range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address
-                    );
+                    range.Worksheet.Cell(lastAddress.RowNumber + rowCount, lastAddress.ColumnNumber).Address);
             }
             else
             {
@@ -89,12 +96,12 @@ namespace ClosedXML.Report.Excel
             }
         }
 
-        internal static KeyValuePair<string, IXLRangeAddress>[] GetRangeParameters(this IXLWorksheet ws, string formulaA1)
+        internal static IEnumerable<KeyValuePair<string, IXLRangeAddress>> GetRangeParameters(this IXLWorksheet ws, string formulaA1)
         {
-            if (formulaA1.IsNullOrWhiteSpace()) return null;
+            if (string.IsNullOrWhiteSpace(formulaA1)) return null;
 
             var regex = A1SimpleRegex;
-            List<KeyValuePair<string, IXLRangeAddress>> result = new List<KeyValuePair<string, IXLRangeAddress>>();
+            var result = new List<KeyValuePair<string, IXLRangeAddress>>();
 
             foreach (var match in regex.Matches(formulaA1).Cast<Match>())
             {
@@ -114,7 +121,7 @@ namespace ClosedXML.Report.Excel
                 }
                 result.Add(new KeyValuePair<string, IXLRangeAddress>(matchValue, ws.Range(matchValue).RangeAddress));
             }
-            return result.ToArray();
+            return result;
         }
 
         /// <summary>
@@ -181,7 +188,7 @@ namespace ClosedXML.Report.Excel
             {
                 if (replace)
                     subtotal.Unsubtotal();
-                var summaries = totalList.Select(x => new SummaryFuncTag {Name=function.ToLower(), Cell = new TemplateCell { Column = x } }).ToArray();
+                var summaries = totalList.Select(x => new SummaryFuncTag { Name = function.ToLower(), Cell = new TemplateCell { Column = x } }).ToArray();
                 subtotal.AddGrandTotal(summaries);
                 subtotal.GroupBy(groupBy, summaries, pageBreaks);
             }
@@ -209,8 +216,8 @@ namespace ClosedXML.Report.Excel
         public static void CopyFrom(this IXLConditionalFormat targetFormat, IXLConditionalFormat srcFormat)
         {
             var type = targetFormat.GetType();
-            var method = type.GetMethod("CopyFrom", BindingFlags.Instance | BindingFlags.Public);
-            method.Invoke(targetFormat, new object[] { srcFormat });
+            _copyFromMethod ??= type.GetMethod("CopyFrom", BindingFlags.Instance | BindingFlags.Public);
+            _copyFromMethod.Invoke(targetFormat, new object[] { srcFormat });
         }
 
         public static int RowCount(this IXLRangeAddress address)
@@ -220,33 +227,31 @@ namespace ClosedXML.Report.Excel
 
         internal static string GetFormulaR1C1(this IXLCell cell, string value)
         {
-            var type = cell.GetType();
-            var method = type.GetMethod("GetFormulaR1C1", BindingFlags.Instance | BindingFlags.NonPublic);
-            return (string)method.Invoke(cell, new object[] { value });
+            _getFormulaR1C1Method ??= cell.GetType().GetMethod("GetFormulaR1C1", BindingFlags.Instance | BindingFlags.NonPublic);
+            return (string)_getFormulaR1C1Method.Invoke(cell, new object[] { value });
         }
 
         internal static string GetFormulaA1(this IXLCell cell, string value)
         {
-            var type = cell.GetType();
-            var method = type.GetMethod("GetFormulaA1", BindingFlags.Instance | BindingFlags.NonPublic);
-            return (string)method.Invoke(cell, new object[] { value });
+            _getFormulaA1Method ??= cell.GetType()
+                .GetMethod("GetFormulaA1", BindingFlags.Instance | BindingFlags.NonPublic);
+            return (string)_getFormulaA1Method.Invoke(cell, new object[] { value });
         }
 
-        private static PropertyInfo _xlCellInnerText;
         internal static string GetInnerText(this IXLCell cell)
         {
-            _xlCellInnerText = _xlCellInnerText ??
-                               cell.GetType()
-                                   .GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
+            _xlCellInnerText ??= cell.GetType()
+                .GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
             return (string)_xlCellInnerText.GetValue(cell, null);
         }
+
         internal static string GetCellText(this IXLCell cell)
         {
-            var field = cell.GetType().GetField("_cellValue",
-                         BindingFlags.NonPublic |
-                         BindingFlags.Instance);
-            return (string)field.GetValue(cell);
+            _cellValueField ??= cell.GetType()
+                .GetField("_cellValue", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (string)_cellValueField.GetValue(cell);
         }
+
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
             foreach (var sourceFmtRange in format.Ranges)
@@ -297,7 +302,7 @@ namespace ClosedXML.Report.Excel
 
         public static IXLRange Offset(this IXLRange range, int rowsOffset, int columnOffset, int rows, int columns)
         {
-            if (rows<=0)
+            if (rows <= 0)
                 throw new ArgumentOutOfRangeException(nameof(rows), "The height of the range must be greater than 0.");
             if (columns <= 0)
                 throw new ArgumentOutOfRangeException(nameof(columns), "The width of the range must be greater than 0.");
@@ -320,9 +325,11 @@ namespace ClosedXML.Report.Excel
 
         public static void SetCalcEngineCacheExpressions(this IXLWorksheet worksheet, bool value)
         {
-            var wsType = worksheet.GetType();
-            var calcEngine = wsType.GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(worksheet, new object[] { });
-            calcEngine.GetType().GetProperty("CacheExpressions").SetValue(calcEngine, value, new object[] { });
+            _calcEngineProperty ??= worksheet.GetType()
+                .GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic);
+            var calcEngine = _calcEngineProperty.GetValue(worksheet);
+            _cacheExpressionsProperty ??= calcEngine.GetType().GetProperty("CacheExpressions");
+            _cacheExpressionsProperty.SetValue(calcEngine, value);
         }
 
         /* ClosedXML issue #686 */
@@ -331,11 +338,16 @@ namespace ClosedXML.Report.Excel
             foreach (var format in worksheet.ConditionalFormats)
             {
                 var source = format.Range.FirstCell();
-                foreach (var v in format.Values.Where(v => v.Value.IsFormula).ToList())
+                var values = format.Values;
+                for (int i = 1; i < values.Count + 1; i++)
                 {
-                    var f = v.Value.Value;
-                    var r1c1 = source.GetFormulaR1C1(f);
-                    format.Values[v.Key] = new XLFormula("&=" + r1c1);
+                    var value = values[i];
+                    if (value.IsFormula)
+                    {
+                        var formula = value.Value;
+                        var r1c1 = source.GetFormulaR1C1(formula);
+                        values[i] = new XLFormula("&=" + r1c1);
+                    }
                 }
             }
         }
@@ -345,14 +357,22 @@ namespace ClosedXML.Report.Excel
         {
             foreach (var format in worksheet.ConditionalFormats)
             {
-                var target = format.Ranges.OrderBy(x=>x.RangeAddress.FirstAddress.RowNumber)
-                    .ThenBy(x=> x.RangeAddress.FirstAddress.ColumnNumber)
-                    .First().FirstCell();
-                foreach (var v in format.Values.Where(v => v.Value.Value.StartsWith("&=")).ToList())
+                var target = format.Ranges
+                    .OrderBy(x => x.RangeAddress.FirstAddress.RowNumber)
+                    .ThenBy(x => x.RangeAddress.FirstAddress.ColumnNumber)
+                    .First()
+                    .FirstCell();
+
+                var values = format.Values;
+                for (int i = 1; i < values.Count + 1; i++)
                 {
-                    var f = v.Value.Value.Substring(1);
-                    var a1 = target.GetFormulaA1(f);
-                    format.Values[v.Key] = new XLFormula(a1);
+                    var value = values[i].Value;
+                    if (value.StartsWith("&="))
+                    {
+                        var formula = value.Substring(1);
+                        var a1 = target.GetFormulaA1(formula);
+                        values[i] = new XLFormula(a1);
+                    }
                 }
             }
         }

@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core.Exceptions;
 using System.Reflection;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using ClosedXML.Report.Utils;
-using System.Linq.Dynamic.Core.Exceptions;
 
 
 namespace ClosedXML.Report
@@ -39,10 +39,12 @@ namespace ClosedXML.Report
 
         public void ParseTags(IXLRange range, string rangeName)
         {
-            var innerRanges = range.GetContainingNames().Where(nr => _variables.ContainsKey(nr.Name)).ToArray();
-            var cellsUsed = range.CellsUsed()
-                .Where(c => !c.HasFormula && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())))
+            var innerRanges = range.GetContainingNames()
+                .Where(nr => _variables.ContainsKey(nr.Name))
                 .ToArray();
+
+            var cellsUsed = range.CellsUsed(c => !c.HasFormula && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())));
+
             var cells = from c in cellsUsed
                 let value = c.GetString()
                 where TagExtensions.HasTag(value)
@@ -207,18 +209,20 @@ namespace ClosedXML.Report
             if (type.IsPrimitive())
                 return;
 
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
-                .Select(f => new { f.Name, val = f.GetValue(value), type = f.FieldType })
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value)))
                 .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
-                    .Select(f => new { f.Name, val = f.GetValue(value, new object[] { }), type = f.PropertyType }));
+                    .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value))));
 
             string alias = _alias;
             if (!string.IsNullOrEmpty(alias))
-                alias = alias + "_";
+            {
+                alias += "_";
+            }
 
             foreach (var field in fields)
             {
-                _variables[alias + field.Name] = field.val;
+                _variables[$"{alias}{field.Key}"] = field.Value;
             }
         }
 
@@ -234,7 +238,7 @@ namespace ClosedXML.Report
                 variableValue is IEnumerable data1)
                 return new BoundRange(namedRange, data1);
 
-            var expression = "{{" + namedRange.Name.Replace("_", ".") +"}}";
+            var expression = $"{{{{{namedRange.Name.Replace("_", ".")}}}}}";
 
             if (_evaluator.TryEvaluate(expression, out var res) &&
                 res is IEnumerable data2)

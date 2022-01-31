@@ -1,7 +1,7 @@
 ﻿using System.IO;
+using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
-using ClosedXML.Report.Utils;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -39,11 +39,11 @@ namespace ClosedXML.Report.Tests
             using (var workbook = XLWorkbook.OpenFromTemplate(fileName))
             {
                 var pars = workbook.Worksheet(1).GetRangeParameters("SUBTOTALS(9,I36:I38, U32");
-                pars.Length.Should().Be(2);
-                pars[0].Key.Should().Be("I36:I38");
-                pars[0].Value.ToStringRelative().Should().Be("I36:I38");
-                pars[1].Key.Should().Be("U32");
-                pars[1].Value.ToStringRelative().Should().Be("U32:U32");
+                pars.Should().HaveCount(2);
+                pars.ElementAt(0).Key.Should().Be("I36:I38");
+                pars.ElementAt(0).Value.ToStringRelative().Should().Be("I36:I38");
+                pars.ElementAt(1).Key.Should().Be("U32");
+                pars.ElementAt(1).Value.ToStringRelative().Should().Be("U32:U32");
             }
         }
 

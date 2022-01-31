@@ -27,27 +27,27 @@ using System.Collections.Generic;
 using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
-using ClosedXML.Report.Utils;
 using MoreLinq;
 
 namespace ClosedXML.Report.Options
 {
-    public class PivotTag: OptionTag
+    public class PivotTag : OptionTag
     {
         public override void Execute(ProcessingContext context)
         {
             var fields = List.GetAll<PivotTag>()
-                .OrderBy(x => context.Range.Cell(x.Cell.Row, x.Cell.Column).WorksheetColumn().ColumnNumber()).ToArray();
+                .OrderBy(x => context.Range.Cell(x.Cell.Row, x.Cell.Column).WorksheetColumn().ColumnNumber())
+                .ToArray();
 
             // Init variables
             var wb = context.Range.Worksheet.Workbook;
-            var rowTags = List.GetAll(new[] {"row"}).OrderBy(t => t.Column);
-            var colTags = List.GetAll(new[] {"column", "col"}).OrderBy(t => t.Column);
-            var pageTags = List.GetAll(new[] {"page"}).OrderBy(t => t.Column).ToList();
+            var rowTags = List.GetAll("row").OrderBy(t => t.Column);
+            var colTags = List.GetAll(new[] { "column", "col" }).OrderBy(t => t.Column);
+            var pageTags = List.GetAll("page").OrderBy(t => t.Column).ToArray();
             var dataTags = List.GetAll<DataPivotTag>().OrderBy(t => t.Column);
 
-            var pivotTag = fields.FirstOrDefault(t => t.Name.ToLower() == "pivot") ?? this;
-            var destination =  GetDestination(pivotTag, wb, pageTags);
+            var pivotTag = fields.FirstOrDefault(t => t.Name.Equals("pivot", StringComparison.OrdinalIgnoreCase)) ?? this;
+            var destination = GetDestination(pivotTag, wb, pageTags);
             var pt = CreatePivot(pivotTag, context, destination);
 
             foreach (var optionTag in pageTags)
@@ -163,18 +163,18 @@ namespace ClosedXML.Report.Options
         private XLPivotTableDestination GetDestination(PivotTag pivot, XLWorkbook wb, IEnumerable<OptionTag> pageTags)
         {
             string tableName = pivot.GetParameter("name");
-            if (tableName.IsNullOrWhiteSpace()) tableName = "PivotTable";
+            if (string.IsNullOrWhiteSpace(tableName)) tableName = "PivotTable";
 
             IXLWorksheet dstSheet;
             IXLCell dstCell;
             var dstStr = pivot.GetParameter("dst");
-            if (!dstStr.IsNullOrWhiteSpace())
+            if (!string.IsNullOrWhiteSpace(dstStr))
             {
                 var shSp = dstStr.IndexOf("!", StringComparison.Ordinal);
                 dstSheet = wb.Worksheet(dstStr.Substring(0, shSp));
                 if (dstSheet == null)
                     throw new TemplateParseException($"Can\'t find pivot destination sheet \'{dstStr.Substring(0, shSp)}\'", Cell.XLCell.AsRange());
-                dstStr = dstStr.Substring(shSp+1, dstStr.Length - shSp - 1);
+                dstStr = dstStr.Substring(shSp + 1, dstStr.Length - shSp - 1);
                 dstCell = dstSheet.Cell(dstStr);
                 if (dstCell == null)
                     throw new TemplateParseException($"Can\'t find pivot destination cell \'{dstStr}\'", Cell.XLCell.AsRange());

@@ -50,6 +50,11 @@ namespace ClosedXML.Report.Options
             return this.Where(x => Array.IndexOf(names, x.Name) >= 0);
         }
 
+        public IEnumerable<OptionTag> GetAll(string name)
+        {
+            return this.Where(x => x.Name == name);
+        }
+
         public IEnumerable<T> GetAll<T>() where T : OptionTag
         {
             return this.OfType<T>().Where(x => x.Enabled);
@@ -64,7 +69,7 @@ namespace ClosedXML.Report.Options
         {
             while (true)
             {
-                var t = this.FirstOrDefault(x=>x.Enabled);
+                var t = this.FirstOrDefault(x => x.Enabled);
                 if (t == null)
                     break;
 
@@ -72,7 +77,7 @@ namespace ClosedXML.Report.Options
                 {
                     t.Execute(context);
                 }
-                catch(TemplateParseException ex)
+                catch (TemplateParseException ex)
                 {
                     _errors.Add(new TemplateError(ex.Message, ex.Range));
                 }
