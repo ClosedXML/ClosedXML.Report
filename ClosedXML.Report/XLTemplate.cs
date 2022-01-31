@@ -105,7 +105,7 @@ namespace ClosedXML.Report
                 var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => f.IsPublic)
                     .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value)))
                     .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
-                        .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value))));
+                        .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value, Array.Empty<string>()))));
 
                 foreach (var field in fields)
                 {
@@ -118,7 +118,7 @@ namespace ClosedXML.Report
         {
             CheckIsDisposed();
             if (value is DataTable)
-                value = ((DataTable) value).Rows.Cast<DataRow>();
+                value = ((DataTable)value).Rows.Cast<DataRow>();
             _interpreter.AddVariable(alias, value);
         }
 

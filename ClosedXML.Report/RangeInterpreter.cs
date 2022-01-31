@@ -212,7 +212,7 @@ namespace ClosedXML.Report
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
                 .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value)))
                 .Concat(type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(f => f.CanRead)
-                    .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value))));
+                    .Select(f => new KeyValuePair<string, object>(f.Name, f.GetValue(value, Array.Empty<object>()))));
 
             string alias = _alias;
             if (!string.IsNullOrEmpty(alias))

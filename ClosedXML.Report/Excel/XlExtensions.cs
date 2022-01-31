@@ -336,7 +336,7 @@ namespace ClosedXML.Report.Excel
         {
             _calcEngineProperty ??= worksheet.GetType()
                 .GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic);
-            var calcEngine = _calcEngineProperty.GetValue(worksheet);
+            var calcEngine = _calcEngineProperty.GetValue(worksheet, Array.Empty<object>());
 
             _cacheExpressionsProperty ??= calcEngine.GetType()
                 .GetProperty("CacheExpressions");
