@@ -6,7 +6,7 @@ internal static class EmptyArray
 {
     public static T[] New<T>()
     {
-#if NETSTANDARD1_3_OR_GREATER
+#if NETSTANDARD
         return Array.Empty<T>();
 #else
         return new T[0];
