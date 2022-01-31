@@ -98,10 +98,12 @@ namespace ClosedXML.Report.Excel
 
         internal static IEnumerable<KeyValuePair<string, IXLRangeAddress>> GetRangeParameters(this IXLWorksheet ws, string formulaA1)
         {
-            if (string.IsNullOrWhiteSpace(formulaA1)) return null;
+            if (string.IsNullOrWhiteSpace(formulaA1))
+            {
+                throw new ArgumentException($"'{nameof(formulaA1)}' cannot be null or whitespace.", nameof(formulaA1));
+            }
 
             var regex = A1SimpleRegex;
-            var result = new List<KeyValuePair<string, IXLRangeAddress>>();
 
             foreach (var match in regex.Matches(formulaA1).Cast<Match>())
             {
@@ -119,9 +121,8 @@ namespace ClosedXML.Report.Excel
                         ws = refWs;
                     }
                 }
-                result.Add(new KeyValuePair<string, IXLRangeAddress>(matchValue, ws.Range(matchValue).RangeAddress));
+                yield return new KeyValuePair<string, IXLRangeAddress>(matchValue, ws.Range(matchValue).RangeAddress);
             }
-            return result;
         }
 
         /// <summary>
@@ -145,12 +146,19 @@ namespace ClosedXML.Report.Excel
         public static IXLRange GrowToMergedRanges(this IXLRange range)
         {
             var sheet = range.Worksheet;
-            sheet.MergedRanges.Where(range.Intersects).Where(x => !range.Contains(x))
+            sheet.MergedRanges
+                .Where(range.Intersects)
+                .Where(x => !range.Contains(x))
                 .ForEach(x =>
                 {
-                    var xlCells = range.Union(x).Select(c => c.Address)
-                        .OrderBy(c => c.RowNumber).ThenBy(c => c.ColumnNumber);
-                    range = sheet.Range(xlCells.First().ToStringFixed(), xlCells.Last().ToStringFixed());
+                    var xlCells = range.Union(x)
+                        .Select(c => c.Address)
+                        .OrderBy(c => c.RowNumber)
+                        .ThenBy(c => c.ColumnNumber);
+
+                    range = sheet.Range(
+                        xlCells.First().ToStringFixed(),
+                        xlCells.Last().ToStringFixed());
                 });
             return range;
         }
@@ -215,8 +223,8 @@ namespace ClosedXML.Report.Excel
 
         public static void CopyFrom(this IXLConditionalFormat targetFormat, IXLConditionalFormat srcFormat)
         {
-            var type = targetFormat.GetType();
-            _copyFromMethod ??= type.GetMethod("CopyFrom", BindingFlags.Instance | BindingFlags.Public);
+            _copyFromMethod ??= targetFormat.GetType()
+                .GetMethod("CopyFrom", BindingFlags.Instance | BindingFlags.Public);
             _copyFromMethod.Invoke(targetFormat, new object[] { srcFormat });
         }
 
@@ -227,7 +235,8 @@ namespace ClosedXML.Report.Excel
 
         internal static string GetFormulaR1C1(this IXLCell cell, string value)
         {
-            _getFormulaR1C1Method ??= cell.GetType().GetMethod("GetFormulaR1C1", BindingFlags.Instance | BindingFlags.NonPublic);
+            _getFormulaR1C1Method ??= cell.GetType()
+                .GetMethod("GetFormulaR1C1", BindingFlags.Instance | BindingFlags.NonPublic);
             return (string)_getFormulaR1C1Method.Invoke(cell, new object[] { value });
         }
 
@@ -328,7 +337,9 @@ namespace ClosedXML.Report.Excel
             _calcEngineProperty ??= worksheet.GetType()
                 .GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic);
             var calcEngine = _calcEngineProperty.GetValue(worksheet);
-            _cacheExpressionsProperty ??= calcEngine.GetType().GetProperty("CacheExpressions");
+
+            _cacheExpressionsProperty ??= calcEngine.GetType()
+                .GetProperty("CacheExpressions");
             _cacheExpressionsProperty.SetValue(calcEngine, value);
         }
 
