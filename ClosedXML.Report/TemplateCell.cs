@@ -7,7 +7,7 @@ namespace ClosedXML.Report
         public TemplateCellType CellType { get; internal set; }
         public bool IsCalculated { get; }
         public int Row { get; internal set; }
-        public int Column { get; internal set; }
+        public int Column { get; set; }
         public string Formula { get; set; }
         public object Value { get; set; }
         public IXLCell XLCell { get; internal set; }
