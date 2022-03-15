@@ -9,7 +9,7 @@ namespace ClosedXML.Report.Options
         internal byte PriorityKey { get; set; }
 
         public Dictionary<string, string> Parameters { get; internal set; }
-        public TemplateCell Cell { get; internal set; }
+        public TemplateCell Cell { get; set; }
         public TagsList List { get; internal set; }
         public string Name { get; internal set; }
         public bool Enabled { get; set; }
@@ -31,7 +31,7 @@ namespace ClosedXML.Report.Options
         public int Column
         {
             get { return _column > 0 ? _column : (_column = Cell.Column); }
-            protected set { _column = value; }
+            set { _column = value; }
         }
 
         protected OptionTag()
