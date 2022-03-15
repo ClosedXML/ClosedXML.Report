@@ -186,7 +186,19 @@ namespace ClosedXML.Report.Excel
                 subtotal.GroupBy(groupBy, summaries, pageBreaks);
             }
         }
-
+        
+        public static void Subtotal(this IXLRange range, int groupBy, Dictionary<int, string> totalListWithFunctions, bool replace = true, bool pageBreaks = false, bool summaryAbove = false)
+        {
+            using (var subtotal = new Subtotal(range, summaryAbove))
+            {
+                 if (replace)
+                    subtotal.Unsubtotal();
+                 var summaries = totalListWithFunctions.Select(x => new SummaryFuncTag { Name = x.Value.ToLower(), Cell = new TemplateCell { Column = x.Key } }).ToArray();
+                 subtotal.AddGrandTotal(summaries);
+                 subtotal.GroupBy(groupBy, summaries, pageBreaks);
+             }
+         }
+        
         public static bool IsSummary(this IXLRangeRow row)
         {
             return row.Cells(x => x.HasFormula && x.FormulaA1.ToLower().Contains("subtotal(")).Any();
