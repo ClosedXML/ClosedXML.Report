@@ -37,7 +37,7 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var cust = db.customers.LoadWith(x=>x.Orders.First().Items).OrderBy(c => c.CustNo).First(x=>x.CustNo == 1356);
+                        var cust = db.customers.LoadWith(x=>x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
                         cust.Logo = Resource.toms_diving_center;
                         tpl.AddVariable("MoreOrders", cust.Orders.Take(5));
                         tpl.AddVariable(cust);
@@ -78,6 +78,7 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_MultiRanges.xlsx"),
          InlineData("GroupTagTests_FormulasWithTagsInGroupRow.xlsx"),
          InlineData("GroupTagTests_TotalLabel.xlsx"),
+         InlineData("GroupTagTests_DisableSubTotals_MergeLabels.xlsx")
        ]
         public void Customers(string templateFile)
         {
