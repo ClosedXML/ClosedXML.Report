@@ -53,13 +53,13 @@ namespace ClosedXML.Report.Excel
                 {
                     var rangeAddress = _range.ShiftRows(1).RangeAddress;
                     _range.InsertRowsAbove(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false,true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false, true);
                 }
                 else
                 {
                     var rangeAddress = _range.RangeAddress;
                     _range.InsertRowsBelow(1, true);
-                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false,true);
+                    gr = CreateGroup(Sheet.Range(rangeAddress), 1, 1, GrandLabel, summaries, false, true);
                 }
                 gr.Column = 0;
                 _groups.Add(gr);
@@ -256,7 +256,7 @@ namespace ClosedXML.Report.Excel
             Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
         }
 
-        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SummaryFuncTag[] summaries, bool pageBreaks,bool isGrandTotal=false)
+        private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SummaryFuncTag[] summaries, bool pageBreaks, bool isGrandTotal = false)
         {
             var firstRow = groupRng.RangeAddress.FirstAddress.RowNumber;
             var lastRow = groupRng.RangeAddress.LastAddress.RowNumber;
@@ -351,18 +351,37 @@ namespace ClosedXML.Report.Excel
 
                 var val = row.Cell(groupBy).GetString();
                 var isSummaryRow = row.IsSummary();
+                var isLeftGroupEndLine = false;
+                if (false == isSummaryRow)
+                {
+                    isLeftGroupEndLine = _groups.SingleOrDefault(gr => gr.Column == groupBy - 1 &&
+                                                                    gr.SummaryRow == null &&
+                                                                    gr.Range.RangeAddress.LastAddress.RowNumber == row.RowNumber()) != null;
+                }
 
-                    if (string.IsNullOrEmpty(val) && !isSummaryRow)
+                if (string.IsNullOrEmpty(val) && !isSummaryRow)
+                {
+                    if (groupStart > 0)
                     {
-                        if (groupStart > 0)
-                        {
-                            groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().LastCell(), RangeType.DataRange));
-                        }
-                        groups.Add(CreateMoveTask(groupBy, "", row.FirstCell(), row.LastCell(), RangeType.HeaderRow));
-                        prevVal = null;
-                        groupStart = 0;
-                        continue;
+                        groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(groupStart, 1), row.RowAbove().LastCell(), RangeType.DataRange));
                     }
+                    groups.Add(CreateMoveTask(groupBy, "", row.FirstCell(), row.LastCell(), RangeType.HeaderRow));
+                    prevVal = null;
+                    groupStart = 0;
+                    continue;
+                }
+
+                if (isLeftGroupEndLine)
+                {
+                    var localGroupStart = groupStart == 0
+                        ? row.RangeAddress.Relative(_range.RangeAddress).FirstAddress.RowNumber
+                        : groupStart;
+
+                    groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(localGroupStart, 1), row.LastCell(), RangeType.DataRange));
+                    prevVal = null;
+                    groupStart = 0;
+                    continue;
+                }
 
                 if (val != prevVal)
                 {
@@ -392,7 +411,7 @@ namespace ClosedXML.Report.Excel
         {
             var groupRng = _range.Range(firstCell, lastCell);
             var level = firstCell.WorksheetRow().OutlineLevel;
-            var group = new MoveData(groupRng.RangeAddress, rangeType, title, level) {GroupColumn = groupColumn};
+            var group = new MoveData(groupRng.RangeAddress, rangeType, title, level) { GroupColumn = groupColumn };
             return group;
         }
 
