@@ -3,7 +3,6 @@ using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -11,7 +10,7 @@ using System.Reflection;
 
 namespace ClosedXML.Report
 {
-    public class XLTemplate : IDisposable
+    public class XLTemplate : IXLTemplate
     {
         private readonly RangeInterpreter _interpreter;
         private readonly bool _disposeWorkbookWithTemplate;
