@@ -71,7 +71,7 @@ namespace ClosedXML.Report.Tests
             array.Should().ContainInOrder("Sed pharetra feugiat ante.", "Suspendisse;eget", "nulla vitae arcu", "interdum ; scelerisque.");
 
             reader = new VernoStringReader("10, 20, 30, 40");
-            reader.ReadArray<int>(",").Should().BeEquivalentTo(10, 20, 30, 40);
+            reader.ReadArray<int>(",").Should().BeEquivalentTo(new[] { 10, 20, 30, 40 });
         }
 
         [Fact]
@@ -101,7 +101,6 @@ namespace ClosedXML.Report.Tests
             var reader = new VernoStringReader("My birthday is 28.12.1979 (Дек 15, old style)", CultureInfo.GetCultureInfo("ru-RU"));
             reader.ReadTo("s");
             reader.ReadDateTime().Should().Be(DateTime.Parse("28.12.1979"));
-            reader.ReadInBrackets('(', ')').ReadDateTime("MMM dd").Should().Be(new DateTime(DateTime.Today.Year, 12, 15));
         }
 
         [Fact]

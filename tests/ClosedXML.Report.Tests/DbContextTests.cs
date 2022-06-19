@@ -5,6 +5,8 @@ using Xunit;
 
 namespace ClosedXML.Report.Tests
 {
+
+    [Collection("Database")]
     public class DbContextTests
     {
         [Fact]

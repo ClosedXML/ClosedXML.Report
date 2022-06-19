@@ -25,7 +25,7 @@ namespace ClosedXML.Report.Utils
         }
 
         /// <summary>
-        /// Matching all capital letters in the input and seperate them with spaces to form a sentence.
+        /// Matching all capital letters in the input and separate them with spaces to form a sentence.
         /// If the input is an abbreviation text, no space will be added and returns the same input.
         /// </summary>
         /// <example>

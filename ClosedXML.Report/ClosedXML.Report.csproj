@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net40;net46</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net462;net6.0</TargetFrameworks>
     <LangVersion>Latest</LangVersion>
     <AssemblyName>ClosedXML.Report</AssemblyName>
     <PackageId>ClosedXML.Report</PackageId>
@@ -60,9 +60,9 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML.Signed" Version="0.95.0" Condition="'$(Configuration)'=='Release.Signed'" />
-    <PackageReference Include="ClosedXML" Version="0.95.0" Condition="'$(Configuration)'!='Release.Signed'" />
-    <PackageReference Include="morelinq" Version="2.10.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.10" />
+    <PackageReference Include="ClosedXML" Version="0.95.4" Condition="'$(Configuration)'!='Release.Signed'" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
   </ItemGroup>
 
 </Project>
