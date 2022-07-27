@@ -115,7 +115,7 @@ namespace ClosedXML.Report.Options
 
             var r = root.Offset(0, 0, rows, columns);
 
-            using (var subtotal = new Subtotal(r, summaryAbove, groups))
+            using (var subtotal = new Subtotal(r, summaryAbove, groups, context.Evaluator))
             {
                 if (TotalLabel != null) subtotal.TotalLabel = TotalLabel;
                 if (GrandLabel != null) subtotal.GrandLabel = GrandLabel;

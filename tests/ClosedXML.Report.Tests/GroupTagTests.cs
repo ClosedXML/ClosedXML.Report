@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
 {
+    [Collection("Database")]
     public class GroupTagTests : XlsxTemplateTestsBase
     {
         public GroupTagTests(ITestOutputHelper output) : base(output)
@@ -86,7 +87,7 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var orders = db.orders.LoadWith(x => x.Customer);
+                        var orders = db.orders.LoadWith(x => x.Customer).ToList();
                         tpl.AddVariable("Orders", orders);
                     }
                 },

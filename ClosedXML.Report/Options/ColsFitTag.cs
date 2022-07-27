@@ -27,18 +27,28 @@
             // worksheet column
             else if (cellRow == 1)
             {
-                ws.Column(cellClmn).AdjustToContents(ws.FirstRowUsed().RowNumber(), ws.LastRowUsed().RowNumber());
+                var firstRowUsed = ws.FirstRowUsed();
+                if (firstRowUsed != null)
+                    ws.Column(cellClmn).AdjustToContents(firstRowUsed.RowNumber(), ws.LastRowUsed().RowNumber());
             }
             // whole range
             else if (IsSpecialRangeCell(xlCell))
             {
-                ws.Columns(xlRange.FirstColumnUsed().ColumnNumber(), xlRange.LastColumnUsed().ColumnNumber())
-                    .AdjustToContents(xlRange.FirstRowUsed().RowNumber()-1, xlRange.LastRowUsed().RowNumber());
+                var firstUsed = xlRange.FirstCellUsed();
+                var lastUsed = xlRange.LastCellUsed();
+
+                if (firstUsed != null && lastUsed != null)
+                {
+                    ws.Columns(firstUsed.WorksheetColumn().ColumnNumber(), lastUsed.WorksheetColumn().ColumnNumber())
+                        .AdjustToContents(firstUsed.WorksheetRow().RowNumber() - 1, lastUsed.WorksheetRow().RowNumber());
+                }
             }
             // range column
             else if (IsSpecialRangeRow(xlCell))
             {
-                ws.Column(cellClmn).AdjustToContents(xlRange.FirstRowUsed().RowNumber(), xlRange.LastRowUsed().RowNumber());
+                var firstRowUsed = xlRange.FirstRowUsed();
+                if (firstRowUsed != null)
+                    ws.Column(cellClmn).AdjustToContents(firstRowUsed.RowNumber(), xlRange.LastRowUsed().RowNumber());
             }
             // only one cell
             else

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
     <LangVersion>7.1</LangVersion>
     <Configurations>Debug;Release;Release.Signed</Configurations>
     <OutputType>Exe</OutputType>

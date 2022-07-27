@@ -4,7 +4,8 @@
     {
         public override void Execute(ProcessingContext context)
         {
-            var xlCell = Cell.GetXlCell(context.Range);
+            var xlRange = context.Range;
+            var xlCell = Cell.GetXlCell(xlRange);
             var cellAddr = xlCell.Address.ToStringRelative(false);
             var cellRow = xlCell.WorksheetRow().RowNumber();
             var cellClmn = xlCell.WorksheetColumn().ColumnNumber();
@@ -26,18 +27,28 @@
             // worksheet row
             else if (cellClmn == 1)
             {
-                ws.Rows(cellRow, cellRow).AdjustToContents(ws.FirstColumnUsed().ColumnNumber(), ws.LastColumnUsed().ColumnNumber());
+                var firstColumnUsed = ws.FirstColumnUsed();
+                if (firstColumnUsed != null)
+                    ws.Rows(cellRow, cellRow).AdjustToContents(firstColumnUsed.ColumnNumber(), ws.LastColumnUsed().ColumnNumber());
             }
             // whole range
             else if (IsSpecialRangeCell(xlCell))
             {
-                ws.Rows(context.Range.FirstRowUsed().RowNumber(), context.Range.LastRowUsed().RowNumber())
-                    .AdjustToContents(context.Range.FirstColumnUsed().ColumnNumber(), context.Range.LastColumnUsed().ColumnNumber());
+                var firstUsed = xlRange.FirstCellUsed();
+                var lastUsed = xlRange.LastCellUsed();
+
+                if (firstUsed != null && lastUsed != null)
+                {
+                    ws.Rows(firstUsed.WorksheetRow().RowNumber(), lastUsed.WorksheetRow().RowNumber())
+                        .AdjustToContents(firstUsed.WorksheetColumn().ColumnNumber(), lastUsed.WorksheetColumn().ColumnNumber());
+                }
             }
             // range row
-            if (cellClmn == context.Range.RangeAddress.FirstAddress.ColumnNumber)
+            if (cellClmn == xlRange.RangeAddress.FirstAddress.ColumnNumber)
             {
-                ws.Rows(cellRow, cellRow).AdjustToContents(context.Range.FirstColumnUsed().ColumnNumber(), context.Range.LastColumnUsed().ColumnNumber());
+                var firstColumnUsed = xlRange.FirstColumnUsed();
+                if (firstColumnUsed != null)
+                    ws.Rows(cellRow, cellRow).AdjustToContents(firstColumnUsed.ColumnNumber(), xlRange.LastColumnUsed().ColumnNumber());
             }
             // only one cell
             else

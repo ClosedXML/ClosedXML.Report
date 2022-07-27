@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bogus;
 using ClosedXML.Report.Excel;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,6 +17,26 @@ namespace ClosedXML.Report.Tests
     {
         public XlTemplateTests(ITestOutputHelper output) : base(output)
         {
+        }
+
+        [Fact]
+        public void Issue246()
+        {
+            //Set the randomizer seed if you wish to generate repeatable data sets.
+            Randomizer.Seed = new Random(8675309);
+            var user = User.Generate(1).First();
+            var entities = TestEntity.GetTestData(300);
+
+            XlTemplateTest("SpreadReportTemplate.xlsx",
+                tpl =>
+                {
+                    tpl.AddVariable(user);
+                    tpl.AddVariable("EquipmentItemList", entities);
+                    tpl.AddVariable("VehicleList", entities);
+                },
+                wb =>
+                {
+                });
         }
 
         [Fact]
@@ -88,7 +109,6 @@ namespace ClosedXML.Report.Tests
                 }),
                 wb =>
                 {
-                    wb.SaveAs(".\\Output\\4.xlsx");
                     var sheet = wb.Worksheet(1);
                     sheet.Cell("H1").GetValue<string>().Should().Be("title from test");
                     sheet.Cell("B4").GetValue<string>().Should().Be("1");
