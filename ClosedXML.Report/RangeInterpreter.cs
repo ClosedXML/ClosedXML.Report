@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using ClosedXML.Report.Utils;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Dynamic.Core.Exceptions;
+using System.Reflection;
 
 
 namespace ClosedXML.Report
@@ -44,9 +44,9 @@ namespace ClosedXML.Report
                 .Where(c => !c.HasFormula && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())))
                 .ToArray();
             var cells = from c in cellsUsed
-                let value = c.GetString()
-                where TagExtensions.HasTag(value)
-                select c;
+                        let value = c.GetString()
+                        where TagExtensions.HasTag(value)
+                        select c;
 
             if (!_tags.ContainsKey(rangeName))
                 _tags.Add(rangeName, new TagsList(_errors));
@@ -147,24 +147,24 @@ namespace ClosedXML.Report
 
                 if (cell.HasComment)
                 {
-                    var comment = EvalString(cell.Comment.Text);
-                    cell.Comment.ClearText();
-                    cell.Comment.AddText(comment);
+                    var comment = EvalString(cell.GetComment().Text);
+                    cell.GetComment().ClearText();
+                    cell.GetComment().AddText(comment);
                 }
 
                 if (cell.HasHyperlink)
                 {
-                    if (cell.Hyperlink.IsExternal)
-                        cell.Hyperlink.ExternalAddress = new Uri(EvalString(cell.Hyperlink.ExternalAddress.ToString()));
+                    if (cell.GetHyperlink().IsExternal)
+                        cell.GetHyperlink().ExternalAddress = new Uri(EvalString(cell.GetHyperlink().ExternalAddress.ToString()));
                     else
-                        cell.Hyperlink.InternalAddress = EvalString(cell.Hyperlink.InternalAddress);
+                        cell.GetHyperlink().InternalAddress = EvalString(cell.GetHyperlink().InternalAddress);
                 }
 
                 if (cell.HasRichText)
                 {
-                    var richText = EvalString(cell.RichText.Text);
-                    cell.RichText.ClearText();
-                    cell.RichText.AddText(richText);
+                    var richText = EvalString(cell.GetRichText().Text);
+                    cell.GetRichText().ClearText();
+                    cell.GetRichText().AddText(richText);
                 }
             }
 
@@ -234,7 +234,7 @@ namespace ClosedXML.Report
                 variableValue is IEnumerable data1)
                 return new BoundRange(namedRange, data1);
 
-            var expression = "{{" + namedRange.Name.Replace("_", ".") +"}}";
+            var expression = "{{" + namedRange.Name.Replace("_", ".") + "}}";
 
             if (_evaluator.TryEvaluate(expression, out var res) &&
                 res is IEnumerable data2)

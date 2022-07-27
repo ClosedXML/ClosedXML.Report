@@ -25,13 +25,9 @@ EXAMPLES
 ================================================
 */
 
-using ClosedXML.Excel;
-using ClosedXML.Report.Excel;
-using ClosedXML.Report.Utils;
-
 namespace ClosedXML.Report.Options
 {
-    public class ValidationTag: OptionTag
+    public class ValidationTag : OptionTag
     {
         public override void Execute(ProcessingContext context)
         {
@@ -43,24 +39,24 @@ namespace ClosedXML.Report.Options
                 var listStr = GetParameter("List");
                 var listRange = ws.ParseRange(listStr);
                 if (listRange != null)
-                    xlCell.DataValidation.List(listRange);
+                    xlCell.GetDataValidation().List(listRange);
                 else
-                    xlCell.DataValidation.List(listStr);
+                    xlCell.GetDataValidation().List(listStr);
             }
 
-            xlCell.DataValidation.AllowedValues = GetParameter("AllowedValues").AsEnum(XLAllowedValues.AnyValue);
-            xlCell.DataValidation.Operator = GetParameter("Operator").AsEnum(XLOperator.EqualTo);
-            xlCell.DataValidation.Value = GetParameter("Value");
-            xlCell.DataValidation.MinValue = GetParameter("MinValue");
-            xlCell.DataValidation.MaxValue = GetParameter("MaxValue");
-            xlCell.DataValidation.IgnoreBlanks = !GetParameter("ProcessBlanks").AsBool();
-            xlCell.DataValidation.ShowErrorMessage = !GetParameter("HideErrorMessage").AsBool();
-            xlCell.DataValidation.ErrorTitle = GetParameter("ErrorTitle");
-            xlCell.DataValidation.ErrorMessage = GetParameter("ErrorMessage");
-            xlCell.DataValidation.ShowInputMessage = !GetParameter("HideInputMessage").AsBool();
-            xlCell.DataValidation.InputTitle = GetParameter("InputTitle");
-            xlCell.DataValidation.InputMessage = GetParameter("InputMessage");
-            xlCell.DataValidation.InCellDropdown = !GetParameter("HideDropdown").AsBool();*/
+            xlCell.GetDataValidation().AllowedValues = GetParameter("AllowedValues").AsEnum(XLAllowedValues.AnyValue);
+            xlCell.GetDataValidation().Operator = GetParameter("Operator").AsEnum(XLOperator.EqualTo);
+            xlCell.GetDataValidation().Value = GetParameter("Value");
+            xlCell.GetDataValidation().MinValue = GetParameter("MinValue");
+            xlCell.GetDataValidation().MaxValue = GetParameter("MaxValue");
+            xlCell.GetDataValidation().IgnoreBlanks = !GetParameter("ProcessBlanks").AsBool();
+            xlCell.GetDataValidation().ShowErrorMessage = !GetParameter("HideErrorMessage").AsBool();
+            xlCell.GetDataValidation().ErrorTitle = GetParameter("ErrorTitle");
+            xlCell.GetDataValidation().ErrorMessage = GetParameter("ErrorMessage");
+            xlCell.GetDataValidation().ShowInputMessage = !GetParameter("HideInputMessage").AsBool();
+            xlCell.GetDataValidation().InputTitle = GetParameter("InputTitle");
+            xlCell.GetDataValidation().InputMessage = GetParameter("InputMessage");
+            xlCell.GetDataValidation().InCellDropdown = !GetParameter("HideDropdown").AsBool();*/
         }
     }
 }

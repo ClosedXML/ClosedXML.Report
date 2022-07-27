@@ -30,6 +30,7 @@
     <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <UserSecretsId>c8580380-3b93-4590-82e8-58cac4798db9</UserSecretsId>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)'=='Release.Signed'">
@@ -60,9 +61,9 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML.Signed" Version="0.95.0" Condition="'$(Configuration)'=='Release.Signed'" />
-    <PackageReference Include="ClosedXML" Version="0.95.4" Condition="'$(Configuration)'!='Release.Signed'" />
+    <PackageReference Include="ClosedXML" Version="0.96.0" Condition="'$(Configuration)'!='Release.Signed'" />
     <PackageReference Include="morelinq" Version="3.3.2" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.19" />
   </ItemGroup>
 
 </Project>

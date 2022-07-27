@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core.Exceptions;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using ClosedXML.Report.Utils;
 using MoreLinq;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core.Exceptions;
 
 namespace ClosedXML.Report
 {
@@ -94,7 +94,7 @@ namespace ClosedXML.Report
                     result._cells.AddNewRow();
             }
 
-            result._mergedRanges = sheet.MergedRanges.Where(x => range.Contains(x) && !innerRanges.Any(nr=>nr.Ranges.Any(r=>r.Contains(x)))).ToArray();
+            result._mergedRanges = sheet.MergedRanges.Where(x => range.Contains(x) && !innerRanges.Any(nr => nr.Ranges.Any(r => r.Contains(x)))).ToArray();
             sheet.MergedRanges.RemoveAll(result._mergedRanges.Contains);
 
             result.ParseTags(range);
@@ -132,13 +132,13 @@ namespace ClosedXML.Report
         {
             var containings = prng.GetContainingNames().ToArray();
             return from nr in containings
-                let br = nr.Ranges
-                    .Any(rng => containings
-                        .Where(rr => rr != nr)
-                        .SelectMany(rr => rr.Ranges)
-                        .Any(r => r.Contains(rng)))
-                where !br
-                select nr;
+                   let br = nr.Ranges
+                       .Any(rng => containings
+                           .Where(rr => rr != nr)
+                           .SelectMany(rr => rr.Ranges)
+                           .Any(r => r.Contains(rng)))
+                   where !br
+                   select nr;
         }
 
         public IReportBuffer Generate(object[] items)
@@ -146,7 +146,7 @@ namespace ClosedXML.Report
             _evaluator.AddVariable("items", items);
             foreach (var v in _globalVariables)
             {
-                _evaluator.AddVariable("@"+v.Key, v.Value);
+                _evaluator.AddVariable("@" + v.Key, v.Value);
             }
             _rangeTags.Reset();
 
@@ -208,7 +208,7 @@ namespace ClosedXML.Report
                 }
 
                 var newRowRng = _buff.GetRange(startAddr, rowEnd);
-                foreach (var mrg in _mergedRanges.Where(r=>!_optionsRow.Contains(r)))
+                foreach (var mrg in _mergedRanges.Where(r => !_optionsRow.Contains(r)))
                 {
                     var newMrg = mrg.Relative(_rowRange, newRowRng);
                     newMrg.Merge(false);
@@ -258,7 +258,7 @@ namespace ClosedXML.Report
             {
                 _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items), evaluator));
                 // if the range was increased by processing tags (for example, Group), move the buffer to the last cell
-                _buff.SetPrevCellToLastUsed(); 
+                _buff.SetPrevCellToLastUsed();
             }
         }
 
@@ -311,24 +311,24 @@ namespace ClosedXML.Report
 
             if (xlCell.HasComment)
             {
-                var comment = EvalString(xlCell.Comment.Text);
-                xlCell.Comment.ClearText();
-                xlCell.Comment.AddText(comment);
+                var comment = EvalString(xlCell.GetComment().Text);
+                xlCell.GetComment().ClearText();
+                xlCell.GetComment().AddText(comment);
             }
 
             if (xlCell.HasHyperlink)
             {
-                if (xlCell.Hyperlink.IsExternal)
-                    xlCell.Hyperlink.ExternalAddress = new Uri(EvalString(xlCell.Hyperlink.ExternalAddress.ToString()));
+                if (xlCell.GetHyperlink().IsExternal)
+                    xlCell.GetHyperlink().ExternalAddress = new Uri(EvalString(xlCell.GetHyperlink().ExternalAddress.ToString()));
                 else
-                    xlCell.Hyperlink.InternalAddress = EvalString(xlCell.Hyperlink.InternalAddress);
+                    xlCell.GetHyperlink().InternalAddress = EvalString(xlCell.GetHyperlink().InternalAddress);
             }
 
             if (xlCell.HasRichText)
             {
-                var richText = EvalString(xlCell.RichText.Text);
-                xlCell.RichText.ClearText();
-                xlCell.RichText.AddText(richText);
+                var richText = EvalString(xlCell.GetRichText().Text);
+                xlCell.GetRichText().ClearText();
+                xlCell.GetRichText().AddText(richText);
             }
         }
 
@@ -364,8 +364,8 @@ namespace ClosedXML.Report
                 else
                 {
                     // move current template cell to next (skip subrange)
-                    row += ownRng._rowCnt+1;
-                    while (_cells[iCell].Row <= row-1)
+                    row += ownRng._rowCnt + 1;
+                    while (_cells[iCell].Row <= row - 1)
                         iCell++;
 
                     iCell--; // roll back. After it became clear that it was too much, we must go back.
