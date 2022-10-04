@@ -311,24 +311,24 @@ namespace ClosedXML.Report
 
             if (xlCell.HasComment)
             {
-                var comment = EvalString(xlCell.Comment.Text);
-                xlCell.Comment.ClearText();
-                xlCell.Comment.AddText(comment);
+                var comment = EvalString(xlCell.GetComment().Text);
+                xlCell.GetComment().ClearText();
+                xlCell.GetComment().AddText(comment);
             }
 
             if (xlCell.HasHyperlink)
             {
-                if (xlCell.Hyperlink.IsExternal)
-                    xlCell.Hyperlink.ExternalAddress = new Uri(EvalString(xlCell.Hyperlink.ExternalAddress.ToString()));
+                if (xlCell.GetHyperlink().IsExternal)
+                    xlCell.GetHyperlink().ExternalAddress = new Uri(EvalString(xlCell.GetHyperlink().ExternalAddress.ToString()));
                 else
-                    xlCell.Hyperlink.InternalAddress = EvalString(xlCell.Hyperlink.InternalAddress);
+                    xlCell.GetHyperlink().InternalAddress = EvalString(xlCell.GetHyperlink().InternalAddress);
             }
 
             if (xlCell.HasRichText)
             {
-                var richText = EvalString(xlCell.RichText.Text);
-                xlCell.RichText.ClearText();
-                xlCell.RichText.AddText(richText);
+                var richText = EvalString(xlCell.GetRichText().Text);
+                xlCell.GetRichText().ClearText();
+                xlCell.GetRichText().AddText(richText);
             }
         }
 

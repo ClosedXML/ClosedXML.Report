@@ -60,9 +60,9 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML.Signed" Version="0.95.0" Condition="'$(Configuration)'=='Release.Signed'" />
-    <PackageReference Include="ClosedXML" Version="0.95.4" Condition="'$(Configuration)'!='Release.Signed'" />
+    <PackageReference Include="ClosedXML" Version="0.96.0" Condition="'$(Configuration)'!='Release.Signed'" />
     <PackageReference Include="morelinq" Version="3.3.2" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.20" />
   </ItemGroup>
 
 </Project>

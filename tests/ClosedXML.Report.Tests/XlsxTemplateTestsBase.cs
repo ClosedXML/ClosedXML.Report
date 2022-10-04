@@ -136,28 +136,28 @@ namespace ClosedXML.Report.Tests
                 }
 
                 if (expectedCell.HasComment != actualCell.HasComment
-                    || (expectedCell.HasComment && !Equals(expectedCell.Comment, actualCell.Comment)))
+                    || (expectedCell.HasComment && !Equals(expectedCell.GetComment(), actualCell.GetComment())))
                 {
                     messages.Add($"Cell comments are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (expectedCell.HasHyperlink != actualCell.HasHyperlink
-                    || (expectedCell.HasHyperlink && !Equals(expectedCell.Hyperlink, actualCell.Hyperlink)))
+                    || (expectedCell.HasHyperlink && !Equals(expectedCell.GetHyperlink(), actualCell.GetHyperlink())))
                 {
                     messages.Add($"Cell Hyperlink are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (expectedCell.HasRichText != actualCell.HasRichText
-                    || (expectedCell.HasRichText && !expectedCell.RichText.Equals(actualCell.RichText)))
+                    || (expectedCell.HasRichText && !expectedCell.GetRichText().Equals(actualCell.GetRichText())))
                 {
                     messages.Add($"Cell RichText are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (expectedCell.HasDataValidation != actualCell.HasDataValidation
-                    || (expectedCell.HasDataValidation && !Equals(expectedCell.DataValidation, actualCell.DataValidation)))
+                    || (expectedCell.HasDataValidation && !Equals(expectedCell.GetDataValidation(), actualCell.GetDataValidation())))
                 {
                     messages.Add($"Cell DataValidation are not equal starting from {address}");
                     cellsAreEqual = false;
