@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net462;net6.0</TargetFrameworks>
     <LangVersion>Latest</LangVersion>
-    <Configurations>Debug;Release;Release.Signed</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <PackageLicenseUrl>https://github.com/ClosedXML/ClosedXML.Report/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>
@@ -10,20 +10,15 @@
     <Authors>Alexey Rozhkov</Authors>
     <Copyright>MIT</Copyright>
     <Version>0.1.0.0</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release.Signed'">
-    <OutputPath>bin\Release.Signed\</OutputPath>
-    <Optimize>true</Optimize>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);RELEASE;STRONGNAME</DefineConstants>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Compile Remove="FiledBuilderTests.cs" />
   </ItemGroup>
@@ -31,7 +26,7 @@
   <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
     <PackageReference Include="ClosedXML" Version="0.96.0" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.16.0" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="linq2db" Version="4.3.0" />
     <PackageReference Include="linq2db.SQLite" Version="4.3.0" />

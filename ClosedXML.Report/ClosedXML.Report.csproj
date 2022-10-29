@@ -5,7 +5,7 @@
     <LangVersion>Latest</LangVersion>
     <AssemblyName>ClosedXML.Report</AssemblyName>
     <PackageId>ClosedXML.Report</PackageId>
-    <Configurations>Debug;Release;Release.Signed</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>
@@ -30,22 +30,14 @@
     <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)'=='Release.Signed'">
-    <PackageId>ClosedXML.Report.Signed</PackageId>
-    <OutputPath>bin\Release.Signed\</OutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Optimize>true</Optimize>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);RELEASE;STRONGNAME</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
   </PropertyGroup>
@@ -59,8 +51,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML.Signed" Version="0.95.0" Condition="'$(Configuration)'=='Release.Signed'" />
-    <PackageReference Include="ClosedXML" Version="0.96.0" Condition="'$(Configuration)'!='Release.Signed'" />
+    <PackageReference Include="ClosedXML" Version="0.96.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.20" />
   </ItemGroup>
