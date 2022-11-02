@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core.Exceptions;
+using System.Reflection;
+
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
@@ -282,6 +284,27 @@ namespace ClosedXML.Report
                 _buff.WriteValue(ex.Message, cell.XLCell);
                 _buff.GetCell(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber).Style.Font.FontColor = XLColor.Red;
                 _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
+                return;
+            }
+            catch (TargetInvocationException)
+            {
+                /*
+                 * item null complex objects results on TargetInvocationException when evaluating the lambda expression
+                 * eg: Given an Array {
+                 *   items: {
+                 *     name: string,
+                 *     foo?: {
+                 *        name: string
+                 *     }
+                 *   }[]
+                 *   
+                 *   if in the template we have {{item.foo.name}} and in some of the items material property is null,
+                 *   this exception will be thrown.
+                 *   
+                 *   just add to the error list for future use and keep doing the work, other items may have the material property.
+                 *   No need to write the error in the cell since it might be a desired behaviour.
+                 */
+                _errors.Add(new TemplateError(string.Format("TargetInvocationException: {0}", cell.Value), cell.XLCell.AsRange()));
                 return;
             }
 
