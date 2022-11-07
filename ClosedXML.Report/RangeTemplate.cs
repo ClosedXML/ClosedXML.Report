@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core.Exceptions;
+using System.Reflection;
+
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
@@ -94,7 +96,7 @@ namespace ClosedXML.Report
                     result._cells.AddNewRow();
             }
 
-            result._mergedRanges = sheet.MergedRanges.Where(x => range.Contains(x) && !innerRanges.Any(nr=>nr.Ranges.Any(r=>r.Contains(x)))).ToArray();
+            result._mergedRanges = sheet.MergedRanges.Where(x => range.Contains(x) && !innerRanges.Any(nr => nr.Ranges.Any(r => r.Contains(x)))).ToArray();
             sheet.MergedRanges.RemoveAll(result._mergedRanges.Contains);
 
             result.ParseTags(range);
@@ -132,13 +134,13 @@ namespace ClosedXML.Report
         {
             var containings = prng.GetContainingNames().ToArray();
             return from nr in containings
-                let br = nr.Ranges
-                    .Any(rng => containings
-                        .Where(rr => rr != nr)
-                        .SelectMany(rr => rr.Ranges)
-                        .Any(r => r.Contains(rng)))
-                where !br
-                select nr;
+                   let br = nr.Ranges
+                       .Any(rng => containings
+                           .Where(rr => rr != nr)
+                           .SelectMany(rr => rr.Ranges)
+                           .Any(r => r.Contains(rng)))
+                   where !br
+                   select nr;
         }
 
         public IReportBuffer Generate(object[] items)
@@ -146,7 +148,7 @@ namespace ClosedXML.Report
             _evaluator.AddVariable("items", items);
             foreach (var v in _globalVariables)
             {
-                _evaluator.AddVariable("@"+v.Key, v.Value);
+                _evaluator.AddVariable("@" + v.Key, v.Value);
             }
             _rangeTags.Reset();
 
@@ -208,7 +210,7 @@ namespace ClosedXML.Report
                 }
 
                 var newRowRng = _buff.GetRange(startAddr, rowEnd);
-                foreach (var mrg in _mergedRanges.Where(r=>!_optionsRow.Contains(r)))
+                foreach (var mrg in _mergedRanges.Where(r => !_optionsRow.Contains(r)))
                 {
                     var newMrg = mrg.Relative(_rowRange, newRowRng);
                     newMrg.Merge(false);
@@ -258,7 +260,7 @@ namespace ClosedXML.Report
             {
                 _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items), evaluator));
                 // if the range was increased by processing tags (for example, Group), move the buffer to the last cell
-                _buff.SetPrevCellToLastUsed(); 
+                _buff.SetPrevCellToLastUsed();
             }
         }
 
@@ -282,6 +284,28 @@ namespace ClosedXML.Report
                 _buff.WriteValue(ex.Message, cell.XLCell);
                 _buff.GetCell(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber).Style.Font.FontColor = XLColor.Red;
                 _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
+                return;
+            }
+            catch (TargetInvocationException)
+            {
+                /*
+                 * item null complex objects results on TargetInvocationException when evaluating the lambda expression
+                 * eg: Given an Array {
+                 *   items: {
+                 *     name: string,
+                 *     foo?: {
+                 *        name: string
+                 *     }
+                 *   }[]
+                 *
+                 *   if in the template we have {{item.foo.name}} and in some of the items material property is null,
+                 *   this exception will be thrown.
+                 *
+                 *   just add to the error list for future use and keep doing the work, other items may have the material property.
+                 *   No need to write the error in the cell since it might be a desired behaviour, but needs to go to next cell.
+                 */
+                _buff.WriteValue(string.Empty, cell.XLCell);
+                _errors.Add(new TemplateError(string.Format("TargetInvocationException: {0}", cell.Value), cell.XLCell.AsRange()));
                 return;
             }
 
@@ -364,8 +388,8 @@ namespace ClosedXML.Report
                 else
                 {
                     // move current template cell to next (skip subrange)
-                    row += ownRng._rowCnt+1;
-                    while (_cells[iCell].Row <= row-1)
+                    row += ownRng._rowCnt + 1;
+                    while (_cells[iCell].Row <= row - 1)
                         iCell++;
 
                     iCell--; // roll back. After it became clear that it was too much, we must go back.
