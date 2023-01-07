@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.IO;
+﻿using System.IO;
 using ClosedXML.Excel.Drawings;
 using ClosedXML.Report.Utils;
 
@@ -31,7 +30,6 @@ namespace ClosedXML.Report.Options
                     case null: return;
                     case Stream stream: picture = xlCell.Worksheet.AddPicture(stream); break;
                     case string path: picture = xlCell.Worksheet.AddPicture(path); break;
-                    case Bitmap image: picture = xlCell.Worksheet.AddPicture(image); break;
                     default: throw new TemplateParseException("Unsupported image type.", xlCell.AsRange());
                 };
                 picture.MoveTo(xlCell);
