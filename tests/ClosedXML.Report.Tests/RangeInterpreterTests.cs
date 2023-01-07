@@ -87,6 +87,33 @@ namespace ClosedXML.Report.Tests
             AssertResultIsCorrect(ws);
         }
 
+        [Fact]
+        public void ShouldNotThrowExceptionIfAccessSomeChildrenNullProp()
+        {
+            var entity = new Order();
+
+            var template = CreateOrderTemplate();
+            var ws = template.Workbook.Worksheets.First();
+
+            ws.Range("A3:B4").AddToNamed("Items");
+
+            template.AddVariable(entity);
+            template.Generate();
+
+            ws.Cell("B3").Value.Should().Be(string.Empty);
+            ws.Cell("B4").Value.Should().Be("Material 1");
+        }
+
+        private XLTemplate CreateOrderTemplate()
+        {
+            var wbTemplate = new XLWorkbook();
+            var ws = wbTemplate.AddWorksheet();
+
+            ws.Cell("B3").Value = "{{item.Material.Name}}";
+
+            return new XLTemplate(wbTemplate);
+        }
+
         private XLTemplate CreateBaseTemplate()
         {
             var wbTemplate = new XLWorkbook();
@@ -121,6 +148,44 @@ namespace ClosedXML.Report.Tests
                 new Child("Child 2"),
                 new Child("Child 3"),
             };
+        }
+
+        private class Order
+        {
+            public string OrderNumber => "Order Number";
+            public List<Item> Items { get; } = new List<Item>
+            {
+                new Item("noMaterial", null),
+                new Item("withMaterial", new Material("Material 1"))
+            };
+        }
+
+        private class Item
+        {
+            public string Name { get; private set; }
+            public Material Material { get; private set; }
+
+            public Item(string name, Material material)
+            {
+                Name = name;
+                Material = material;
+            }
+
+            public Item AddMaterial(Material material)
+            {
+                Material = material;
+                return this;
+            }
+        }
+
+        private class Material
+        {
+            public string Name { get; }
+
+            public Material(string name)
+            {
+                Name = name;
+            }
         }
 
         public class Child

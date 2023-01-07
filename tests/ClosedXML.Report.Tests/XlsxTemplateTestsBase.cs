@@ -7,7 +7,6 @@ using System.Threading;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using FluentAssertions;
-//using JetBrains.Profiler.Windows.Api;
 using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
@@ -19,17 +18,11 @@ namespace ClosedXML.Report.Tests
         public XlsxTemplateTestsBase(ITestOutputHelper output)
         {
             Output = output;
-            LinqToDB.Common.Configuration.Linq.AllowMultipleQuery = true;
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         }
 
         protected void XlTemplateTest(string tmplFileName, Action<XLTemplate> arrangeCallback, Action<XLWorkbook> assertCallback)
         {
-            /*if (MemoryProfiler.IsActive && MemoryProfiler.CanControlAllocations)
-                MemoryProfiler.EnableAllocations();*/
-
-            //MemoryProfiler.Dump();
-
             var fileName = Path.Combine(TestConstants.TemplatesFolder, tmplFileName);
             using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var template = new XLTemplate(stream))
@@ -39,14 +32,11 @@ namespace ClosedXML.Report.Tests
 
                 using (var file = new MemoryStream())
                 {
-                    //MemoryProfiler.Dump();
                     // ACT
                     var start = DateTime.Now;
                     template.Generate();
                     Output.WriteLine(DateTime.Now.Subtract(start).ToString());
-                    //MemoryProfiler.Dump();
                     template.SaveAs(file);
-                    //MemoryProfiler.Dump();
                     file.Position = 0;
 
                     using (var wb = new XLWorkbook(file))
@@ -58,7 +48,6 @@ namespace ClosedXML.Report.Tests
             }
 
             GC.Collect();
-            //MemoryProfiler.Dump();
         }
 
         protected void CompareWithGauge(XLWorkbook actual, string fileExpected)
@@ -147,28 +136,28 @@ namespace ClosedXML.Report.Tests
                 }
 
                 if (expectedCell.HasComment != actualCell.HasComment
-                    || (expectedCell.HasComment && !Equals(expectedCell.Comment, actualCell.Comment)))
+                    || (expectedCell.HasComment && !Equals(expectedCell.GetComment(), actualCell.GetComment())))
                 {
                     messages.Add($"Cell comments are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (expectedCell.HasHyperlink != actualCell.HasHyperlink
-                    || (expectedCell.HasHyperlink && !Equals(expectedCell.Hyperlink, actualCell.Hyperlink)))
+                    || (expectedCell.HasHyperlink && !Equals(expectedCell.GetHyperlink(), actualCell.GetHyperlink())))
                 {
                     messages.Add($"Cell Hyperlink are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (expectedCell.HasRichText != actualCell.HasRichText
-                    || (expectedCell.HasRichText && !expectedCell.RichText.Equals(actualCell.RichText)))
+                    || (expectedCell.HasRichText && !expectedCell.GetRichText().Equals(actualCell.GetRichText())))
                 {
                     messages.Add($"Cell RichText are not equal starting from {address}");
                     cellsAreEqual = false;
                 }
 
                 if (expectedCell.HasDataValidation != actualCell.HasDataValidation
-                    || (expectedCell.HasDataValidation && !Equals(expectedCell.DataValidation, actualCell.DataValidation)))
+                    || (expectedCell.HasDataValidation && !Equals(expectedCell.GetDataValidation(), actualCell.GetDataValidation())))
                 {
                     messages.Add($"Cell DataValidation are not equal starting from {address}");
                     cellsAreEqual = false;

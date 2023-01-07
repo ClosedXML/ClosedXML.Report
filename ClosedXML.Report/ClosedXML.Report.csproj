@@ -1,17 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net40;net46</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net462;net6.0</TargetFrameworks>
     <LangVersion>Latest</LangVersion>
     <AssemblyName>ClosedXML.Report</AssemblyName>
     <PackageId>ClosedXML.Report</PackageId>
-    <Configurations>Debug;Release;Release.Signed</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>
     <Authors>Alexey Rozhkov</Authors>
     <Copyright>MIT</Copyright>
-    <Version>0.2.0.0</Version>
     <Product>ClosedXML.Report</Product>
     <PackageReleaseNotes>See https://github.com/ClosedXML/ClosedXML.Report/releases/tag/$(productVersion)</PackageReleaseNotes>
     <Description>ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel. ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code.</Description>
@@ -30,22 +29,14 @@
     <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)'=='Release.Signed'">
-    <PackageId>ClosedXML.Report.Signed</PackageId>
-    <OutputPath>bin\Release.Signed\</OutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Optimize>true</Optimize>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);RELEASE;STRONGNAME</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
   </PropertyGroup>
@@ -59,10 +50,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML.Signed" Version="0.95.0" Condition="'$(Configuration)'=='Release.Signed'" />
-    <PackageReference Include="ClosedXML" Version="0.95.0" Condition="'$(Configuration)'!='Release.Signed'" />
-    <PackageReference Include="morelinq" Version="2.10.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.10" />
+    <PackageReference Include="ClosedXML" Version="0.96.0" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.20" />
   </ItemGroup>
 
 </Project>

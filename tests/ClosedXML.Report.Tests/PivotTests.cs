@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using Xunit;
@@ -8,6 +6,7 @@ using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
 {
+    [Collection("Database")]
     public class PivotTests : XlsxTemplateTestsBase
     {
         public PivotTests(ITestOutputHelper output) : base(output)
@@ -24,8 +23,16 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var rows = from o in db.orders
-                            select new {o.Customer.Company, o.PaymentMethod, OrderNo = o.OrderNo.ToString(), o.ShipDate, o.ItemsTotal, o.TaxRate, o.AmountPaid};
+                        var rows = db.orders.Select(o => new
+                        {
+                            o.Customer.Company,
+                            o.PaymentMethod,
+                            OrderNo = o.OrderNo.ToString(),
+                            o.ShipDate,
+                            o.ItemsTotal,
+                            o.TaxRate,
+                            o.AmountPaid
+                        }).ToList();
                         tpl.AddVariable("Orders", rows);
                     }
                 },

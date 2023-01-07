@@ -32,16 +32,27 @@ namespace ClosedXML.Report.Tests.TestModels
 
         public DbDemos()
         {
-            InitDataContext();
+            UpdateMappingSchema();
         }
 
         public DbDemos(string configuration)
             : base(configuration)
         {
-            InitDataContext();
+            UpdateMappingSchema();
         }
 
-        partial void InitDataContext();
+        private void UpdateMappingSchema()
+        {
+            this.MappingSchema.SetConverter<long, DateTime?>(ticks => new DateTime(ticks, DateTimeKind.Unspecified));
+            this.MappingSchema.SetConverter<string, DateTime?>(ticks =>
+            {
+                if (string.IsNullOrEmpty(ticks))
+                {
+                    return null;
+                }
+                return DateTime.Parse(ticks);
+            });
+        }
     }
 
     [Table("country")]

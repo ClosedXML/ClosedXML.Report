@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
@@ -9,6 +8,8 @@ using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
 {
+
+    [Collection("Database")]
     public class SubrangesTests : XlsxTemplateTestsBase
     {
         [Theory,
