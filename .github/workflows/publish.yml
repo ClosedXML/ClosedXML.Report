@@ -1,0 +1,25 @@
+name: Publish
+
+on:
+  push:
+    tags: any
+
+jobs:
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore /p:PackageVersion=${{ github.ref_name }}
+    - name: Publish NuGet
+      run: dotnet nuget push **.nupkg -k ${NUGET_TOKEN} --skip-duplicate
+      env:
+        NUGET_TOKEN: ${{ secrets.NUGET_API_KEY }}
