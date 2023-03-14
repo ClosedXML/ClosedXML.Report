@@ -123,7 +123,7 @@ namespace ClosedXML.Report.Options
                 {
                     var total = subtotal.AddGrandTotal(summaries);
                     total.SummaryRow.Cell(2).Value = total.SummaryRow.Cell(1).Value;
-                    total.SummaryRow.Cell(1).Value = null;
+                    total.SummaryRow.Cell(1).Value = Blank.Value; //total.SummaryRow.Cell(1).Value = null;
                     level++;
                 }
 
@@ -182,7 +182,7 @@ namespace ClosedXML.Report.Options
             {
                 foreach (var cell in groupRow.Cells(c => c.HasFormula && !(c.GetCellText()?.Contains("<<sum>>")??false)))
                 {
-                    subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell;
+                    subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell.Value; //subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell;
                 }
 
                 subGroup.SummaryRow.Clear(XLClearOptions.AllFormats);

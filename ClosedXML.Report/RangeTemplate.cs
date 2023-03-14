@@ -268,7 +268,7 @@ namespace ClosedXML.Report
         {
             if (cell.CellType != TemplateCellType.Formula && cell.CellType != TemplateCellType.Value)
             {
-                _buff.WriteValue(null, null);
+                _buff.WriteCellValue(Blank.Value, null); //_buff.WriteValue(null, null);
                 return;
             }
 
@@ -281,7 +281,7 @@ namespace ClosedXML.Report
             }
             catch (ParseException ex)
             {
-                _buff.WriteValue(ex.Message, cell.XLCell);
+                _buff.WriteCellValue(ex.Message, cell.XLCell); //_buff.WriteValue(ex.Message, cell.XLCell);
                 _buff.GetCell(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber).Style.Font.FontColor = XLColor.Red;
                 _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
                 return;
@@ -304,7 +304,7 @@ namespace ClosedXML.Report
                  *   just add to the error list for future use and keep doing the work, other items may have the material property.
                  *   No need to write the error in the cell since it might be a desired behaviour, but needs to go to next cell.
                  */
-                _buff.WriteValue(string.Empty, cell.XLCell);
+                _buff.WriteCellValue(string.Empty, cell.XLCell); //_buff.WriteValue2(string.Empty, cell.XLCell);
                 _errors.Add(new TemplateError(string.Format("TargetInvocationException: {0}", cell.Value), cell.XLCell.AsRange()));
                 return;
             }
