@@ -131,7 +131,7 @@ namespace ClosedXML.Report.Excel
                 .ForEach(g =>
                 {
                     g.HeaderRow = _range.Row(g.Range.RangeAddress.FirstAddress.RowNumber - _range.RangeAddress.FirstAddress.RowNumber);
-                    g.HeaderRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
+                    g.HeaderRow.Clear(XLClearOptions.Contents); //g.HeaderRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); // ClosedXML issue 844
                     g.HeaderRow.Cell(column).Value = g.GroupTitle;
                 });
 
@@ -237,7 +237,7 @@ namespace ClosedXML.Report.Excel
                 return;
 
             trgtRng.Clear();
-            fcell.Value = srcRng;
+            fcell.CopyFrom(srcRng); //fcell.Value = srcRng;
             srcRng.Clear(XLClearOptions.AllContents);
 
             foreach (var cell in trgtRng.CellsUsed(c => c.HasFormula))
@@ -250,10 +250,10 @@ namespace ClosedXML.Report.Excel
         {
             var srcRng = Sheet.Range(moveData.SourceAddress);
             _tempSheet.Clear();
-            _tempSheet.Cell(1, 1).Value = srcRng;
+            _tempSheet.Cell(1, 1).CopyFrom(srcRng); //_tempSheet.Cell(1, 1).Value = srcRng;
             srcRng.Clear(XLClearOptions.AllContents);
             Sheet.Range(moveData.TargetAddress).Clear();
-            Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
+            Sheet.Cell(moveData.TargetAddress.FirstAddress).CopyFrom(_tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount())); //Sheet.Cell(moveData.TargetAddress.FirstAddress).Value = _tempSheet.Range(1, 1, srcRng.RowCount(), srcRng.ColumnCount());
         }
 
         private SubtotalGroup CreateGroup(IXLRange groupRng, int groupClmn, int level, string title, SummaryFuncTag[] summaries, bool pageBreaks,bool isGrandTotal=false)
@@ -275,7 +275,7 @@ namespace ClosedXML.Report.Excel
                 summRow.CopyStylesFrom(fr);
             }
 
-            summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); //TODO Check if the issue persists (ClosedXML issue 844)
+            summRow.Clear(XLClearOptions.Contents); //summRow.Clear(XLClearOptions.Contents | XLClearOptions.DataType); //TODO Check if the issue persists (ClosedXML issue 844)
             //TODO: Remove the extra space if we can change the existing gauge files
             //summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + (isGrandTotal?null: (string.IsNullOrWhiteSpace(groups?.Where(x => x.Column == groupClmn).Select(x => x.TotalLabel).FirstOrDefault())?null:" ") + (groups?.Where(x => x.Column == groupClmn).Select(x=>x.TotalLabel).FirstOrDefault()??TotalLabel));
             summRow.Cell(groupClmn).Value = _getGroupLabel != null ? _getGroupLabel(title) : title + (isGrandTotal ? null : " " + (_groupTags?.Where(x => x.Column == groupClmn).Select(x => x.TotalLabel).FirstOrDefault() ?? TotalLabel));

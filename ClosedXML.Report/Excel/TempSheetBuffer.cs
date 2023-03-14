@@ -1,5 +1,7 @@
 using ClosedXML.Excel;
+using ClosedXML.Report.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,11 +55,32 @@ namespace ClosedXML.Report.Excel
 
             try
             {
-                xlCell.SetValue(value);
+                xlCell.SetObjectValue(value); //xlCell.SetValue(value);
             }
             catch (ArgumentException)
             {
                 xlCell.SetValue(value?.ToString());
+            }
+
+            ChangeAddress(_row, _clmn + 1);
+            return xlCell;
+        }
+
+        public IXLCell WriteCellValue(XLCellValue value, IXLCell settingCell)
+        {
+            var xlCell = _sheet.Cell(_row, _clmn);
+            if (settingCell != null)
+            {
+                xlCell.CopyFrom(settingCell);
+            }
+
+            try
+            {
+                xlCell.SetValue(value);
+            }
+            catch (ArgumentException)
+            {
+                xlCell.SetValue(value.ToString());
             }
 
             ChangeAddress(_row, _clmn + 1);
