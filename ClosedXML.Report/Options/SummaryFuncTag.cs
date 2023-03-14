@@ -35,7 +35,7 @@ namespace ClosedXML.Report.Options
 
             if (summ.FuncNum == 0)
             {
-                summRow.Cell(summ.Column).Value = summ.Calculate((IDataSource)context.Value);
+                summRow.Cell(summ.Column).SetObjectValue(summ.Calculate((IDataSource)context.Value)); //summRow.Cell(summ.Column).Value = summ.Calculate((IDataSource)context.Value);
             }
             else if (summ.FuncNum > 0)
             {
