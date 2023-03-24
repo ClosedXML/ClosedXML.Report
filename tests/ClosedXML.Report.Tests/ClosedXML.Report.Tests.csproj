@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net462;net6.0</TargetFrameworks>
-    <LangVersion>Latest</LangVersion>
+    <LangVersion>10</LangVersion>
     <Configurations>Debug;Release</Configurations>
     <PackageLicenseUrl>https://github.com/ClosedXML/ClosedXML.Report/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
