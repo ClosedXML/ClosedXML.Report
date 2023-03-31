@@ -71,7 +71,7 @@ namespace ClosedXML.Report.Tests
         {
             XlTemplateTest("1.xlsx",
                 tpl => tpl.AddVariable(new {TestValue2 = (double?) 2.3}),
-                wb => wb.Worksheet(1).Cell(2, 2).Value.Should().Be((2.3 + 4) * 2)
+                wb => wb.Worksheet(1).Cell(2, 2).GetDouble().Should().Be((2.3 + 4) * 2)
             );
         }
 
@@ -197,17 +197,17 @@ namespace ClosedXML.Report.Tests
             template.AddVariable("Items", items);
             template.Generate();
 
-            sheet.Cell("B2").Value.Should().Be("Alice");
-            sheet.Cell("B3").Value.Should().Be("Bob");
-            sheet.Cell("B4").Value.Should().Be("Carl");
+            sheet.Cell("B2").GetString().Should().Be("Alice");
+            sheet.Cell("B3").GetString().Should().Be("Bob");
+            sheet.Cell("B4").GetString().Should().Be("Carl");
 
-            sheet.Cell("C2").Value.Should().Be(20.0);
-            sheet.Cell("C3").Value.Should().Be(30.0);
-            sheet.Cell("C4").Value.Should().Be(38.0);
+            sheet.Cell("C2").GetDouble().Should().Be(20.0);
+            sheet.Cell("C3").GetDouble().Should().Be(30.0);
+            sheet.Cell("C4").GetDouble().Should().Be(38.0);
 
-            sheet.Cell("F2").Value.Should().Be("Placeholder");
-            sheet.Cell("F3").Value.Should().Be("Placeholder");
-            sheet.Cell("F4").Value.Should().Be("Placeholder");
+            sheet.Cell("F2").GetString().Should().Be("Placeholder");
+            sheet.Cell("F3").GetString().Should().Be("Placeholder");
+            sheet.Cell("F4").GetString().Should().Be("Placeholder");
 
             XLWorkbook CreateWorkbook()
             {
@@ -247,7 +247,7 @@ namespace ClosedXML.Report.Tests
             using (var template = new XLTemplate(fileName))
             {
                 template.Workbook.Should().NotBeNull();
-                template.Workbook.Worksheets.First().FirstCell().Value.Should().Be("{{TestValue1}}");
+                template.Workbook.Worksheets.First().FirstCell().GetString().Should().Be("{{TestValue1}}");
             }
         }
 
@@ -260,7 +260,7 @@ namespace ClosedXML.Report.Tests
                 var template = new XLTemplate(stream);
 
                 template.Workbook.Should().NotBeNull();
-                template.Workbook.Worksheets.First().FirstCell().Value.Should().Be("{{TestValue1}}");
+                template.Workbook.Worksheets.First().FirstCell().GetString().Should().Be("{{TestValue1}}");
             }
         }
 
@@ -323,9 +323,9 @@ namespace ClosedXML.Report.Tests
                 wb =>
                 {
                     var sheet = wb.Worksheet(1);
-                    sheet.Cell(2, 2).Value.Should().Be("001");
-                    sheet.Cell(3, 2).Value.Should().Be("002");
-                    sheet.Cell(1, 1).Value.Should().Be("01");
+                    sheet.Cell(2, 2).GetString().Should().Be("001");
+                    sheet.Cell(3, 2).GetString().Should().Be("002");
+                    sheet.Cell(1, 1).GetString().Should().Be("01");
                 });
         }
 
@@ -344,12 +344,12 @@ namespace ClosedXML.Report.Tests
                 wb =>
                 {
                     var sheet = wb.Worksheet(1);
-                    sheet.Cell(1, 1).Value.Should().Be("1");
-                    sheet.Cell(1, 2).Value.Should().Be("Customer 1");
-                    sheet.Cell(2, 1).Value.Should().Be("2");
-                    sheet.Cell(2, 2).Value.Should().Be("Customer 2");
-                    sheet.Cell(3, 1).Value.Should().Be("3");
-                    sheet.Cell(3, 2).Value.Should().Be("Customer 3");
+                    sheet.Cell(1, 1).GetString().Should().Be("1");
+                    sheet.Cell(1, 2).GetString().Should().Be("Customer 1");
+                    sheet.Cell(2, 1).GetString().Should().Be("2");
+                    sheet.Cell(2, 2).GetString().Should().Be("Customer 2");
+                    sheet.Cell(3, 1).GetString().Should().Be("3");
+                    sheet.Cell(3, 2).GetString().Should().Be("Customer 3");
                 });
         }
 
@@ -368,12 +368,12 @@ namespace ClosedXML.Report.Tests
                 wb =>
                 {
                     var sheet = wb.Worksheet(1);
-                    sheet.Cell(2, 2).Value.Should().Be("1");
-                    sheet.Cell(2, 3).Value.Should().Be("Customer 1");
-                    sheet.Cell(3, 2).Value.Should().Be("2");
-                    sheet.Cell(3, 3).Value.Should().Be("Customer 2");
-                    sheet.Cell(4, 2).Value.Should().Be("3");
-                    sheet.Cell(4, 3).Value.Should().Be("Customer 3");
+                    sheet.Cell(2, 2).GetString().Should().Be("1");
+                    sheet.Cell(2, 3).GetString().Should().Be("Customer 1");
+                    sheet.Cell(3, 2).GetString().Should().Be("2");
+                    sheet.Cell(3, 3).GetString().Should().Be("Customer 2");
+                    sheet.Cell(4, 2).GetString().Should().Be("3");
+                    sheet.Cell(4, 3).GetString().Should().Be("Customer 3");
                 });
         }
 
@@ -396,7 +396,7 @@ namespace ClosedXML.Report.Tests
                     for (int i = 0; i < testData.Length; i++)
                     {
                         var itemCnt = testData[i].ProductsWithQuantities.Count;
-                        sheet.Cell("B" + (i * 3 + 1)).Value.Should().Be(testData[i].OrderNumber);
+                        sheet.Cell("B" + (i * 3 + 1)).GetString().Should().Be(testData[i].OrderNumber);
                         var header = GetRowData(sheet, i, itemCnt, 2);
                         header.Length.Should().Be(itemCnt * 2);
                         for (int j = 0; j < itemCnt; j += 2)
@@ -424,18 +424,18 @@ namespace ClosedXML.Report.Tests
                 wb =>
                 {
                     var sheet = wb.Worksheet(1);
-                    sheet.Cell("C3").Value.Should().Be(1d);
-                    sheet.Cell("E3").Value.Should().Be(2d);
-                    sheet.Cell("G3").Value.Should().Be(3d);
-                    sheet.Cell("C4").Value.Should().Be(testData[0].Role);
-                    sheet.Cell("D4").Value.Should().Be(testData[0].Name);
-                    sheet.Cell("E4").Value.Should().Be(testData[1].Role);
-                    sheet.Cell("F4").Value.Should().Be(testData[1].Name);
-                    sheet.Cell("G4").Value.Should().Be(testData[2].Role);
-                    sheet.Cell("H4").Value.Should().Be(testData[2].Name);
-                    sheet.Cell("C5").Value.Should().Be(testData[0].Address.City);
-                    sheet.Cell("E5").Value.Should().Be(testData[1].Address.City);
-                    sheet.Cell("G5").Value.Should().Be(testData[2].Address.City);
+                    sheet.Cell("C3").GetDouble().Should().Be(1d);
+                    sheet.Cell("E3").GetDouble().Should().Be(2d);
+                    sheet.Cell("G3").GetDouble().Should().Be(3d);
+                    sheet.Cell("C4").GetString().Should().Be(testData[0].Role);
+                    sheet.Cell("D4").GetString().Should().Be(testData[0].Name);
+                    sheet.Cell("E4").GetString().Should().Be(testData[1].Role);
+                    sheet.Cell("F4").GetString().Should().Be(testData[1].Name);
+                    sheet.Cell("G4").GetString().Should().Be(testData[2].Role);
+                    sheet.Cell("H4").GetString().Should().Be(testData[2].Name);
+                    sheet.Cell("C5").GetString().Should().Be(testData[0].Address.City);
+                    sheet.Cell("E5").GetString().Should().Be(testData[1].Address.City);
+                    sheet.Cell("G5").GetString().Should().Be(testData[2].Address.City);
                 });
         }
 

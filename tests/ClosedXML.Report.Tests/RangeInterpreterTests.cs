@@ -43,7 +43,7 @@ namespace ClosedXML.Report.Tests
                 template.AddVariable("Items", GenerateItems());
                 template.Generate();
 
-                ws1.FirstCell().Value.Should().Be(20.0);
+                ws1.FirstCell().GetDouble().Should().Be(20.0);
             }
 
             IEnumerable<object> GenerateItems()
@@ -100,8 +100,8 @@ namespace ClosedXML.Report.Tests
             template.AddVariable(entity);
             template.Generate();
 
-            ws.Cell("B3").Value.Should().Be(string.Empty);
-            ws.Cell("B4").Value.Should().Be("Material 1");
+            ws.Cell("B3").GetString().Should().Be(string.Empty);
+            ws.Cell("B4").GetString().Should().Be("Material 1");
         }
 
         private XLTemplate CreateOrderTemplate()
@@ -122,7 +122,7 @@ namespace ClosedXML.Report.Tests
             ws.Cell("B1").Value = "{{Model.Name}}";
             ws.Cell("B2").Value = "Children:";
             ws.Cell("B3").Value = "{{item.ChildName}}";
-            
+
             ws.Cell("D2").Value = "Items in container:";
             ws.Cell("E2").Value = "{{item.ChildName}}";
 
@@ -131,10 +131,10 @@ namespace ClosedXML.Report.Tests
 
         private void AssertResultIsCorrect(IXLWorksheet ws)
         {
-            ws.Cell("B3").Value.Should().Be("Child 1");
-            ws.Cell("B5").Value.Should().Be("Child 3");
-            ws.Cell("E2").Value.Should().Be("Item in container 1");
-            ws.Cell("G2").Value.Should().Be("Item in container 3");
+            ws.Cell("B3").GetString().Should().Be("Child 1");
+            ws.Cell("B5").GetString().Should().Be("Child 3");
+            ws.Cell("E2").GetString().Should().Be("Item in container 1");
+            ws.Cell("G2").GetString().Should().Be("Item in container 3");
         }
 
 

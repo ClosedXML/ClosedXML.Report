@@ -1,7 +1,7 @@
-using ClosedXML.Excel;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using ClosedXML.Excel;
+using ClosedXML.Report.Utils;
 
 namespace ClosedXML.Report.Excel
 {
@@ -53,7 +53,8 @@ namespace ClosedXML.Report.Excel
 
             try
             {
-                xlCell.SetValue(value);
+                var cellValue = XLCellValueConverter.FromObject(value);
+                xlCell.SetValue(cellValue);
             }
             catch (ArgumentException)
             {

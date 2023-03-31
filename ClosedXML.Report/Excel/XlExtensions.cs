@@ -186,7 +186,7 @@ namespace ClosedXML.Report.Excel
                 subtotal.GroupBy(groupBy, summaries, pageBreaks);
             }
         }
-        
+
         public static void Subtotal(this IXLRange range, int groupBy, Dictionary<int, string> totalListWithFunctions, bool replace = true, bool pageBreaks = false, bool summaryAbove = false)
         {
             using (var subtotal = new Subtotal(range, summaryAbove))
@@ -196,9 +196,9 @@ namespace ClosedXML.Report.Excel
                  var summaries = totalListWithFunctions.Select(x => new SummaryFuncTag { Name = x.Value.ToLower(), Cell = new TemplateCell { Column = x.Key } }).ToArray();
                  subtotal.AddGrandTotal(summaries);
                  subtotal.GroupBy(groupBy, summaries, pageBreaks);
-             }
-         }
-        
+            }
+        }
+
         public static bool IsSummary(this IXLRangeRow row)
         {
             return row.Cells(x => x.HasFormula && x.FormulaA1.ToLower().Contains("subtotal(")).Any();
@@ -247,17 +247,21 @@ namespace ClosedXML.Report.Excel
         private static PropertyInfo _xlCellInnerText;
         internal static string GetInnerText(this IXLCell cell)
         {
-            _xlCellInnerText = _xlCellInnerText ??
-                               cell.GetType()
-                                   .GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
-            return (string)_xlCellInnerText.GetValue(cell, null);
+            _xlCellInnerText ??= cell
+                .GetType()
+                .GetProperty("InnerText", BindingFlags.Instance | BindingFlags.Public);
+
+            return (string)_xlCellInnerText?.GetValue(cell, null);
         }
         internal static string GetCellText(this IXLCell cell)
         {
-            var field = cell.GetType().GetField("_cellValue",
-                         BindingFlags.NonPublic |
-                         BindingFlags.Instance);
-            return (string)field.GetValue(cell);
+            var field = cell
+                .GetType()
+                .GetField("_cellValue", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            try { return (string)field.GetValue(cell); }
+            catch { return string.Empty; }
+
         }
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
@@ -265,7 +269,7 @@ namespace ClosedXML.Report.Excel
             {
                 var frmtRng = Intersection(sourceFmtRange, fromRange)
                         .Relative(fromRange, toRange)
-                        as IXLRange;
+                    as IXLRange;
                 if (expand &&
                     frmtRng.RangeAddress.RowCount() == fromRange.RangeAddress.RowCount() &&
                     frmtRng.RangeAddress.RowCount() != toRange.RangeAddress.RowCount())

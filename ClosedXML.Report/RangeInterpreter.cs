@@ -113,7 +113,10 @@ namespace ClosedXML.Report
                     if (value.StartsWith("&="))
                         cell.FormulaA1 = _evaluator.Evaluate(value.Substring(2), pars).ToString();
                     else
-                        cell.SetValue(_evaluator.Evaluate(value, pars));
+                    {
+                        var cellValue = XLCellValueConverter.FromObject(_evaluator.Evaluate(value, pars));
+                        cell.SetValue(cellValue);
+                    }
                 }
                 catch (ParseException ex)
                 {
