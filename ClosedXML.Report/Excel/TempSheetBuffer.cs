@@ -55,7 +55,7 @@ namespace ClosedXML.Report.Excel
 
             try
             {
-                xlCell.SetObjectValue(value); //xlCell.SetValue(value);
+                xlCell.SetObjectValue(value);
             }
             catch (ArgumentException)
             {
