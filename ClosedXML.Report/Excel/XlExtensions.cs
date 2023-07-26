@@ -255,14 +255,9 @@ namespace ClosedXML.Report.Excel
         }
         internal static string GetCellText(this IXLCell cell)
         {
-            var field = cell
-                .GetType()
-                .GetField("_cellValue", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            try { return (string)field.GetValue(cell); }
-            catch { return string.Empty; }
-
+            return cell.GetValue<string>();
         }
+
         internal static void CopyRelative(this IXLConditionalFormat format, IXLRangeBase fromRange, IXLRangeBase toRange, bool expand)
         {
             foreach (var sourceFmtRange in format.Ranges)

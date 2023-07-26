@@ -9,7 +9,7 @@ namespace ClosedXML.Report
         public int Row { get; internal set; }
         public int Column { get; internal set; }
         public string Formula { get; set; }
-        public object Value { get; set; }
+        public XLCellValue Value { get; set; }
         public IXLCell XLCell { get; internal set; }
 
         public TemplateCell()
@@ -34,11 +34,11 @@ namespace ClosedXML.Report
                 {
                     CellType = TemplateCellType.Value;
                     var strVal = xlCell.GetString();
-                        if (strVal.StartsWith("&="))
-                        {
-                            CellType = TemplateCellType.Formula;
-                            Formula = strVal.Substring(2);
-                        }
+                    if (strVal.StartsWith("&="))
+                    {
+                        CellType = TemplateCellType.Formula;
+                        Formula = strVal.Substring(2);
+                    }
                     if (strVal.Contains("{{"))
                     {
                         IsCalculated = true;

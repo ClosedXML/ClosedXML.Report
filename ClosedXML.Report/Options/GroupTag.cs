@@ -182,7 +182,9 @@ namespace ClosedXML.Report.Options
             {
                 foreach (var cell in groupRow.Cells(c => c.HasFormula && !(c.GetCellText()?.Contains("<<sum>>")??false)))
                 {
-                    subGroup.SummaryRow.Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1).Value = cell.Value;
+                    subGroup.SummaryRow
+                        .Cell(cell.Address.ColumnNumber - groupRow.RangeAddress.FirstAddress.ColumnNumber + 1)
+                        .FormulaR1C1 = cell.FormulaR1C1;
                 }
 
                 subGroup.SummaryRow.Clear(XLClearOptions.AllFormats);
