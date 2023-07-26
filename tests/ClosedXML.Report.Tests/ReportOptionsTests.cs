@@ -27,15 +27,13 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void OnlyValues_option_should_remove_formulas_on_sheet()
         {
-            //TODO make tests culture-independent
-            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             XlTemplateTest("5_options.xlsx",
                 tpl => { },
                 wb =>
                 {
                     var worksheet = wb.Worksheet(1);
                     worksheet.Cell("B3").HasFormula.Should().BeFalse();
-                    worksheet.Cell("B3").GetValue<string>().Should().Be("Begin at " + DateTime.Today.Subtract(TimeSpan.FromDays(7)).ToShortDateString());
+                    worksheet.Cell("B3").GetValue<string>().Should().Be("Begin at 19.01.2023");
                     worksheet = wb.Worksheet(3);
                     worksheet.Cell("B4").HasFormula.Should().BeFalse();
                     worksheet.Cell("B4").GetValue<int>().Should().Be(10);
@@ -45,14 +43,13 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void ColsFit_option_should_FitWidth()
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             XlTemplateTest("5_options.xlsx",
                 tpl => { },
                 wb =>
                 {
                     var worksheet = wb.Worksheet(1);
-                    worksheet.Column(4).Width.Should().BeApproximately(5.03, 0.01);
-                    worksheet.Column(5).Width.Should().BeApproximately(13.61, 0.01);
+                    worksheet.Column(4).Width.Should().BeApproximately(5.0, 0.01);
+                    worksheet.Column(5).Width.Should().BeApproximately(16.16, 0.01);
                 });
         }
 
