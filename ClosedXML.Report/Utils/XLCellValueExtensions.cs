@@ -10,6 +10,7 @@ internal static class XLCellValueConverter
         return obj switch
         {
             null => Blank.Value,
+            XLCellValue cellValue => cellValue,
             Blank blank => blank,
             bool logical => logical,
             string text => text,
