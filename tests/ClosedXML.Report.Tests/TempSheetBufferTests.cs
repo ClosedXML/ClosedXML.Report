@@ -41,8 +41,8 @@ namespace ClosedXML.Report.Tests
                 template.AddVariable("List", new List<string>());
                 template.Generate();
 
-                ws.Cell("B3").Value.Should().Be("Cell below");
-                ws.Cell("B4").Value.Should().Be("");
+                ws.Cell("B3").GetString().Should().Be("Cell below");
+                ws.Cell("B4").GetString().Should().Be("");
             }
         }
 
@@ -71,7 +71,7 @@ namespace ClosedXML.Report.Tests
                 template.Generate();
 
                 // Assert.
-                ws.Cell("B4").Value.Should().Be(totalsName);
+                ws.Cell("B4").GetString().Should().Be(totalsName);
                 ws.Range(rangeName).RowCount().Should().Be(3);
                 ws.Range(rangeName).ColumnCount().Should().Be(3);
             }

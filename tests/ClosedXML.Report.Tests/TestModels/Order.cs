@@ -7,10 +7,10 @@ namespace ClosedXML.Report.Tests.TestModels
 {
     public partial class order
     {
-        [Association(ThisKey = "CustNo", OtherKey = "CustNo", CanBeNull = true, KeyName = "FK_Orders_Customers", BackReferenceName = "Orders")]
+        [Association(ThisKey = "CustNo", OtherKey = "CustNo", CanBeNull = true)]
         public customer Customer { get; set; }
 
-        [Association(ThisKey = "OrderNo", OtherKey = "OrderNo", IsBackReference = true)]
+        [Association(ThisKey = "OrderNo", OtherKey = "OrderNo")]
         public List<item> Items { get; set; }
 
         public Bitmap PaymentImage

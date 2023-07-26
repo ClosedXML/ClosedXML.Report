@@ -129,7 +129,8 @@ namespace ClosedXML.Report.Tests
                     cellsAreEqual = false;
                 }
 
-                if (!expectedCell.HasFormula && actualCell.DataType != expectedCell.DataType)
+                if (!expectedCell.HasFormula && actualCell.DataType != expectedCell.DataType &&
+                    actualCell.DataType != XLDataType.Blank && expectedCell.GetValue<string>() != "") // Special case for treating blanks as equal to empty strings for not changing all gauges created in older versions (with no "blank" type)
                 {
                     messages.Add($"Cell data types are not equal starting from {address}");
                     cellsAreEqual = false;
