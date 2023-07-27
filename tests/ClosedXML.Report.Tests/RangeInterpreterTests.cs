@@ -104,6 +104,37 @@ namespace ClosedXML.Report.Tests
             ws.Cell("B4").GetString().Should().Be("Material 1");
         }
 
+        [Fact]
+        public void ShouldDestroyEmptyTable()
+        {
+            //See #251
+            var template = CreateOrderTemplate();
+            var ws = template.Workbook.Worksheets.First();
+
+            ws.Cell("B4").SetValue("This list is empty");
+            ws.Cell("B5").SetValue("{{item.Name}}");
+            ws.Range("A5:B6").AddToNamed("Empty");
+
+            ws.Cell("B7").SetValue("This list is populated");
+            ws.Cell("B8").SetValue("{{item.Name}}");
+            ws.Range("A8:B9").AddToNamed("Populated");
+
+            var model = new
+            {
+                Empty = new List<Item>(),
+                Populated = new[]
+                {
+                    new Item("It works", null)
+                }
+            };
+            template.AddVariable(model);
+            template.Generate();
+
+            ws.Cell("B4").GetString().Should().Be("This list is empty");
+            ws.Cell("B5").GetString().Should().Be("This list is populated");
+            ws.Cell("B6").GetString().Should().Be("It works");
+        }
+
         private XLTemplate CreateOrderTemplate()
         {
             var wbTemplate = new XLWorkbook();
