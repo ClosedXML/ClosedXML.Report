@@ -33,7 +33,6 @@ namespace ClosedXML.Report.Excel
                 if (!_wb.TryGetWorksheet(SheetName, out _sheet))
                 {
                     _sheet = _wb.AddWorksheet(SheetName);
-                    _sheet.SetCalcEngineCacheExpressions(false);
                 }
                 _sheet.Visibility = XLWorksheetVisibility.VeryHidden;
             }

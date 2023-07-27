@@ -329,13 +329,6 @@ namespace ClosedXML.Report.Excel
                 addr.ColumnNumber + offset.ColumnNumber - 1);
         }
 
-        public static void SetCalcEngineCacheExpressions(this IXLWorksheet worksheet, bool value)
-        {
-            var wsType = worksheet.GetType();
-            var calcEngine = wsType.GetProperty("CalcEngine", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(worksheet, new object[] { });
-            calcEngine.GetType().GetProperty("CacheExpressions").SetValue(calcEngine, value, new object[] { });
-        }
-
         /* ClosedXML issue #686 */
         public static void ReplaceCFFormulaeToR1C1(this IXLWorksheet worksheet)
         {

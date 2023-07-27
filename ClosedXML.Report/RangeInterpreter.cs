@@ -193,12 +193,9 @@ namespace ClosedXML.Report
                     }
 
                     // refresh ranges for pivot tables
-                    foreach (var pt in range.Worksheet.Workbook.Worksheets.SelectMany(sh => sh.PivotTables))
+                    foreach (var pivotCache in range.Worksheet.Workbook.PivotCaches)
                     {
-                        if (pt.SourceRange.Intersects(growedRange))
-                        {
-                            pt.SourceRange = growedRange.Offset(-1, 1, growedRange.RowCount() + 1, growedRange.ColumnCount() - 1);
-                        }
+                        pivotCache.Refresh();
                     }
                 }
             }

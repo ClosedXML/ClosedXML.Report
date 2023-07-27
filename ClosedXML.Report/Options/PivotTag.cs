@@ -1,9 +1,9 @@
 ﻿/*
 PivotTable Options Package
 ================================================
-OPTION          PARAMS                OBJECTS   
+OPTION          PARAMS                OBJECTS
 ================================================
-"Pivot"          "Name="              Range     
+"Pivot"          "Name="              Range
                  "Dst="
                  "RowGrand"
                  "ColumnGrand"
@@ -15,10 +15,10 @@ OPTION          PARAMS                OBJECTS
                  "AutofitColumns"
                  "NoSort"
 
-"Data"                                Column    
-"Row"                                 Column    
-"Column"                              Column    
-"Page"                                Column    
+"Data"                                Column
+"Row"                                 Column
+"Column"                              Column
+"Page"                                Column
 ================================================
 */
 
@@ -200,9 +200,9 @@ namespace ClosedXML.Report.Options
             pt.PreserveCellFormatting = !pivot.HasParameter("NoPreserveFormatting");
             pt.ShowGrandTotalsColumns = pivot.HasParameter("ColumnGrand");
             pt.ShowGrandTotalsRows = pivot.HasParameter("RowGrand");
-            pt.SaveSourceData = true;
+            pt.PivotCache.SaveSourceData = true;
             pt.FilterAreaOrder = XLFilterAreaOrder.DownThenOver;
-            pt.RefreshDataOnOpen = true;
+            pt.PivotCache.RefreshDataOnOpen = true;
             return pt;
         }
 
