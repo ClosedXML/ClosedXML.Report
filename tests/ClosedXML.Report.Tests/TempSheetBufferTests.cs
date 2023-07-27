@@ -41,8 +41,8 @@ namespace ClosedXML.Report.Tests
                 template.AddVariable("List", new List<string>());
                 template.Generate();
 
-                ws.Cell("B3").GetString().Should().Be("Cell below");
-                ws.Cell("B4").GetString().Should().Be("");
+                ws.Cell("B2").GetString().Should().Be("Cell below");
+                ws.Cell("B3").GetString().Should().Be("");
             }
         }
 

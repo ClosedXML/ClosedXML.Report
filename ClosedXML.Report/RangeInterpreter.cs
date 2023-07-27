@@ -177,6 +177,20 @@ namespace ClosedXML.Report
                 {
                     var growedRange = rng.GrowToMergedRanges();
                     var items = nr.RangeData as object[] ?? nr.RangeData.Cast<object>().ToArray();
+                    if (!items.Any())
+                    {
+                        if (growedRange.IsOptionsRowEmpty())
+                        {
+                            growedRange.Delete(XLShiftDeletedCells.ShiftCellsUp);
+                        }
+                        else
+                        {
+                            var rangeWithoutOptionsRow = growedRange.Worksheet
+                                .Range(growedRange.FirstCell(), growedRange.LastCell().CellAbove());
+                            rangeWithoutOptionsRow.Delete(XLShiftDeletedCells.ShiftCellsUp);
+                        }
+                        continue;
+                    }
                     var tplt = RangeTemplate.Parse(nr.NamedRange.Name, growedRange, _errors, _variables);
                     using (var buff = tplt.Generate(items))
                     {
