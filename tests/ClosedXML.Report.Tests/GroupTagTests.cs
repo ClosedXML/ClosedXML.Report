@@ -79,6 +79,7 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_MultiRanges.xlsx"),
          //InlineData("GroupTagTests_FormulasWithTagsInGroupRow.xlsx"), // Formulas with tags got broken after upgrading to ClosedXML 0.100
          InlineData("GroupTagTests_TotalLabel.xlsx"),
+         InlineData("GroupTagTests_DisableSubTotals_MergeLabels.xlsx")
        ]
         public void Customers(string templateFile)
         {
