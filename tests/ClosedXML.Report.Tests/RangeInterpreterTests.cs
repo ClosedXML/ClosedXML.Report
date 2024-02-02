@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -108,7 +109,7 @@ namespace ClosedXML.Report.Tests
         public void ShouldDestroyEmptyTable()
         {
             //See #251
-            var template = CreateOrderTemplate();
+            var template = CreateEmptyTemplate();
             var ws = template.Workbook.Worksheets.First();
 
             ws.Cell("B4").SetValue("This list is empty");
@@ -133,6 +134,15 @@ namespace ClosedXML.Report.Tests
             ws.Cell("B4").GetString().Should().Be("This list is empty");
             ws.Cell("B5").GetString().Should().Be("This list is populated");
             ws.Cell("B6").GetString().Should().Be("It works");
+        }
+
+        private XLTemplate CreateEmptyTemplate()
+        {
+            var wbTemplate = new XLWorkbook();
+
+            wbTemplate.AddWorksheet();
+
+            return new XLTemplate(wbTemplate);
         }
 
         private XLTemplate CreateOrderTemplate()
