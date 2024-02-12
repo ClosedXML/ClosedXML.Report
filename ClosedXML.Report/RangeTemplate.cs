@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core.Exceptions;
 using System.Reflection;
-
+using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
@@ -368,7 +368,27 @@ namespace ClosedXML.Report
         {
             var start = _buff.NextAddress;
             // the child template to which the cell belongs
-            var formula = ownRng.Source.ReplaceLast("_", ".");
+            // Define a regular expression pattern to match parts of the string that are enclosed in backslashes
+            string pattern = @"\\(.*?)\\";
+            var formula = ownRng.Source;
+            var matches = Regex.Matches(formula, pattern);
+            // Iterate over each match found
+            foreach (Match match in matches)
+            {
+                // Replace underscores in the matched string with caret symbols
+                string replacement = match.Value.Replace("_", "^");
+
+                // Replace the matched part in the input string with the modified string
+                formula = formula.Replace(match.Value, replacement);
+            }
+
+            // Remove all backslashes from the input string
+            formula = formula.Replace("\\", "");
+
+            formula = formula.ReplaceLast("_", ".");
+            formula = formula.Replace("^", "_");
+
+            //var formula = ownRng.Source.ReplaceLast("_", ".");
 
             if (evaluator.Evaluate(formula, new Parameter(Name, item)) is IEnumerable value)
             {
