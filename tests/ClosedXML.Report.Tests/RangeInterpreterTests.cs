@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -106,10 +107,46 @@ namespace ClosedXML.Report.Tests
         }
 
         [Fact]
+        public void ShouldClearPlaceHolders()
+        {
+            var wbTemplate = new XLWorkbook();
+            var ws = wbTemplate.AddWorksheet();
+            var template = new XLTemplate(wbTemplate);
+
+            ws.Cell("B8").InsertTable(new DataTable()
+            {
+                Columns =
+                {
+                    "Id",
+                    "Name"
+                },
+                Rows =
+                {
+                    { "{{item.Id}}", "{{item.Name}}" }
+                }
+            });
+            ws.Range("B9:C9").AddToNamed("TestRange");
+
+            var model = new
+            {
+                TestRange = new List<Item>()
+            };
+
+            template.AddVariable(model);
+
+            template.Generate();
+
+            ws.Cell("B8").GetString().Should().Be("Id");
+            ws.Cell("C8").GetString().Should().Be("Name");
+            ws.Cell("B9").GetString().Should().BeEmpty();
+            ws.Cell("C9").GetString().Should().BeEmpty();
+        }
+
+        [Fact]
         public void ShouldDestroyEmptyTable()
         {
             //See #251
-            var template = CreateEmptyTemplate();
+            var template = CreateOrderTemplate();
             var ws = template.Workbook.Worksheets.First();
 
             ws.Cell("B4").SetValue("This list is empty");
@@ -131,18 +168,16 @@ namespace ClosedXML.Report.Tests
             template.AddVariable(model);
             template.Generate();
 
+            using (var memoryStream = new MemoryStream())
+            {
+                template.SaveAs(memoryStream);
+
+                File.WriteAllBytes("C:\\Users\\SOMA-PC\\Desktop\\test.xlsx", memoryStream.ToArray());
+            }
+
             ws.Cell("B4").GetString().Should().Be("This list is empty");
             ws.Cell("B5").GetString().Should().Be("This list is populated");
             ws.Cell("B6").GetString().Should().Be("It works");
-        }
-
-        private XLTemplate CreateEmptyTemplate()
-        {
-            var wbTemplate = new XLWorkbook();
-
-            wbTemplate.AddWorksheet();
-
-            return new XLTemplate(wbTemplate);
         }
 
         private XLTemplate CreateOrderTemplate()

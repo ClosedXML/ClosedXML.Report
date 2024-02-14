@@ -181,13 +181,16 @@ namespace ClosedXML.Report
                     {
                         if (growedRange.IsOptionsRowEmpty())
                         {
-                            growedRange.Clear();
+                            growedRange.Delete(XLShiftDeletedCells.ShiftCellsUp);
                         }
                         else
                         {
                             var rangeWithoutOptionsRow = growedRange.Worksheet
                                 .Range(growedRange.FirstCell(), growedRange.LastCell().CellAbove());
-                            rangeWithoutOptionsRow.Clear();
+                            if (growedRange.Worksheet.Tables.Any(t => t.Contains(rangeWithoutOptionsRow)))
+                                growedRange.Clear();
+                            else
+                                rangeWithoutOptionsRow.Delete(XLShiftDeletedCells.ShiftCellsUp);
                         }
                         continue;
                     }
