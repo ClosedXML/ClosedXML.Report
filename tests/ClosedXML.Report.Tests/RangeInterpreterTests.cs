@@ -168,13 +168,6 @@ namespace ClosedXML.Report.Tests
             template.AddVariable(model);
             template.Generate();
 
-            using (var memoryStream = new MemoryStream())
-            {
-                template.SaveAs(memoryStream);
-
-                File.WriteAllBytes("C:\\Users\\SOMA-PC\\Desktop\\test.xlsx", memoryStream.ToArray());
-            }
-
             ws.Cell("B4").GetString().Should().Be("This list is empty");
             ws.Cell("B5").GetString().Should().Be("This list is populated");
             ws.Cell("B6").GetString().Should().Be("It works");
