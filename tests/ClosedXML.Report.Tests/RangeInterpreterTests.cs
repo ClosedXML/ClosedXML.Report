@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -102,6 +103,42 @@ namespace ClosedXML.Report.Tests
 
             ws.Cell("B3").GetString().Should().Be(string.Empty);
             ws.Cell("B4").GetString().Should().Be("Material 1");
+        }
+
+        [Fact]
+        public void ShouldClearPlaceHolders()
+        {
+            var wbTemplate = new XLWorkbook();
+            var ws = wbTemplate.AddWorksheet();
+            var template = new XLTemplate(wbTemplate);
+
+            ws.Cell("B8").InsertTable(new DataTable()
+            {
+                Columns =
+                {
+                    "Id",
+                    "Name"
+                },
+                Rows =
+                {
+                    { "{{item.Id}}", "{{item.Name}}" }
+                }
+            });
+            ws.Range("B9:C9").AddToNamed("TestRange");
+
+            var model = new
+            {
+                TestRange = new List<Item>()
+            };
+
+            template.AddVariable(model);
+
+            template.Generate();
+
+            ws.Cell("B8").GetString().Should().Be("Id");
+            ws.Cell("C8").GetString().Should().Be("Name");
+            ws.Cell("B9").GetString().Should().BeEmpty();
+            ws.Cell("C9").GetString().Should().BeEmpty();
         }
 
         [Fact]

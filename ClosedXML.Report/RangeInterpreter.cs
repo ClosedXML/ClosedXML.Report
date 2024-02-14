@@ -187,7 +187,10 @@ namespace ClosedXML.Report
                         {
                             var rangeWithoutOptionsRow = growedRange.Worksheet
                                 .Range(growedRange.FirstCell(), growedRange.LastCell().CellAbove());
-                            rangeWithoutOptionsRow.Delete(XLShiftDeletedCells.ShiftCellsUp);
+                            if (growedRange.Worksheet.Tables.Any(t => t.Contains(rangeWithoutOptionsRow)))
+                                growedRange.Clear();
+                            else
+                                rangeWithoutOptionsRow.Delete(XLShiftDeletedCells.ShiftCellsUp);
                         }
                         continue;
                     }
