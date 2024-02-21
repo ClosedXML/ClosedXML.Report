@@ -12,6 +12,7 @@ OPTION          PARAMS                OBJECTS      RNG     Priority
                 "\PageBreaks"
                 "\TotalLabel"
                 "\GrandLabel"
+                "\DisableSubtotalLine"
 
 "SummaryAbove"                        Range        rD      Normal
 
@@ -40,6 +41,7 @@ namespace ClosedXML.Report.Options
 
         public bool PageBreaks => Parameters.ContainsKey("pagebreaks");
         public bool DisableSubtotals => Parameters.ContainsKey("disablesubtotals");
+        public bool DisableSubtotalLine => Parameters.ContainsKey("disablesubtotalline");
         public bool Collapse => Parameters.ContainsKey("collapse");
         public bool DisableOutLine => Parameters.ContainsKey("disableoutline");
         public bool OutLine => !Parameters.ContainsKey("disableoutline");
@@ -129,9 +131,18 @@ namespace ClosedXML.Report.Options
 
                 foreach (var g in groups.OrderBy(x => x.Column))
                 {
+                    // Todo: New Feature Group Without Subtotal. Only Merge.
+                    if (g.DisableSubtotalLine)
+                    {
+                        subtotal.ScanForGroups(g.Column);
+                        g.Level = ++level;
+
+                        continue;
+                    }
+
                     Func<string, string> labFormat = null;
                     if (!string.IsNullOrEmpty(g.LabelFormat))
-                        labFormat = title => string.Format(LabelFormat, title);
+                        labFormat = title => string.Format(g.LabelFormat, title);
 
                     if (g.MergeLabels == MergeMode.Merge2 && summaries.Length == 0)
                         subtotal.ScanForGroups(g.Column);
@@ -218,7 +229,12 @@ namespace ClosedXML.Report.Options
                 var rng = subGroup.Range.Column(subGroup.Column);
                 if (subGroup.Range.RowCount() > 1)
                 {
-                    int cellIdx = _maxLevel - subGroup.Level + 1;
+                    // TODO: Wrong Style apply for merged cells if on right has grouped total
+                    // But in first cell i expect already cell with value and style
+                    // Plus with DisableSubtotalLine feature this became totally wrong
+                    int cellIdx = 1;
+                    //int cellIdx = _maxLevel - subGroup.Level + 1; // TODO: Comment for future investigation
+
                     var style = rng.Cell(cellIdx).Style;
                     rng.Merge();
                     rng.Style = style;
