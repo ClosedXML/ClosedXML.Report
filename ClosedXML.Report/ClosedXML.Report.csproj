@@ -30,6 +30,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
+    <Version>0.2.10-Beta1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
