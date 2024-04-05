@@ -5,11 +5,11 @@ using ClosedXML.Excel;
 
 namespace ClosedXML.Report.Options
 {
-    public class TagsList : SortedSet<OptionTag>
+    public class TagsList : List<OptionTag>
     {
         private readonly TemplateErrors _errors;
 
-        public TagsList(TemplateErrors errors) : base(new OptionTagComparer())
+        public TagsList(TemplateErrors errors) : base()
         {
             _errors = errors;
         }
@@ -31,9 +31,6 @@ namespace ClosedXML.Report.Options
         public new void Add(OptionTag tag)
         {
             tag.List = this;
-            var map = Enumerable.Range(byte.MinValue, byte.MaxValue + 1).ToList();
-            map.RemoveAll(x => this.Any(t => t.PriorityKey == x));
-            tag.PriorityKey = (byte)map.OrderBy(x => Math.Abs(tag.Priority - x)).First();
             base.Add(tag);
         }
 
@@ -62,15 +59,20 @@ namespace ClosedXML.Report.Options
 
         public void Execute(ProcessingContext context)
         {
-            while (true)
-            {
-                var t = this.FirstOrDefault(x=>x.Enabled);
-                if (t == null)
-                    break;
+            var tags = this
+                .OrderByDescending(x => x.Priority)
+                .ThenBy(x => x.Cell.Row)
+                .ThenBy(x => x.Cell.Column)
+                .ToList();
 
+            foreach (var tag in tags)
+            {
                 try
                 {
-                    t.Execute(context);
+                    if (tag.Enabled)
+                    {
+                        tag.Execute(context);
+                    }
                 }
                 catch(TemplateParseException ex)
                 {
@@ -78,7 +80,7 @@ namespace ClosedXML.Report.Options
                 }
                 finally
                 {
-                    t.Enabled = false;
+                    tag.Enabled = false;
                 }
             }
         }
@@ -92,14 +94,6 @@ namespace ClosedXML.Report.Options
         {
             foreach (var item in this)
                 item.Enabled = true;
-        }
-    }
-
-    internal class OptionTagComparer : IComparer<OptionTag>
-    {
-        public int Compare(OptionTag x, OptionTag y)
-        {
-            return -x.PriorityKey.CompareTo(y.PriorityKey);
         }
     }
 }
