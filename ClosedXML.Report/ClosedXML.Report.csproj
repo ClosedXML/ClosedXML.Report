@@ -1,23 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>10</LangVersion>
     <AssemblyName>ClosedXML.Report</AssemblyName>
-    <PackageId>ClosedXML.Report</PackageId>
+    <PackageId>CustomEa.ClosedXML.Report</PackageId>
     <Configurations>Debug;Release</Configurations>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/ClosedXML/ClosedXML.Report</RepositoryUrl>
-    <Authors>Alexey Rozhkov, Alexey Pankratev</Authors>
+    <RepositoryUrl>https://github.com/eagleoriginal/ClosedXML.Report</RepositoryUrl>
+    <Authors>IOrlov, Alexey Rozhkov, Alexey Pankratev</Authors>
     <Copyright>MIT</Copyright>
-    <Product>ClosedXML.Report</Product>
-    <PackageReleaseNotes>See https://github.com/ClosedXML/ClosedXML.Report/releases/tag/$(productVersion)</PackageReleaseNotes>
-    <Description>ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel. ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code.</Description>
+    <Product>CustomEa.ClosedXML.Report</Product>
+    <PackageReleaseNotes>See https://github.com/eagleoriginal/ClosedXML.Report/releases/tag/$(productVersion)</PackageReleaseNotes>
+    <Description>Not Intended for Common Use!!! 
+Pacakge with Custom Changes in original ClosedXML.Report.
+ClosedXML.Report is a tool for report generation and data analysis in .NET applications through the use of Microsoft Excel. ClosedXML.Report is a .NET-library for report generation Microsoft Excel without requiring Excel to be installed on the machine that's running the code.</Description>
     <PackageTags>ClosedXML Reporting Excel</PackageTags>
-    <Company>ClosedXML</Company>
-    <PackageIconUrl>https://github.com/ClosedXML/ClosedXML.Report/raw/develop/Resources/favicon-01.png</PackageIconUrl>
+    <Company>CustomEa.ClosedXML</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -31,11 +32,19 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
     <Version>0.2.10-Beta1</Version>
+    <PackageIcon>favicon-01.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\Resources\favicon-01.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.102.2" />
