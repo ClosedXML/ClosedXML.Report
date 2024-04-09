@@ -12,7 +12,7 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void TagInA2CellShouldDeleteWorksheet()
         {
-            CreateAndExecuteTags(new[] { "A2" });
+            CreateAndExecuteNotInRangeTags(new[] { "A2" });
 
             _wb.Worksheets.Count.Should().Be(0);
         }
@@ -23,7 +23,7 @@ namespace ClosedXML.Report.Tests
             _ws.Cell("B5").Value = 2.0;
             _ws.Cell("C5").Value = 3.0;
             _ws.Cell("D5").Value = 4.0;
-            CreateAndExecuteTags(new[] { "C1" });
+            CreateAndExecuteNotInRangeTags(new[] { "C1" });
 
             _ws.Cell("B5").GetDouble().Should().Be(2.0);
             _ws.Cell("C5").GetDouble().Should().Be(4.0);
@@ -35,7 +35,7 @@ namespace ClosedXML.Report.Tests
             _ws.Cell("D3").Value = 3.0;
             _ws.Cell("D4").Value = 4.0;
             _ws.Cell("D5").Value = 5.0;
-            CreateAndExecuteTags(new[] { "A4" });
+            CreateAndExecuteNotInRangeTags(new[] { "A4" });
 
             _ws.Cell("D3").GetDouble().Should().Be(3.0);
             _ws.Cell("D4").GetDouble().Should().Be(5.0);
@@ -48,7 +48,7 @@ namespace ClosedXML.Report.Tests
             _ws.Cell("C5").Value = 3.0;
             _ws.Cell("D5").Value = 4.0;
             _ws.Cell("E5").Value = 5.0;
-            CreateAndExecuteTags(new[] { "A3", "A4", "C1", "D1" });
+            CreateAndExecuteNotInRangeTags(new[] { "A3", "A4", "C1", "D1" });
 
             _ws.Cell("B3").GetDouble().Should().Be(2.0);
             _ws.Cell("C3").GetDouble().Should().Be(5.0);
@@ -59,24 +59,34 @@ namespace ClosedXML.Report.Tests
         {
             var rng = FillData();
 
-            CreateAndExecuteTags(new[] { "B2" }, isInRange: true, range: rng);
+            CreateAndExecuteInRangeTags(new[] { "B2" }, range: rng);
 
             rng.Cell("A1").GetText().Should().Be("Alice");
             rng.Cell("B1").GetText().Should().Be("Wonderland");
         }
 
-        private void CreateAndExecuteTags(IEnumerable<string> cells, bool isInRange = false, IXLRange range = null)
+        private void CreateAndExecuteInRangeTags(IEnumerable<string> cells, IXLRange range = null)
         {
             var errorsList = new TemplateErrors();
             var tagList = new TagsList(errorsList);
             foreach (var cell in cells)
             {
-                tagList.Add(isInRange
-                    ? CreateInRangeTag<DeleteTag>(range, range.Cell(cell))
-                    : CreateNotInRangeTag<DeleteTag>(_ws.Cell(cell)));
+                tagList.Add(CreateInRangeTag<DeleteTag>(range, range.Cell(cell)));
             }
 
-            tagList.Execute(new ProcessingContext(isInRange ? range : _ws.AsRange(), new DataSource(Array.Empty<object>()), new FormulaEvaluator()));
+            tagList.Execute(new ProcessingContext(range, new DataSource(Array.Empty<object>()), new FormulaEvaluator()));
+        }
+
+        private void CreateAndExecuteNotInRangeTags(IEnumerable<string> cells)
+        {
+            var errorsList = new TemplateErrors();
+            var tagList = new TagsList(errorsList);
+            foreach (var cell in cells)
+            {
+                tagList.Add(CreateNotInRangeTag<DeleteTag>(_ws.Cell(cell)));
+            }
+
+            tagList.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(Array.Empty<object>()), new FormulaEvaluator()));
         }
 
         private IXLRange FillData()

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Linq;
+﻿using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
 using Xunit;
@@ -23,6 +21,7 @@ namespace ClosedXML.Report.Tests
          InlineData("tLists1_cell_setting.xlsx"),
          InlineData("tLists2_sum.xlsx"),
          InlineData("tLists3_options.xlsx"),
+         InlineData("autofilter_with_multiple_delete.xlsx"),
          InlineData("issue#111_autofilter_with_delete.xlsx"),
          InlineData("tLists4_complexRange.xlsx"),
          InlineData("tLists5_GlobalVars.xlsx"),

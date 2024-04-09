@@ -5,11 +5,11 @@ using ClosedXML.Excel;
 
 namespace ClosedXML.Report.Options
 {
-    public class TagsList : List<OptionTag>
+    public class TagsList : SortedSet<OptionTag>
     {
         private readonly TemplateErrors _errors;
 
-        public TagsList(TemplateErrors errors) : base()
+        public TagsList(TemplateErrors errors) : base(new OptionTagComparer())
         {
             _errors = errors;
         }
@@ -59,20 +59,15 @@ namespace ClosedXML.Report.Options
 
         public void Execute(ProcessingContext context)
         {
-            var tags = this
-                .OrderByDescending(x => x.Priority)
-                .ThenBy(x => x.Cell.Row)
-                .ThenBy(x => x.Cell.Column)
-                .ToList();
-
-            foreach (var tag in tags)
+            while (true)
             {
+                var t = this.FirstOrDefault(x => x.Enabled);
+                if (t == null)
+                    break;
+
                 try
                 {
-                    if (tag.Enabled)
-                    {
-                        tag.Execute(context);
-                    }
+                    t.Execute(context);
                 }
                 catch(TemplateParseException ex)
                 {
@@ -80,7 +75,7 @@ namespace ClosedXML.Report.Options
                 }
                 finally
                 {
-                    tag.Enabled = false;
+                    t.Enabled = false;
                 }
             }
         }
@@ -94,6 +89,27 @@ namespace ClosedXML.Report.Options
         {
             foreach (var item in this)
                 item.Enabled = true;
+        }
+
+        internal class OptionTagComparer : IComparer<OptionTag>
+        {
+            public int Compare(OptionTag x, OptionTag y)
+            {
+                var result = -x.Priority.CompareTo(y.Priority);
+
+                if (x.Cell != null)
+                {
+                    if (result == 0)
+                        result = x.Cell.Row.CompareTo(y.Cell.Row);
+                    if (result == 0)
+                        result = x.Cell.Column.CompareTo(y.Cell.Column);
+                }
+
+                if (result == 0)
+                    return 1;
+
+                return result;
+            }
         }
     }
 }
