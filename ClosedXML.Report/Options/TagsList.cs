@@ -31,9 +31,6 @@ namespace ClosedXML.Report.Options
         public new void Add(OptionTag tag)
         {
             tag.List = this;
-            var map = Enumerable.Range(byte.MinValue, byte.MaxValue + 1).ToList();
-            map.RemoveAll(x => this.Any(t => t.PriorityKey == x));
-            tag.PriorityKey = (byte)map.OrderBy(x => Math.Abs(tag.Priority - x)).First();
             base.Add(tag);
         }
 
@@ -64,7 +61,7 @@ namespace ClosedXML.Report.Options
         {
             while (true)
             {
-                var t = this.FirstOrDefault(x=>x.Enabled);
+                var t = this.FirstOrDefault(x => x.Enabled);
                 if (t == null)
                     break;
 
@@ -93,13 +90,26 @@ namespace ClosedXML.Report.Options
             foreach (var item in this)
                 item.Enabled = true;
         }
-    }
 
-    internal class OptionTagComparer : IComparer<OptionTag>
-    {
-        public int Compare(OptionTag x, OptionTag y)
+        internal class OptionTagComparer : IComparer<OptionTag>
         {
-            return -x.PriorityKey.CompareTo(y.PriorityKey);
+            public int Compare(OptionTag x, OptionTag y)
+            {
+                var result = -x.Priority.CompareTo(y.Priority);
+
+                if (x.Cell != null)
+                {
+                    if (result == 0)
+                        result = x.Cell.Row.CompareTo(y.Cell.Row);
+                    if (result == 0)
+                        result = x.Cell.Column.CompareTo(y.Cell.Column);
+                }
+
+                if (result == 0)
+                    return 1;
+
+                return result;
+            }
         }
     }
 }

@@ -6,8 +6,6 @@ namespace ClosedXML.Report.Options
 {
     public abstract class OptionTag
     {
-        internal byte PriorityKey { get; set; }
-
         public Dictionary<string, string> Parameters { get; internal set; }
         public TemplateCell Cell { get; internal set; }
         public TagsList List { get; internal set; }
