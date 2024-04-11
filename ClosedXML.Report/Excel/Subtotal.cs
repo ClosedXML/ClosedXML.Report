@@ -351,8 +351,15 @@ namespace ClosedXML.Report.Excel
 
                 var val = row.Cell(groupBy).GetString();
                 var isSummaryRow = row.IsSummary();
+                var isLeftGroupEndLine = false;
+                if (false == isSummaryRow)
+                {
+                    isLeftGroupEndLine = _groups.SingleOrDefault(gr => gr.Column == groupBy - 1 &&
+                                                                       gr.SummaryRow == null &&
+                                                                       gr.Range.RangeAddress.LastAddress.RowNumber == row.RowNumber()) != null;
+                }
 
-                    if (string.IsNullOrEmpty(val) && !isSummaryRow)
+                if (string.IsNullOrEmpty(val) && !isSummaryRow)
                     {
                         if (groupStart > 0)
                         {
@@ -363,6 +370,18 @@ namespace ClosedXML.Report.Excel
                         groupStart = 0;
                         continue;
                     }
+
+                if (isLeftGroupEndLine)
+                {
+                    var localGroupStart = groupStart == 0
+                        ? row.RangeAddress.Relative(_range.RangeAddress).FirstAddress.RowNumber
+                        : groupStart;
+
+                    groups.Add(CreateMoveTask(groupBy, prevVal, _range.Cell(localGroupStart, 1), row.LastCell(), RangeType.DataRange));
+                    prevVal = null;
+                    groupStart = 0;
+                    continue;
+                }
 
                 if (val != prevVal)
                 {
