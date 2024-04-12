@@ -349,7 +349,13 @@ namespace ClosedXML.Report.Excel
         {
             foreach (var format in worksheet.ConditionalFormats)
             {
-                var target = format.Ranges.OrderBy(x=>x.RangeAddress.FirstAddress.RowNumber)
+                format.Ranges.RemoveAll(range => false == range.RangeAddress.IsValid);
+                var validRanges = format.Ranges.Where(range => range.RangeAddress.IsValid).ToList();
+                if (false == validRanges.Any())
+                    continue;
+                
+                var target =
+                    validRanges.OrderBy(x=>x.RangeAddress.FirstAddress.RowNumber)
                     .ThenBy(x=> x.RangeAddress.FirstAddress.ColumnNumber)
                     .First().FirstCell();
                 foreach (var v in format.Values.Where(v => v.Value.Value.StartsWith("&=")).ToList())

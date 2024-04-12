@@ -31,7 +31,7 @@ ClosedXML.Report is a tool for report generation and data analysis in .NET appli
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
-    <Version>0.2.10-Beta1</Version>
+    <Version>0.2.10-Beta5</Version>
     <PackageIcon>favicon-01.png</PackageIcon>
   </PropertyGroup>
 

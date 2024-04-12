@@ -31,6 +31,8 @@ using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Utils;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Spreadsheet;
 using MoreLinq;
 
 namespace ClosedXML.Report.Options
@@ -112,11 +114,48 @@ namespace ClosedXML.Report.Options
             var level = 0;
             var rows = root.RowCount() - 1;
             var columns = root.ColumnCount();
-            if (rows <= 0 || columns <= 0)
+            if (columns <= 0)
+            {
                 return;
+            }
 
+            // Empty Total grand for report
+            if (rows <= 0)
+            {
+                if (disableGrandTotal)
+                    return;
+                
+                var r2= root.Offset(0, 0, 1, columns);
+                using (var subtotal = new Subtotal(r2, summaryAbove, groups, context.Evaluator))
+                {
+                    if (TotalLabel != null) subtotal.TotalLabel = TotalLabel;
+                    if (GrandLabel != null) subtotal.GrandLabel = GrandLabel;
+                    if (!disableGrandTotal)
+                    {
+                        var total = subtotal.AddGrandTotal(summaries);
+                        total.SummaryRow.Cell(2).Value = total.SummaryRow.Cell(1).Value;
+                        total.SummaryRow.Cell(1).Value = Blank.Value;
+                        level++;
+                    }
+
+                    foreach (var subGroup in subtotal.Groups.OrderBy(x => x.Column).Reverse())
+                    {
+                        FormatHeaderFooter(subGroup, groupRow);
+
+                        GroupRender(subGroup, new GroupTag { Column = 1, Level = 1 });
+                    }
+
+                    r2.Rows().ForEach(r => r.WorksheetRow().OutlineLevel = 0);
+                }
+
+                //   Rem DoDeleteSpecialRow
+                root.LastRow().Delete(XLShiftDeletedCells.ShiftCellsUp);
+
+                return;
+            }
+            
             var r = root.Offset(0, 0, rows, columns);
-
+            
             using (var subtotal = new Subtotal(r, summaryAbove, groups, context.Evaluator))
             {
                 if (TotalLabel != null) subtotal.TotalLabel = TotalLabel;

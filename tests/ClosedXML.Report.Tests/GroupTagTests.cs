@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
@@ -38,7 +40,7 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var cust = db.customers.LoadWith(x=>x.Orders.First().Items).OrderBy(c => c.CustNo).First(x=>x.CustNo == 1356);
+                        var cust = db.customers.LoadWith(x => x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
                         cust.Logo = Resource.toms_diving_center;
                         tpl.AddVariable("MoreOrders", cust.Orders.Take(5));
                         tpl.AddVariable(cust);
@@ -52,6 +54,29 @@ namespace ClosedXML.Report.Tests
                 });
         }
 
+        [Xunit.Fact]
+        public void Simple_EmptyResult()
+        {
+            string templateFile = "GroupTagTests_Simple_Empty.xlsx";
+            XlTemplateTest(templateFile,
+                tpl =>
+                {
+                    using (var db = new DbDemos())
+                    {
+                        var cust = db.customers.LoadWith(x => x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
+                        cust.Orders.Clear();
+                        cust.Logo = Resource.toms_diving_center;
+                        tpl.AddVariable("MoreOrders", cust.Orders.Take(0));
+                        tpl.AddVariable(cust);
+                    }
+                    tpl.AddVariable("Tax", 13);
+                },
+                wb =>
+                {
+                    CompareWithGauge(wb, templateFile);
+                });
+        }
+        
         [Theory,
          InlineData("GroupTagTests_SummaryAbove.xlsx"),
          InlineData("GroupTagTests_MergeLabels.xlsx"),
