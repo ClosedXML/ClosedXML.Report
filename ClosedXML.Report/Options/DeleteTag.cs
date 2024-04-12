@@ -8,6 +8,7 @@ OPTION          OBJECTS
 
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
+using ClosedXML.Report.Utils;
 using System.Linq;
 
 namespace ClosedXML.Report.Options
@@ -23,34 +24,42 @@ namespace ClosedXML.Report.Options
 
             foreach (var tag in deleteTags)
             {
-                var xlCell = tag.Cell.GetXlCell(context.Range);
-                var cellAddr = xlCell.Address.ToStringRelative(false);
-                var ws = Range.Worksheet;
+                if (!IsDisabled(tag))
+                {
+                    var xlCell = tag.Cell.GetXlCell(context.Range);
+                    var cellAddr = xlCell.Address.ToStringRelative(false);
+                    var ws = Range.Worksheet;
 
-                // whole worksheet
-                if (cellAddr == "A1" || cellAddr == "A2")
-                {
-                    ws.Workbook.Worksheets.Delete(ws.Name);
-                }
-                // whole column
-                else if (xlCell.Address.RowNumber == 1)
-                {
-                    ws.Column(xlCell.Address.ColumnNumber).Delete();
-                }
-                // whole row
-                else if (xlCell.Address.ColumnNumber == 1)
-                {
-                    ws.Row(xlCell.Address.RowNumber).Delete();
-                }
-                // range column
-                else if (IsSpecialRangeRow(xlCell))
-                {
-                    var addrInRange = xlCell.Relative(Range.RangeAddress.FirstAddress);
-                    context.Range.Column(addrInRange.ColumnNumber).Delete(XLShiftDeletedCells.ShiftCellsLeft);
+                    // whole worksheet
+                    if (cellAddr == "A1" || cellAddr == "A2")
+                    {
+                        ws.Workbook.Worksheets.Delete(ws.Name);
+                    }
+                    // whole column
+                    else if (xlCell.Address.RowNumber == 1)
+                    {
+                        ws.Column(xlCell.Address.ColumnNumber).Delete();
+                    }
+                    // whole row
+                    else if (xlCell.Address.ColumnNumber == 1)
+                    {
+                        ws.Row(xlCell.Address.RowNumber).Delete();
+                    }
+                    // range column
+                    else if (IsSpecialRangeRow(xlCell))
+                    {
+                        var addrInRange = xlCell.Relative(Range.RangeAddress.FirstAddress);
+                        context.Range.Column(addrInRange.ColumnNumber).Delete(XLShiftDeletedCells.ShiftCellsLeft);
+                    }
                 }
 
                 tag.Enabled = false;
             }
+        }
+
+        private bool IsDisabled(DeleteTag tag)
+        {
+            return tag.Parameters.ContainsKey("disabled") && tag.Parameters["disabled"].AsBool();
         }
     }
 }

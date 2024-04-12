@@ -32,8 +32,8 @@ namespace ClosedXML.Report
         public void Evaluate(IXLRange range)
         {
             var rangeName = range.RangeAddress.ToStringRelative(true);
-            ParseTags(range, rangeName);
             EvaluateValues(range);
+            ParseTags(range, rangeName);
             TagsPostprocessing(rangeName, new ProcessingContext(range, null, _evaluator));
         }
 

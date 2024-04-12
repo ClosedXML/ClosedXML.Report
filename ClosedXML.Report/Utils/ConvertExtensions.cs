@@ -50,15 +50,12 @@ namespace ClosedXML.Report.Utils
                 return false;
             switch (value.ToLower())
             {
-                case "0":
-                case "0.0":
-                case "0,0":
-                case "-":
                 case "false":
                 case "ложь":
                 case "нет":
                 case "no":
                 case "not":
+                case "null":
                     return false;
                 default:
                     return true;
