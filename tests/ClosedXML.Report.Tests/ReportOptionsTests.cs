@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using FluentAssertions;
+using LinqToDB;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace ClosedXML.Report.Tests
 {
+    [Collection("Database")]
     public class ReportOptionsTests : XlsxTemplateTestsBase
     {
         [Fact]
@@ -69,6 +69,26 @@ namespace ClosedXML.Report.Tests
                     var expectedOrder = testEntities.OrderBy(x=>x.Address.City).ThenBy(x=>x.Age).ToArray();
                     worksheet.Range("D5:D10").Cells().Select(x=>x.GetValue<int>()).ToArray().Should().ContainInOrder(expectedOrder.Select(x => x.Age));
                     worksheet.Range("E5:E10").Cells().Select(x=>x.GetString()).ToArray().Should().ContainInOrder(expectedOrder.Select(x => x.Address.City));
+                });
+        }
+
+        [Fact]
+        public void DeleteOptionsWithParameter()
+        {
+            XlTemplateTest("delete_options.xlsx",
+                tpl =>
+                {
+                    using (var db = new DbDemos())
+                    {
+                        var cust = db.customers.LoadWith(x => x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
+                        tpl.AddVariable(cust);
+                    }
+                    tpl.AddVariable("disableCColumnDeletion", "true");
+                    tpl.AddVariable("disableEColumnDeletion", "false");
+                },
+                wb =>
+                {
+                    CompareWithGauge(wb, "delete_options.xlsx");
                 });
         }
 
