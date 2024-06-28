@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using ClosedXML.Excel;
 using ClosedXML.Report.Tests.TestModels;
 using FluentAssertions;
