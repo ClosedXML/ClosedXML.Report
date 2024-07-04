@@ -12,6 +12,6 @@ public class HeightTag : OptionTag
         var xlCell = Cell.GetXlCell(context.Range);
         var cellRow = xlCell.WorksheetRow().RowNumber();
 
-        Range.Worksheet.Rows(cellRow, cellRow).Height = Height;
+        Range.Worksheet.Row(cellRow).Height = Height;
     }
 }

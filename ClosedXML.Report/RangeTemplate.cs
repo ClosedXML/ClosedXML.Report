@@ -151,6 +151,8 @@ namespace ClosedXML.Report
             {
                 _evaluator.AddVariable("@" + v.Key, v.Value);
             }
+            _rangeTags.Reset();
+
 
             if (IsHorizontal)
             {
