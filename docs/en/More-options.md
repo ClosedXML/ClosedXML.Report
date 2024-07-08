@@ -27,3 +27,5 @@ title: Tags list
 | Hidden, Hide      |                       | worksheet    | Hides the sheet for which it is specified. In the case of debugging the report, produces a "soft" hiding, which makes the sheet visible.
 | Delete            |                       | worksheet<br>worksheetRow<br>worksheetCol<br>rangeCol | Removes a sheet, a row/column of a sheet, or an range column, depending on where the tag is located.
 | PageOptions       | Wide=`<int>`<br>Tall=`<int>`<br>Landscape | workbook<br>worksheet | Specifies the page parameters for printing, adjusting the width of the sheet with the parameter `Wide`, the height of the sheet with the parameter` Tall` and the orientation of the sheet with the parameter `Landscape`
+| Height            | size, example `50`    |              | Sets the row height.
+| HeightRange       | size, example `50`    |              | Sets the row height for the data source in the area. All rows within the area will have their height adjusted.
