@@ -146,11 +146,13 @@ namespace ClosedXML.Report
         public IReportBuffer Generate(object[] items)
         {
             _evaluator.AddVariable("items", items);
+
             foreach (var v in _globalVariables)
             {
                 _evaluator.AddVariable("@" + v.Key, v.Value);
             }
             _rangeTags.Reset();
+
 
             if (IsHorizontal)
             {
@@ -160,6 +162,7 @@ namespace ClosedXML.Report
             {
                 VerticalTable(items, _evaluator);
             }
+
             return _buff;
         }
 
@@ -482,10 +485,16 @@ namespace ClosedXML.Report
                     tags = _tagsEvaluator.Parse(cell.GetString(), range, cell, out newValue);
                     cell.Value = newValue;
                 }
-                if (cell.Row > 1 && cell.Row == _rowCnt)
-                    _rangeTags.AddRange(tags);
-                else
-                    _tags.AddRange(tags);
+
+                foreach (var optionTag in tags)
+                {
+                    if (cell.Row > 1 && cell.Row == _rowCnt)
+                        _rangeTags.Add(optionTag);
+                    else if (optionTag is RangeOptionTag)
+                        _rangeTags.Add(optionTag);
+                    else
+                        _tags.Add(optionTag);
+                }
             }
 
             _rangeOption = _rangeTags.GetAll<RangeOptionTag>().Union(_tags.GetAll<RangeOptionTag>()).FirstOrDefault();
