@@ -12,11 +12,10 @@ namespace ClosedXML.Report.Tests
     [Collection("Database")]
     public class SubrangesTests : XlsxTemplateTestsBase
     {
-        [Theory,
-        InlineData("Subranges_Simple_tMD1.xlsx"),
-        InlineData("Subranges_WithSubtotals_tMD2.xlsx"),
-        InlineData("Subranges_WithSort_tMD3.xlsx"),
-        ]
+        [Theory]
+        [InlineData("Subranges_Simple_tMD1.xlsx")]
+        [InlineData("Subranges_WithSubtotals_tMD2.xlsx")]
+        [InlineData("Subranges_WithSort_tMD3.xlsx", Skip = "ClosedXML 0.104.1 bug. When a sheet is copied, it doesn't insert links to calculation chain for cells with formulas, but then requires it.")]
         public void Simple(string templateFile)
         {
             XlTemplateTest(templateFile,
