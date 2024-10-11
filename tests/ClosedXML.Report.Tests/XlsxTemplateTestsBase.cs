@@ -125,7 +125,7 @@ namespace ClosedXML.Report.Tests
 
                 if (!string.Equals(actualCell.FormulaA1, expectedCell.FormulaA1, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    messages.Add($"Cell formulae are not equal starting from {address}");
+                    messages.Add($"Cell formulae are not equal starting from {address}. Actual: '{actualCell.FormulaA1}'; Expected: '{expectedCell.FormulaA1}'");
                     cellsAreEqual = false;
                 }
 
