@@ -102,7 +102,7 @@ namespace ClosedXML.Report
             var cells = range.CellsUsed()
                 .Where(c => !c.HasFormula
                             && c.GetString().Contains("{{")
-                            && !innerRanges.Any(nr => nr.NamedRange.Ranges.Contains(c.AsRange())))
+                            && !innerRanges.Any(nr => nr.DefinedName.Ranges.Contains(c.AsRange())))
                 .ToArray();
 
             foreach (var cell in cells)
@@ -173,7 +173,7 @@ namespace ClosedXML.Report
 
             foreach (var nr in innerRanges)
             {
-                foreach (var rng in nr.NamedRange.Ranges)
+                foreach (var rng in nr.DefinedName.Ranges)
                 {
                     var growedRange = rng.GrowToMergedRanges();
                     var items = nr.RangeData as object[] ?? nr.RangeData.Cast<object>().ToArray();
@@ -194,14 +194,14 @@ namespace ClosedXML.Report
                         }
                         continue;
                     }
-                    var tplt = RangeTemplate.Parse(nr.NamedRange.Name, growedRange, _errors, _variables);
+                    var tplt = RangeTemplate.Parse(nr.DefinedName.Name, growedRange, _errors, _variables);
                     using (var buff = tplt.Generate(items))
                     {
-                        var ranges = nr.NamedRange.Ranges;
+                        var ranges = nr.DefinedName.Ranges;
                         var trgtRng = buff.CopyTo(growedRange);
                         ranges.Remove(rng);
                         ranges.Add(trgtRng);
-                        nr.NamedRange.SetRefersTo(ranges);
+                        nr.DefinedName.SetRefersTo(ranges);
 
                         tplt.RangeTagsApply(trgtRng, items);
                         var isOptionsRowEmpty = trgtRng.IsOptionsRowEmpty();
@@ -245,30 +245,30 @@ namespace ClosedXML.Report
             _evaluator.AddVariable(alias, value);
         }
 
-        private BoundRange BindToVariable(IXLNamedRange namedRange)
+        private BoundRange BindToVariable(IXLDefinedName definedName)
         {
-            if (_variables.TryGetValue(namedRange.Name, out var variableValue) &&
+            if (_variables.TryGetValue(definedName.Name, out var variableValue) &&
                 variableValue is IEnumerable data1)
-                return new BoundRange(namedRange, data1);
+                return new BoundRange(definedName, data1);
 
-            var expression = "{{" + namedRange.Name.Replace("_", ".") +"}}";
+            var expression = "{{" + definedName.Name.Replace("_", ".") +"}}";
 
             if (_evaluator.TryEvaluate(expression, out var res) &&
                 res is IEnumerable data2)
-                return new BoundRange(namedRange, data2);
+                return new BoundRange(definedName, data2);
 
             return null;
         }
 
         private class BoundRange
         {
-            public IXLNamedRange NamedRange { get; }
+            public IXLDefinedName DefinedName { get; }
 
             public IEnumerable RangeData { get; }
 
-            public BoundRange(IXLNamedRange namedRange, IEnumerable rangeData)
+            public BoundRange(IXLDefinedName definedName, IEnumerable rangeData)
             {
-                NamedRange = namedRange;
+                DefinedName = definedName;
                 RangeData = rangeData;
             }
         }
