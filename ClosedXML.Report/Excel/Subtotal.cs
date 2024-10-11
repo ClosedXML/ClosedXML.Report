@@ -509,7 +509,7 @@ namespace ClosedXML.Report.Excel
 
         private string ExpandFormula(MoveData[] groups, string formula)
         {
-            var pars = _range.Worksheet.GetRangeParameters(formula).Where(r => r.Key.Contains(":"));
+            var pars = _range.Worksheet.GetRangeParameters(formula);
             foreach (var addr in pars)
             {
                 var firstGroup = groups.FirstOrDefault(x => x.SourceAddress.FirstAddress.RowNumber == addr.Value.FirstAddress.RowNumber);
@@ -532,7 +532,7 @@ namespace ClosedXML.Report.Excel
 
         private string ShiftFormula(string formula, int rowCount)
         {
-            var pars = _range.Worksheet.GetRangeParameters(formula).Where(r => r.Key.Contains(":"));
+            var pars = _range.Worksheet.GetRangeParameters(formula);
             foreach (var addr in pars)
             {
                 var sheet = addr.Value.Worksheet;

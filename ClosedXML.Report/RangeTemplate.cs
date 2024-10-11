@@ -50,13 +50,15 @@ namespace ClosedXML.Report
             Name = name;
             Source = name;
             var rangeName = name + "_tpl";
-            if (range.Worksheet.NamedRanges.TryGetValue(rangeName, out var namedRange) || wb.NamedRanges.TryGetValue(rangeName, out namedRange))
+            if (range.Worksheet.DefinedNames.TryGetValue(rangeName, out var namedRange) || wb.DefinedNames.TryGetValue(rangeName, out namedRange))
             {
-                namedRange.Add(range);
+                var ranges = namedRange.Ranges;
+                ranges.Add(range);
+                namedRange.SetRefersTo(ranges);
             }
             else
             {
-                range.Worksheet.NamedRanges.Add(rangeName, range);
+                range.Worksheet.DefinedNames.Add(rangeName, range);
             }
 
             _evaluator = new FormulaEvaluator();
@@ -130,7 +132,7 @@ namespace ClosedXML.Report
             return result;
         }
 
-        private static IEnumerable<IXLNamedRange> GetInnerRanges(IXLRange prng)
+        private static IEnumerable<IXLDefinedName> GetInnerRanges(IXLRange prng)
         {
             var containings = prng.GetContainingNames().ToArray();
             return from nr in containings
