@@ -54,20 +54,7 @@ namespace ClosedXML.Report
 
             foreach (var cell in cells)
             {
-                string value = cell.GetString();
-                OptionTag[] tags;
-                string newValue;
-                var templateCell = new TemplateCell(cell.Address.RowNumber, cell.Address.ColumnNumber, cell);
-                if (value.StartsWith("&="))
-                {
-                    tags = _tagsEvaluator.Parse(value.Substring(2), range, templateCell, out newValue);
-                    cell.FormulaA1 = newValue;
-                }
-                else
-                {
-                    tags = _tagsEvaluator.Parse(value, range, templateCell, out newValue);
-                    cell.Value = newValue;
-                }
+                OptionTag[] tags = _tagsEvaluator.ApplyTagsTo(cell, range);
                 _tags[rangeName].AddRange(tags);
             }
         }

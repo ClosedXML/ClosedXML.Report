@@ -39,7 +39,27 @@ namespace ClosedXML.Report.Options
             return tags;
         }
 
-        public OptionTag[] Parse(string templateLiteral, IXLRange range, TemplateCell cell, out string newValue)
+        public OptionTag[] ApplyTagsTo(IXLCell cell, IXLRange range)
+        {
+            string value = cell.GetString();
+            OptionTag[] tags;
+            string newValue;
+            var templateCell = new TemplateCell(cell.Address.RowNumber, cell.Address.ColumnNumber, cell);
+            if (value.StartsWith("&="))
+            {
+                tags = Parse(value.Substring(2), range, templateCell, out newValue);
+                cell.FormulaA1 = newValue;
+            }
+            else
+            {
+                tags = Parse(value, range, templateCell, out newValue);
+                cell.Value = newValue;
+            }
+
+            return tags;
+        }
+
+        private OptionTag[] Parse(string templateLiteral, IXLRange range, TemplateCell cell, out string newValue)
         {
             List<OptionTag> result = new List<OptionTag>();
             foreach (var expr in GetAllTags(templateLiteral))
@@ -77,7 +97,6 @@ namespace ClosedXML.Report.Options
             }
 
             return TagsRegister.CreateOption(name, dictionary);
-
         }
     }
 }
