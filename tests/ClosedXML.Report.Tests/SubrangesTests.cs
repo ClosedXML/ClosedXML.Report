@@ -112,21 +112,20 @@ namespace ClosedXML.Report.Tests
         {
             var items = db.items.ToList().GroupBy(i => i.OrderNo).ToDictionary(x => x.Key);
             var parts = db.parts.ToList().ToDictionary(x => x.PartNo);
-            customer[] custs = db.customers.LoadWith(x => x.Orders).OrderBy(x => x.CustNo).ToArray();
-            foreach (var customer in custs)
+            var customers = db.customers.LoadWith(x => x.Orders).OrderBy(x => x.CustNo).ToArray();
+            foreach (var customer in customers)
             {
                 customer.Orders.Sort((x, y) => x.OrderNo.CompareTo(y.OrderNo));
-                foreach (var o in customer.Orders)
+                foreach (var order in customer.Orders)
                 {
-                    var order = o;
-                    o.Items = items[order.OrderNo].ToList();
-                    o.Items.Sort((x, y) => x.ItemNo.Value.CompareTo(y.ItemNo));
-                    foreach (var item in o.Items)
+                    order.Items = items[order.OrderNo].ToList();
+                    order.Items.Sort((x, y) => x.ItemNo.Value.CompareTo(y.ItemNo));
+                    foreach (var item in order.Items)
                         item.Part = parts[item.PartNo.Value];
                 }
             }
             //var cust = db.Customers.Include(x => x.Orders.Select(o=>o.Items.Select(i=>i.Part)));
-            return custs;
+            return customers;
         }
 
         private IEnumerable<dynamic> GenerateVisitors()

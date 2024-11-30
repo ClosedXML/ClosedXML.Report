@@ -29,7 +29,10 @@ namespace ClosedXML.Report.Options
             var fields = List.GetAll<SortTag>().ToArray();
             foreach (var tag in fields.OrderBy(x => x.Num).ThenBy(x => x.Column))
             {
-                context.Range.SortColumns.Add(tag.Column, tag.Order);
+                // Ignore blanks is a legacy option, but basically it means treat blanks as blanks
+                // and blanks are always at the end (regardless of sorting order). The value `false`
+                // would treat blanks as empty strings (i.e. sorted at the beginning instead of the end).
+                context.Range.SortColumns.Add(tag.Column, tag.Order, ignoreBlanks: true);
             }
             context.Range.Sort();
 
