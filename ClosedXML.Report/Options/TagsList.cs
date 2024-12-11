@@ -69,7 +69,7 @@ namespace ClosedXML.Report.Options
                 {
                     t.Execute(context);
                 }
-                catch(TemplateParseException ex)
+                catch (TemplateParseException ex)
                 {
                     _errors.Add(new TemplateError(ex.Message, ex.Range));
                 }
