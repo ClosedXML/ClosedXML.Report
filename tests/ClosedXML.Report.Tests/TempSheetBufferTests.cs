@@ -30,6 +30,7 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void CanRenderRangeForEmptySet()
         {
+            // If bound range has no items and the option row is empty, remove the whole area, including the option row.
             using (var wb = new XLWorkbook())
             {
                 var ws = wb.AddWorksheet("Sheet1");

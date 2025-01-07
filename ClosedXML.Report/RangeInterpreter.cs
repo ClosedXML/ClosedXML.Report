@@ -178,21 +178,14 @@ namespace ClosedXML.Report
                 {
                     var grownRange = rng.GrowToMergedRanges();
                     var items = nr.RangeData as object[] ?? nr.RangeData.Cast<object>().ToArray();
-                    if (!items.Any())
+
+                    if (!items.Any() && grownRange.IsOptionsRowEmpty())
                     {
-                        if (grownRange.IsOptionsRowEmpty())
-                        {
-                            grownRange.Delete(XLShiftDeletedCells.ShiftCellsUp);
-                        }
-                        else
-                        {
-                            var rangeWithoutOptionsRow = grownRange.Worksheet
-                                .Range(grownRange.FirstCell(), grownRange.LastCell().CellAbove());
-                            if (grownRange.Worksheet.Tables.Any(t => t.Contains(rangeWithoutOptionsRow)))
-                                grownRange.Clear();
-                            else
-                                rangeWithoutOptionsRow.Delete(XLShiftDeletedCells.ShiftCellsUp);
-                        }
+                        // Related to #251. I am pretty sure this is wrong solution and dealing with empty items
+                        // should be done through RangeTemplate below. But if there are no items and empty option
+                        // row, the result is degenerated A1 rendered range in temp sheet. Deleting (empty) options
+                        // row would thus delete only first cell, not full (empty) options row.
+                        grownRange.Delete(XLShiftDeletedCells.ShiftCellsUp);
                         continue;
                     }
 
