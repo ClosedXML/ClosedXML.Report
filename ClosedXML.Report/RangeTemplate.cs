@@ -70,7 +70,6 @@ namespace ClosedXML.Report
             _colCnt = colCnt;
         }
 
-
         public static RangeTemplate Parse(string name, IXLRange range, TemplateErrors errors, IDictionary<string, object> globalVariables)
         {
             var wb = range.Worksheet.Workbook;
