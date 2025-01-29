@@ -134,7 +134,7 @@ namespace ClosedXML.Report
     {
         public Parameter(string name, object value)
         {
-            ParameterExpression = Expression.Parameter(value?.GetType() ?? typeof(string), name);
+            ParameterExpression = Expression.Parameter(value?.GetType() ?? typeof(object), name);
             Value = value;
         }
 
