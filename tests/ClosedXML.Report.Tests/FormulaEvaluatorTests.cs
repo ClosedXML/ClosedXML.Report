@@ -53,7 +53,6 @@ namespace ClosedXML.Report.Tests
 
         [Theory,
         InlineData("{{\"Hello \"+a}}","Hello "),
-        InlineData("{{1+a}}", null, Skip = "Validate if this test is even correct, 1+null is it expected to silently fail to null?"),
         InlineData("{{\"City: \"+Iif(a==null, string.Empty, a.City)}}","City: ")
         ]
         public void PassNullParameter(string formula, object expected)
