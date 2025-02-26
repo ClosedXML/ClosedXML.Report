@@ -108,7 +108,7 @@ namespace ClosedXML.Report.Tests
                 });
         }
 
-        private static customer[] GetCustomers(DbDemos db)
+        private static Customer[] GetCustomers(DbDemos db)
         {
             var items = db.items.ToList().GroupBy(i => i.OrderNo).ToDictionary(x => x.Key);
             var parts = db.parts.ToList().ToDictionary(x => x.PartNo);

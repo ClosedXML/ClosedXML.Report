@@ -4,13 +4,13 @@ using LinqToDB.Mapping;
 
 namespace ClosedXML.Report.Tests.TestModels
 {
-    public partial class order
+    public partial class Order
     {
         [Association(ThisKey = "CustNo", OtherKey = "CustNo", CanBeNull = true)]
-        public customer Customer { get; set; }
+        public Customer Customer { get; set; }
 
         [Association(ThisKey = "OrderNo", OtherKey = "OrderNo")]
-        public List<item> Items { get; set; }
+        public List<Item> Items { get; set; }
 
         public Bitmap PaymentImage
         {

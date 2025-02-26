@@ -410,7 +410,7 @@ namespace ClosedXML.Report
 
             var rng = _buff.GetRange(start, _buff.PrevAddress);
             var rangeName = subrange.Name;
-            var dnr = rng.Worksheet.Workbook.NamedRange(rangeName);
+            var dnr = rng.Worksheet.Workbook.DefinedName(rangeName);
             dnr.SetRefersTo(rng);
         }
 

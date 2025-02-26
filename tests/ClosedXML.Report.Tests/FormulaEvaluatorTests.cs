@@ -117,10 +117,8 @@ namespace ClosedXML.Report.Tests
             object CreateDicParameter(string name) => new Dictionary<string, object>
                 {{"Name", new Dictionary<string, object> {{"FirstName", name }}}};
 
-            var config = new ParsingConfig()
-            {
-                CustomTypeProvider = new DefaultDynamicLinqCustomTypeProvider()
-            };
+            var config = new ParsingConfig();
+            config.CustomTypeProvider = new DefaultDynamicLinqCustomTypeProvider(config, cacheCustomTypes: true);
             var parType = new Dictionary<string, object>().GetType();
             var lambda = DynamicExpressionParser.ParseLambda(config, new [] {Expression.Parameter(parType, "item")}, typeof(object), "item.Name.FirstName").Compile();
             lambda.DynamicInvoke(CreateDicParameter("Julio")).Should().Be("Julio");

@@ -19,16 +19,16 @@ namespace ClosedXML.Report.Tests.TestModels
     /// </summary>
     public partial class DbDemos : LinqToDB.Data.DataConnection
     {
-        public ITable<country> countries { get { return this.GetTable<country>(); } }
-        public ITable<customer> customers { get { return this.GetTable<customer>(); } }
-        public ITable<employee> employees { get { return this.GetTable<employee>(); } }
-        public ITable<item> items { get { return this.GetTable<item>(); } }
-        public ITable<nextcust> nextcusts { get { return this.GetTable<nextcust>(); } }
-        public ITable<nextitem> nextitems { get { return this.GetTable<nextitem>(); } }
-        public ITable<nextord> nextords { get { return this.GetTable<nextord>(); } }
-        public ITable<order> orders { get { return this.GetTable<order>(); } }
-        public ITable<part> parts { get { return this.GetTable<part>(); } }
-        public ITable<vendor> vendors { get { return this.GetTable<vendor>(); } }
+        public ITable<Country> countries { get { return this.GetTable<Country>(); } }
+        public ITable<Customer> customers { get { return this.GetTable<Customer>(); } }
+        public ITable<Employee> employees { get { return this.GetTable<Employee>(); } }
+        public ITable<Item> items { get { return this.GetTable<Item>(); } }
+        public ITable<NextCust> nextcusts { get { return this.GetTable<NextCust>(); } }
+        public ITable<NextItem> nextitems { get { return this.GetTable<NextItem>(); } }
+        public ITable<NextOrd> nextords { get { return this.GetTable<NextOrd>(); } }
+        public ITable<Order> orders { get { return this.GetTable<Order>(); } }
+        public ITable<Part> parts { get { return this.GetTable<Part>(); } }
+        public ITable<Vendor> vendors { get { return this.GetTable<Vendor>(); } }
 
         public DbDemos()
         {
@@ -56,7 +56,7 @@ namespace ClosedXML.Report.Tests.TestModels
     }
 
     [Table("country")]
-    public partial class country
+    public partial class Country
     {
         [PrimaryKey, Nullable]
         public string Name { get; set; } // text(24)
@@ -71,7 +71,7 @@ namespace ClosedXML.Report.Tests.TestModels
     }
 
     [Table("customer")]
-    public partial class customer
+    public partial class Customer
     {
         [PrimaryKey, Identity]
         public int CustNo { get; set; } // int
@@ -102,7 +102,7 @@ namespace ClosedXML.Report.Tests.TestModels
     }
 
     [Table("employee")]
-    public partial class employee
+    public partial class Employee
     {
         [PrimaryKey, Nullable]
         public int? EmpNo { get; set; } // Long
@@ -119,7 +119,7 @@ namespace ClosedXML.Report.Tests.TestModels
     }
 
     [Table("items")]
-    public partial class item
+    public partial class Item
     {
         [PrimaryKey(1), Nullable]
         public double? OrderNo { get; set; } // Double
@@ -134,28 +134,28 @@ namespace ClosedXML.Report.Tests.TestModels
     }
 
     [Table("nextcust")]
-    public partial class nextcust
+    public partial class NextCust
     {
         [Column, Nullable]
         public double? NewCust { get; set; } // Double
     }
 
     [Table("nextitem")]
-    public partial class nextitem
+    public partial class NextItem
     {
         [Column, Nullable]
         public double? NewKey { get; set; } // Double
     }
 
     [Table("nextord")]
-    public partial class nextord
+    public partial class NextOrd
     {
         [Column, Nullable]
         public double? NewKey { get; set; } // Double
     }
 
     [Table("orders")]
-    public partial class order
+    public partial class Order
     {
         [PrimaryKey, Identity]
         public double OrderNo { get; set; } // Double
@@ -202,7 +202,7 @@ namespace ClosedXML.Report.Tests.TestModels
     }
 
     [Table("parts")]
-    public partial class part
+    public partial class Part
     {
         [PrimaryKey, Identity]
         public double PartNo { get; set; } // Double
@@ -221,7 +221,7 @@ namespace ClosedXML.Report.Tests.TestModels
     }
 
     [Table("vendors")]
-    public partial class vendor
+    public partial class Vendor
     {
         [PrimaryKey, Identity]
         public double VendorNo { get; set; } // Double
@@ -249,44 +249,44 @@ namespace ClosedXML.Report.Tests.TestModels
 
     public static partial class TableExtensions
     {
-        public static country Find(this ITable<country> table, string Name)
+        public static Country Find(this ITable<Country> table, string Name)
         {
             return table.FirstOrDefault(t =>
                 t.Name == Name);
         }
 
-        public static customer Find(this ITable<customer> table, double CustNo)
+        public static Customer Find(this ITable<Customer> table, double CustNo)
         {
             return table.FirstOrDefault(t =>
                 t.CustNo == CustNo);
         }
 
-        public static employee Find(this ITable<employee> table, int? EmpNo)
+        public static Employee Find(this ITable<Employee> table, int? EmpNo)
         {
             return table.FirstOrDefault(t =>
                 t.EmpNo == EmpNo);
         }
 
-        public static item Find(this ITable<item> table, double? OrderNo, double? ItemNo)
+        public static Item Find(this ITable<Item> table, double? OrderNo, double? ItemNo)
         {
             return table.FirstOrDefault(t =>
                 t.OrderNo == OrderNo &&
                 t.ItemNo == ItemNo);
         }
 
-        public static order Find(this ITable<order> table, double OrderNo)
+        public static Order Find(this ITable<Order> table, double OrderNo)
         {
             return table.FirstOrDefault(t =>
                 t.OrderNo == OrderNo);
         }
 
-        public static part Find(this ITable<part> table, double PartNo)
+        public static Part Find(this ITable<Part> table, double PartNo)
         {
             return table.FirstOrDefault(t =>
                 t.PartNo == PartNo);
         }
 
-        public static vendor Find(this ITable<vendor> table, double VendorNo)
+        public static Vendor Find(this ITable<Vendor> table, double VendorNo)
         {
             return table.FirstOrDefault(t =>
                 t.VendorNo == VendorNo);
