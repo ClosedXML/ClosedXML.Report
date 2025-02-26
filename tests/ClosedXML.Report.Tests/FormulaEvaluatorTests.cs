@@ -51,13 +51,14 @@ namespace ClosedXML.Report.Tests
             eval.Evaluate("{{b}}{{a}}").Should().Be("1");
         }
 
-        [Fact]
-        public void PassNullParameter()
+        [Theory,
+        InlineData("{{\"Hello \"+a}}","Hello "),
+        InlineData("{{\"City: \"+Iif(a==null, string.Empty, a.City)}}","City: ")
+        ]
+        public void PassNullParameter(string formula, object expected)
         {
             var eval = new FormulaEvaluator();
-            eval.Evaluate("{{\"Hello \"+a}}", new Parameter("a", null)).Should().Be("Hello ");
-            eval.Evaluate("{{1+a}}", new Parameter("a", null)).Should().Be(null);
-            //TODO: eval.Evaluate("{{\"City: \"+Iif(a==null, string.Empty, a.City}}", new Parameter("a", null)).Should().Be("City: ");
+            eval.Evaluate(formula, new Parameter("a", null)).Should().Be(expected);
         }
 
         [Fact]
