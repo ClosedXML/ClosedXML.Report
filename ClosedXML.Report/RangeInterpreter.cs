@@ -8,6 +8,7 @@ using ClosedXML.Report.Excel;
 using ClosedXML.Report.Options;
 using ClosedXML.Report.Utils;
 using System.Linq.Dynamic.Core.Exceptions;
+using System.Text.RegularExpressions;
 
 
 namespace ClosedXML.Report
@@ -251,7 +252,36 @@ namespace ClosedXML.Report
                 variableValue is IEnumerable data1)
                 return new BoundRange(namedRange, data1);
 
-            var expression = "{{" + namedRange.Name.Replace("_", ".") +"}}";
+            // Get the name of the named range
+            var input = namedRange.Name;
+
+            // Define a regular expression pattern to match parts of the string that are enclosed in backslashes
+            string pattern = @"\\(.*?)\\";
+
+            // Use the regular expression to find all matches in the input string
+            var matches = Regex.Matches(input, pattern);
+
+            // Iterate over each match found
+            foreach (Match match in matches)
+            {
+                // Replace underscores in the matched string with caret symbols
+                string replacement = match.Value.Replace("_", "^");
+
+                // Replace the matched part in the input string with the modified string
+                input = input.Replace(match.Value, replacement);
+            }
+
+            // Remove all backslashes from the input string
+            input = input.Replace("\\", "");
+
+            // Replace all remaining underscores in the input string with dots
+            input = input.Replace("_", ".");
+
+            // Replace all caret symbols in the input string back to underscores
+            input = input.Replace("^", "_");
+
+            // Create an expression by enclosing the modified input string in double curly braces
+            var expression = "{{" + input +"}}";
 
             if (_evaluator.TryEvaluate(expression, out var res) &&
                 res is IEnumerable data2)
