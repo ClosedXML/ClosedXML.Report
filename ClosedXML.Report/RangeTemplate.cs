@@ -33,9 +33,6 @@ namespace ClosedXML.Report
         private bool _isSubrange;
         private IDictionary<string, object> _globalVariables;
         
-        private readonly Parameter _itemParameter = new("item", null);
-        private readonly Parameter _indexParameter = new("index", 0);
-        
         public string Source { get; private set; }
         public string Name { get; }
 
