@@ -96,11 +96,11 @@ namespace ClosedXML.Report.Utils
         public override int Read([In, Out] char[] buffer, int index, int count)
         {
             if (buffer == null)
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if (index < 0)
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
             if (count < 0)
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if (buffer.Length - index < count)
                 throw new ArgumentException("Argument invalid off len");
             if (_s == null)
