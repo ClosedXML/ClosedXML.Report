@@ -18,8 +18,8 @@ namespace ClosedXML.Report.Tests
 
                 var tempSheetBuffer = new TempSheetBuffer(wb);
                 wb.DefinedNames.Add("Temp range", tempSheetBuffer.GetRange(
-                    tempSheetBuffer.GetCell(1, 1).Address,
-                    tempSheetBuffer.GetCell(4, 4).Address));
+                    tempSheetBuffer.GetCell(new CellPosition(1, 1)).Address,
+                    tempSheetBuffer.GetCell(new CellPosition(4, 4)).Address));
 
                 wb.DefinedNames.Count().Should().Be(1, "global named range is supposed to be added");
                 tempSheetBuffer.Dispose();

@@ -118,7 +118,7 @@ namespace ClosedXML.Report.Excel
         }
 
         /// <summary>
-        /// Get the named ranges that contains the specified range (completely).
+        /// Get the named ranges that contain the specified range (completely).
         /// </summary>
         /// <param name="range">range</param>
         public static IEnumerable<IXLDefinedName> GetContainingNames(this IXLRange range)
@@ -214,9 +214,7 @@ namespace ClosedXML.Report.Excel
                 var rela = srcCells[i].Relative(srcRow.RangeAddress.FirstAddress);
                 var trgtCell = trgtRow.RangeAddress.FirstAddress.Offset(rela);
                 trgtCell.Style = srcCells[i].Style;
-                //trgtCells[i].Style = srcCells[i].Style;
             }
-            //trgtRow.CopyConditionalFormatsFrom(srcRow);
         }
 
         public static void CopyFrom(this IXLConditionalFormat targetFormat, IXLConditionalFormat srcFormat)

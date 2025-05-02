@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
 using Xunit;
@@ -62,7 +63,7 @@ namespace ClosedXML.Report.Tests
         public void EmptyDataSource(string templateFile)
         {
             XlTemplateTest(templateFile,
-                tpl => tpl.AddVariable("Orders", new Order[0]),
+                tpl => tpl.AddVariable("Orders", Array.Empty<Order>()),
                 wb => { });
         }
 

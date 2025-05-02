@@ -32,7 +32,10 @@ namespace ClosedXML.Report
         private bool _isOptionsRowEmpty = true;
         private bool _isSubrange;
         private IDictionary<string, object> _globalVariables;
-
+        
+        private readonly Parameter _itemParameter = new("item", null);
+        private readonly Parameter _indexParameter = new("index", 0);
+        
         public string Source { get; private set; }
         public string Name { get; }
 
@@ -84,12 +87,13 @@ namespace ClosedXML.Report
             var innerRanges = GetInnerRanges(range).ToArray();
 
             var sheet = range.Worksheet;
+            var innerCells = innerRanges.SelectMany(x => x.Ranges.Cells()).ToHashSet();
             for (int iRow = 1; iRow <= result._rowCnt; iRow++)
             {
                 for (int iColumn = 1; iColumn <= result._colCnt; iColumn++)
                 {
                     var xlCell = range.Cell(iRow, iColumn);
-                    if (innerRanges.Any(x => x.Ranges.Cells().Contains(xlCell)))
+                    if (innerCells.Contains(xlCell))
                         xlCell = null;
                     result._cells.Add(iRow, iColumn, xlCell);
                 }
@@ -97,7 +101,10 @@ namespace ClosedXML.Report
                     result._cells.AddNewRow();
             }
 
-            result._mergedRanges = sheet.MergedRanges.Where(x => range.Contains(x) && !innerRanges.Any(nr => nr.Ranges.Any(r => r.Contains(x)))).ToArray();
+            result._mergedRanges = sheet.MergedRanges
+                .Where(range.Contains)
+                .Where(x => !innerRanges.Any(nr => nr.Ranges.Any(r => r.Contains(x))))
+                .ToArray();
             sheet.MergedRanges.RemoveAll(result._mergedRanges.Contains);
 
             result.ParseTags(range);
@@ -174,13 +181,25 @@ namespace ClosedXML.Report
         private void VerticalTable(object[] items, FormulaEvaluator evaluator)
         {
             var rangeStart = _buff.NextAddress;
+            
+            // Precompute merged ranges that do NOT belong to options row
+            var mergedRangesNonOptions = _mergedRanges.Where(r => !_optionsRow?.Contains(r) ?? true).ToArray();            
+            
+            // Precompute worksheet row heights once
+            var worksheet = _rowRange.Worksheet;
+            var rowHeightMap = _cells
+                .Where(c => c.XLCell != null && c.Row <= _rowCnt)
+                .GroupBy(c => c.XLCell.Address.RowNumber)
+                .ToDictionary(g => g.Key, g => worksheet.Row(g.Key).Height);
+            
+            
             for (int i = 0; i < items.Length; i++)
             {
                 var startAddr = _buff.NextAddress;
                 IXLAddress rowEnd = null;
                 int row = 1;
                 var tags = _tags.CopyTo(_rowRange);
-                var renderedSubranges = new List<string>();
+                var renderedSubranges = new HashSet<string>();
 
                 // render row cells
                 for (var iCell = 0; iCell < _cells.Count; iCell++)
@@ -192,11 +211,10 @@ namespace ClosedXML.Report
                     if (cell.CellType == TemplateCellType.None)
                     {
                         var xlCell = _rowRange.Cell(cell.Row, cell.Column);
-                        var ownRng = _subranges.First(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
-                        if (!renderedSubranges.Contains(ownRng.Name))
+                        var ownRng = _subranges.FirstOrDefault(r => r._cells.Any(c => c.CellType != TemplateCellType.None && c.XLCell != null && Equals(c.XLCell.Address, xlCell.Address)));
+                        if (ownRng != null && renderedSubranges.Add(ownRng.Name))
                         {
                             RenderSubrange(ownRng, items[i], evaluator, cell, tags, ref iCell, ref row);
-                            renderedSubranges.Add(ownRng.Name);
                         }
                     }
                     else if (cell.CellType == TemplateCellType.NewRow)
@@ -212,12 +230,11 @@ namespace ClosedXML.Report
                         RenderCell(items, i, evaluator, cell);
                     }
                 }
-
+            
                 var newRowRng = _buff.GetRange(startAddr, rowEnd);
-                foreach (var mrg in _mergedRanges.Where(r => !_optionsRow.Contains(r)))
+                foreach (var mrg in mergedRangesNonOptions)
                 {
-                    var newMrg = mrg.Relative(_rowRange, newRowRng);
-                    newMrg.Merge(false);
+                    mrg.Relative(_rowRange, newRowRng).Merge(false);
                 }
 
                 tags.Execute(new ProcessingContext(newRowRng, items[i], evaluator));
@@ -240,24 +257,18 @@ namespace ClosedXML.Report
                 var optionsRow = resultRange.LastRow().AsRange();
                 foreach (var mrg in _mergedRanges.Where(r => _optionsRow.Contains(r)))
                 {
-                    var newMrg = mrg.Relative(_optionsRow, optionsRow);
-                    newMrg.Merge();
+                    mrg.Relative(_optionsRow, optionsRow).Merge();
                 }
             }
 
-            // arrage rows height
-            var worksheet = _rowRange.Worksheet;
-            var rowNumbers = _cells.Where(xc => xc.XLCell != null && xc.Row <= _rowCnt)
-                .Select(xc => xc.XLCell.Address.RowNumber)
-                .Distinct()
-                .ToArray();
-            var heights = rowNumbers
-                .Select(c => worksheet.Row(c).Height)
-                .ToArray();
-            var firstRow = rowNumbers.Min();
-            foreach (var row in Enumerable.Range(rangeStart.RowNumber, _buff.PrevAddress.RowNumber))
+            // arrange rows height
+            var firstRow = rowHeightMap.Keys.Min();
+            var heights = rowHeightMap.Values.ToArray();
+            var heightsLength = heights.Length;
+           
+            for (int rowNum = rangeStart.RowNumber; rowNum <= _buff.PrevAddress.RowNumber; rowNum++)
             {
-                worksheet.Row(firstRow + row - 1).Height = heights[(row - 1) % heights.Length];
+                worksheet.Row(firstRow + rowNum - 1).Height = heights[(rowNum - 1) % heightsLength];
             }
 
             if (_isSubrange)
@@ -272,7 +283,7 @@ namespace ClosedXML.Report
         {
             if (cell.CellType != TemplateCellType.Formula && cell.CellType != TemplateCellType.Value)
             {
-                _buff.WriteValue(null, null);
+                _buff.WriteCellValue(null, null);
                 return;
             }
 
@@ -285,9 +296,7 @@ namespace ClosedXML.Report
             }
             catch (ParseException ex)
             {
-                _buff.WriteValue(ex.Message, cell.XLCell);
-                _buff.GetCell(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber).Style.Font.FontColor = XLColor.Red;
-                _errors.Add(new TemplateError(ex.Message, cell.XLCell.AsRange()));
+                HandleError(ex.Message, cell);
                 return;
             }
             catch (TargetInvocationException)
@@ -308,21 +317,14 @@ namespace ClosedXML.Report
                  *   just add to the error list for future use and keep doing the work, other items may have the material property.
                  *   No need to write the error in the cell since it might be a desired behaviour, but needs to go to next cell.
                  */
-                _buff.WriteValue(string.Empty, cell.XLCell);
-                _errors.Add(new TemplateError(string.Format("TargetInvocationException: {0}", cell.Value), cell.XLCell.AsRange()));
+                _buff.WriteCellValue(string.Empty, cell.XLCell);
+                _errors.Add(new TemplateError($"TargetInvocationException: {cell.Value}", cell.XLCell.AsRange()));
                 return;
             }
 
-            IXLCell xlCell;
-            if (cell.CellType == TemplateCellType.Formula)
-            {
-                var r1c1 = cell.XLCell.GetFormulaR1C1(value.ToString());
-                xlCell = _buff.WriteFormulaR1C1(r1c1, cell.XLCell);
-            }
-            else
-            {
-                xlCell = _buff.WriteValue(value, cell.XLCell);
-            }
+            IXLCell xlCell = cell.CellType == TemplateCellType.Formula
+                ? _buff.WriteFormulaR1C1(cell.XLCell.GetFormulaR1C1(value.ToString()), cell.XLCell)
+                : _buff.WriteCellValue(value, cell.XLCell);
 
             string EvalString(string str)
             {
@@ -346,10 +348,11 @@ namespace ClosedXML.Report
 
             if (xlCell.HasHyperlink)
             {
-                if (xlCell.GetHyperlink().IsExternal)
-                    xlCell.GetHyperlink().ExternalAddress = new Uri(EvalString(xlCell.GetHyperlink().ExternalAddress.ToString()));
+                var link = xlCell.GetHyperlink();
+                if (link.IsExternal)
+                    link.ExternalAddress = new Uri(EvalString(link.ExternalAddress.ToString()));
                 else
-                    xlCell.GetHyperlink().InternalAddress = EvalString(xlCell.GetHyperlink().InternalAddress);
+                    link.InternalAddress = EvalString(link.InternalAddress);
             }
 
             if (xlCell.HasRichText)
@@ -359,8 +362,13 @@ namespace ClosedXML.Report
                 xlCell.GetRichText().AddText(richText);
             }
         }
-
-
+        
+        private void HandleError(string message, TemplateCell cell)
+        {
+            _buff.WriteCellValue(message, cell.XLCell);
+            _buff.GetCell(new CellPosition(_buff.PrevAddress.RowNumber, _buff.PrevAddress.ColumnNumber)).Style.Font.FontColor = XLColor.Red;
+            _errors.Add(new TemplateError(message, cell.XLCell.AsRange()));
+        }
 
         private void RenderCell(object[] items, int i, FormulaEvaluator evaluator, TemplateCell cell)
         {
@@ -381,17 +389,20 @@ namespace ClosedXML.Report
 
                 if (subrange.IsHorizontal)
                 {
-                    int shiftLen = subrange._colCnt * (valArr.Length - 1);
-                    tags.Where(tag => tag.Cell.Row == cell.Row && tag.Cell.Column > cell.Column)
-                        .ForEach(t =>
+                    var shiftLen = subrange._colCnt * (valArr.Length - 1);
+                    if (shiftLen > 0)
+                    {
+                        var tagsToShift = tags.Where(tag => tag.Cell.Row == cell.Row && tag.Cell.Column > cell.Column).ToArray();
+                        foreach (var t in tagsToShift)
                         {
                             t.Cell.Column += shiftLen;
                             t.Cell.XLCell = _rowRange.Cell(t.Cell.Row, t.Cell.Column);
-                        });
+                        }
+                    }
                 }
                 else
                 {
-                    // move current template cell to next (skip subrange)
+                    // move the current template cell to next (skip subrange)
                     row += subrange._rowCnt + 1;
                     while (_cells[iCell].Row <= row - 1)
                         iCell++;
@@ -458,19 +469,19 @@ namespace ClosedXML.Report
             {
                 worksheet.Column(firstCol + col - 1).Width = widths[(col - 1) % widths.Length];
             }
-
-            /*using (var resultRange = _buff.GetRange(rangeStart, _buff.PrevAddress))
-                _rangeTags.Execute(new ProcessingContext(resultRange, new DataSource(items)));*/
         }
 
         private void ParseTags(IXLRange range)
         {
             var innerRanges = range.GetContainingNames().ToArray();
-            var cells = from c in _cells
-                        let value = c.GetString()
-                        where TagExtensions.HasTag(value)
-                              && !innerRanges.Any(nr => nr.Ranges.Contains(c.XLCell.AsRange()))
-                        select c;
+            var innerRangeCells = innerRanges
+                .SelectMany(nr => nr.Ranges)
+                .SelectMany(r => r.Cells())
+                .ToHashSet();
+        
+            var cells = _cells
+                .Where(c => c.XLCell != null && !innerRangeCells.Contains(c.XLCell))
+                .Where(c => TagExtensions.HasTag(c.GetString()));
 
             foreach (var cell in cells)
             {

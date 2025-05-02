@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq.Expressions;
 using ClosedXML.Report.Utils;
 
 namespace ClosedXML.Report.Excel
 {
     public class SubtotalSummaryFunc
     {
-        private static readonly Dictionary<string, IFuncData<IAggregator>> TotalFuncs = new Dictionary<string, IFuncData<IAggregator>>
+        private static readonly Dictionary<string, IFuncData<IAggregator>> TotalFuncs = new()
         {
             {"average", new FuncData<AverageAggregator>(1)},
             {"avg", new FuncData<AverageAggregator>(1)},
@@ -27,7 +26,7 @@ namespace ClosedXML.Report.Excel
 
         private static IFuncData<IAggregator> GetFunc(string funcName)
         {
-            var func = TotalFuncs.ContainsKey(funcName) ? TotalFuncs[funcName] : null;
+            var func = TotalFuncs.TryGetValue(funcName, out var totalFunc) ? totalFunc : null;
             if (func == null)
                 Debug.WriteLine("Unknown function " + funcName);
             return func;
@@ -70,7 +69,6 @@ namespace ClosedXML.Report.Excel
             var agg = _func.CreateAggregator();
 
             var dlg = GetCalculateDelegate(items[0].GetType());
-            //var dlg = lambda.Compile();
             foreach (var item in items)
             {
                 try
@@ -171,25 +169,25 @@ namespace ClosedXML.Report.Excel
 
         private class CountAggregator : IAggregator
         {
-            private int _cnt = 0;
+            private int _cnt;
             public void Aggregate(object value)
             {
                 if (value.GetType().IsNumeric())
                     _cnt++;
             }
 
-            public object Result { get { return _cnt; } }
+            public object Result => _cnt;
         }
 
         private class CountAAggregator : IAggregator
         {
-            private int _cnt = 0;
+            private int _cnt;
             public void Aggregate(object value)
             {
                 _cnt++;
             }
 
-            public object Result { get { return _cnt; } }
+            public object Result => _cnt;
         }
 
         private class MinAggregator : IAggregator
@@ -206,7 +204,7 @@ namespace ClosedXML.Report.Excel
                     _min = value;
             }
 
-            public object Result { get { return _min; } }
+            public object Result => _min;
         }
 
         private class MaxAggregator : IAggregator
@@ -223,12 +221,12 @@ namespace ClosedXML.Report.Excel
                     _max = value;
             }
 
-            public object Result { get { return _max; } }
+            public object Result => _max;
         }
 
         private class AverageAggregator : IAggregator
         {
-            protected readonly List<object> List = new List<object>();
+            protected readonly List<object> List = new();
 
             public void Aggregate(object value)
             {
@@ -246,9 +244,9 @@ namespace ClosedXML.Report.Excel
                     foreach (dynamic v in List)
                         sum += v;
 
-                    if (sum is TimeSpan)
+                    if (sum is TimeSpan span)
                     {
-                        return TimeSpan.FromTicks(((TimeSpan)sum).Ticks / List.Count);
+                        return TimeSpan.FromTicks(span.Ticks / List.Count);
                     }
 
                     return sum / List.Count;

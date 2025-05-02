@@ -298,7 +298,7 @@ namespace ClosedXML.Report.Excel
             var result = new List<SubtotalGroup>(grRanges.Length);
             var rows = Sheet.Rows(_range.RangeAddress.FirstAddress.RowNumber, _range.RangeAddress.LastAddress.RowNumber);
             if (!rows.Any())
-                return new SubtotalGroup[0];
+                return Array.Empty<SubtotalGroup>();
 
             var level = Math.Min(8, rows.Max(r => r.OutlineLevel) + 1);
 

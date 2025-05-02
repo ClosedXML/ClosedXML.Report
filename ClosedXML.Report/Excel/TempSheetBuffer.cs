@@ -10,12 +10,10 @@ namespace ClosedXML.Report.Excel
         private const string SheetName = "__temp_buffer";
         private readonly XLWorkbook _wb;
         private IXLWorksheet _sheet;
-        private int _row;
-        private int _clmn;
-        private int _minRow;
-        private int _minClmn;
-        private int _prevrow;
-        private int _prevclmn;
+        private CellPosition _cellPosition;
+        private CellPosition _minCellPosition;
+        private CellPosition _prevCellPosition;
+        private CellPosition _maxCellPosition;
 
         public TempSheetBuffer(XLWorkbook wb)
         {
@@ -23,28 +21,33 @@ namespace ClosedXML.Report.Excel
             Init();
         }
 
-        public IXLAddress NextAddress => _sheet.Cell(_row, _clmn).Address;
-        public IXLAddress PrevAddress => _sheet.Cell(_prevrow, _prevclmn).Address;
+        public IXLAddress NextAddress => _sheet.Cell(_cellPosition.Row, _cellPosition.Column).Address;
+        public IXLAddress PrevAddress => _sheet.Cell(_prevCellPosition.Row, _prevCellPosition.Column).Address;
 
         private void Init()
         {
             if (_sheet == null)
             {
-                if (!_wb.TryGetWorksheet(SheetName, out _sheet))
-                {
+                if (!_wb.TryGetWorksheet(SheetName, out _sheet)) 
                     _sheet = _wb.AddWorksheet(SheetName);
-                }
+                
                 _sheet.Visibility = XLWorksheetVisibility.VeryHidden;
             }
-            _row = _minRow = _prevrow = 1;
-            _clmn = _minClmn = _prevclmn = 1;
+
+            _cellPosition = new CellPosition()
+            {
+                Row = _minCellPosition.Row = _prevCellPosition.Row = 1,
+                Column = _minCellPosition.Column = _prevCellPosition.Column = 1
+            };
+            _maxCellPosition.Row = _maxCellPosition.Column = 1;
+            
             Clear();
             _sheet.Style = _wb.Worksheets.First().Style;
         }
 
-        public IXLCell WriteValue(object value, IXLCell settingCell)
+        public IXLCell WriteCellValue(object value, IXLCell settingCell)
         {
-            var xlCell = _sheet.Cell(_row, _clmn);
+            var xlCell = _sheet.Cell(_cellPosition.Row, _cellPosition.Column);
             if (settingCell != null)
             {
                 xlCell.CopyFrom(settingCell);
@@ -52,49 +55,59 @@ namespace ClosedXML.Report.Excel
 
             try
             {
-                var cellValue = XLCellValueConverter.FromObject(value);
-                xlCell.SetValue(cellValue);
+                xlCell.SetValue(XLCellValueConverter.FromObject(value));
             }
             catch (ArgumentException)
             {
                 xlCell.SetValue(value?.ToString());
             }
 
-            ChangeAddress(_row, _clmn + 1);
+            UpdateMaxAddress(_cellPosition);
+            ChangeAddress(_cellPosition.Row, _cellPosition.Column + 1);
             return xlCell;
+        }
+        
+        private void UpdateMaxAddress(CellPosition cellPosition)
+        {
+            if (cellPosition.Row > _maxCellPosition.Row) _maxCellPosition.Row = cellPosition.Row;
+            if (cellPosition.Column > _maxCellPosition.Column) _maxCellPosition.Column = cellPosition.Column;
         }
 
         public IXLCell WriteFormulaR1C1(string formula, IXLCell settingCell)
         {
-            var xlCell = _sheet.Cell(_row, _clmn);
+            var xlCell = _sheet.Cell(_cellPosition.Row, _cellPosition.Column);
             xlCell.CopyFrom(settingCell);
             xlCell.SetFormulaR1C1(formula);
-            ChangeAddress(_row, _clmn + 1);
+            UpdateMaxAddress(_cellPosition);
+            ChangeAddress(_cellPosition.Row, _cellPosition.Column + 1);
             return xlCell;
         }
 
         public void NewRow()
         {
-            if (_clmn > 1)
-                _clmn--;
-            ChangeAddress(_row + 1, _minClmn);
-            _minRow = _row;
+            StepBackColumn();
+            ChangeAddress(_cellPosition.Row + 1, _minCellPosition.Column);
+            _minCellPosition.Row = _cellPosition.Row;
+        }
+        
+        private void StepBackColumn()
+        {
+            if (_cellPosition.Column > 1)
+                _cellPosition.Column--;
         }
 
         public void NewRow(IXLAddress startAddr)
         {
-            if (_clmn > 1)
-                _clmn--;
-            ChangeAddress(_row + 1, startAddr.ColumnNumber);
-            _minRow = _row;
+            StepBackColumn();
+            ChangeAddress(_cellPosition.Row + 1, startAddr.ColumnNumber);
+            _minCellPosition.Row = _cellPosition.Row;
         }
 
         public void NewColumn(IXLAddress startAddr)
         {
-            if (_clmn > 1)
-                _clmn--;
-            ChangeAddress(startAddr.RowNumber, _clmn + 1);
-            _minClmn = _clmn;
+            StepBackColumn();
+            ChangeAddress(startAddr.RowNumber, _cellPosition.Column + 1);
+            _minCellPosition.Column = _cellPosition.Column;
         }
 
         public IXLRange GetRange(IXLAddress startAddr, IXLAddress endAddr)
@@ -102,23 +115,24 @@ namespace ClosedXML.Report.Excel
             return _sheet.Range(startAddr, endAddr);
         }
 
-        public IXLCell GetCell(int row, int column)
+        public IXLCell GetCell(CellPosition cellPosition)
         {
-            return _sheet.Cell(row, column);
+            return _sheet.Cell(cellPosition.Row, cellPosition.Column);
         }
 
-        private void ChangeAddress(int row, int clmn)
+        private void ChangeAddress(int row, int column)
         {
-            _prevrow = _row;
-            _prevclmn = _clmn;
-            _row = row;
-            _clmn = clmn;
+            _prevCellPosition = _cellPosition;
+            _cellPosition = new CellPosition{
+                Row = row,
+                Column = column
+            };
         }
 
         public IXLRange CopyTo(IXLRange range)
         {
             var firstCell = _sheet.Cell(1, 1);
-            var tempRng = _sheet.Range(firstCell, LastCell);
+            var tempRng = _sheet.Range(firstCell, LastCellUsed);
 
             var rowDiff = tempRng.RowCount() - range.RowCount();
             if (rowDiff > 0)
@@ -152,7 +166,6 @@ namespace ClosedXML.Report.Excel
             foreach (var picture in _sheet.Pictures)
             {
                 var tgtPic = picture.CopyTo(tgtSheet);
-                //var relAddress = picture.TopLeftCell.Relative(range.RangeAddress.FirstAddress);
                 var tgtCell = range.RangeAddress.FirstAddress.Offset(picture.TopLeftCell.Address);
                 tgtPic.MoveTo(tgtCell);
             }
@@ -170,23 +183,14 @@ namespace ClosedXML.Report.Excel
             return range;
         }
 
-        public IXLCell LastCell
-        {
-            get
-            {
-                var rowNumber = Math.Max(_prevrow, _sheet.RowsUsed().LastOrDefault()?.RowNumber() ?? 1);
-                var columnNumber = Math.Max(_prevclmn, _sheet.ColumnsUsed().LastOrDefault()?.ColumnNumber() ?? 1);
-                var lastCell = GetCell(rowNumber, columnNumber); //_sheet.Cell(_prevrow, _prevclmn);
-                return lastCell;
-            }
-        }
+       public IXLCell LastCellUsed => GetCell(_maxCellPosition);
 
         public void SetPrevCellToLastUsed()
         {
             var lastUsed = _sheet.LastCellUsed();
-            var clmn = _clmn < lastUsed.Address.ColumnNumber
+            var clmn = _cellPosition.Column < lastUsed.Address.ColumnNumber
                 ? lastUsed.Address.ColumnNumber + 1
-                : _clmn;
+                : _cellPosition.Column;
 
             ChangeAddress(lastUsed.Address.RowNumber, clmn);
             NewRow();
