@@ -290,3 +290,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 nuget.txt
+/Benchmark/BenchmarkDotNet.Artifacts/*
