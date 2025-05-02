@@ -13,7 +13,7 @@ namespace ClosedXML.Report
             Range = range;
         }
 
-        public TemplateParseException(string message, TemplateErrors errors)
+        public TemplateParseException(string message, TemplateErrors errors) : base(message)
         {
             InnerErrors = errors;
         }

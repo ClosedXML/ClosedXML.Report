@@ -16,7 +16,7 @@ namespace ClosedXML.Report.Tests
         public void Hidden_option_should_hide_sheet()
         {
             XlTemplateTest("5_options.xlsx",
-                tpl => { },
+                _ => { },
                 wb =>
                 {
                     wb.Worksheets.Count.Should().Be(3);
@@ -28,7 +28,7 @@ namespace ClosedXML.Report.Tests
         public void OnlyValues_option_should_remove_formulas_on_sheet()
         {
             XlTemplateTest("5_options.xlsx",
-                tpl => { },
+                _ => { },
                 wb =>
                 {
                     var worksheet = wb.Worksheet(1);
@@ -44,7 +44,7 @@ namespace ClosedXML.Report.Tests
         public void ColsFit_option_should_FitWidth()
         {
             XlTemplateTest("5_options.xlsx",
-                tpl => { },
+                _ => { },
                 wb =>
                 {
                     var worksheet = wb.Worksheet(1);
@@ -80,8 +80,8 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var cust = db.customers.LoadWith(x => x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
-                        tpl.AddVariable(cust);
+                        var customer = db.customers.LoadWith(x => x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
+                        tpl.AddVariable(customer);
                     }
                     tpl.AddVariable("disableCColumnDeletion", "true");
                     tpl.AddVariable("disableEColumnDeletion", "false");

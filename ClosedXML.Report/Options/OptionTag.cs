@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using ClosedXML.Excel;
-using ClosedXML.Report.Excel;
 
 namespace ClosedXML.Report.Options
 {

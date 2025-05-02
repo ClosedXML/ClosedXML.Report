@@ -88,12 +88,12 @@ namespace ClosedXML.Report.Utils
                 case TypeCode.Int16:
                 case TypeCode.Int32:
                 case TypeCode.Int64:
-                    return (ulong)Convert.ToInt64(value, (IFormatProvider)CultureInfo.InvariantCulture);
+                    return (ulong)Convert.ToInt64(value, CultureInfo.InvariantCulture);
                 case TypeCode.Byte:
                 case TypeCode.UInt16:
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
-                    return Convert.ToUInt64(value, (IFormatProvider)CultureInfo.InvariantCulture);
+                    return Convert.ToUInt64(value, CultureInfo.InvariantCulture);
                 default:
                     throw new InvalidOperationException("Invalid operation: Unknown enum type");
             }

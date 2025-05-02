@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using ClosedXML.Excel;
-using ClosedXML.Report.Excel;
 using FluentAssertions;
 using Xunit.Abstractions;
 

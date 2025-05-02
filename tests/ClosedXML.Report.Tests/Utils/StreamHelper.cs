@@ -176,17 +176,17 @@ namespace ClosedXML.Report.Tests.Utils
             }
         }
 
-        private static Regex columnRegex = new Regex("<x:col.*?width=\"\\d+(\\.\\d+)?\".*?\\/>", RegexOptions.Compiled);
-        private static Regex widthRegex = new Regex("width=\"\\d+(\\.\\d+)?\"\\s+", RegexOptions.Compiled);
+        private static readonly Regex ColumnRegex = new("<x:col.*?width=\"\\d+(\\.\\d+)?\".*?\\/>", RegexOptions.Compiled);
+        private static readonly Regex WidthRegex = new("width=\"\\d+(\\.\\d+)?\"\\s+", RegexOptions.Compiled);
 
         private static String RemoveColumnWidths(String s)
         {
                 var replacements = new Dictionary<string, string>();
 
-                foreach (var m in columnRegex.Matches(s).OfType<Match>())
+                foreach (var m in ColumnRegex.Matches(s).OfType<Match>())
                 {
                     var original = m.Groups[0].Value;
-                    var replacement = widthRegex.Replace(original, "");
+                    var replacement = WidthRegex.Replace(original, "");
                     replacements.Add(original, replacement);
                 }
 
@@ -197,11 +197,11 @@ namespace ClosedXML.Report.Tests.Utils
                 return s;
             }
 
-        private static Regex guidRegex = new Regex(@"{[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}}", RegexOptions.Compiled | RegexOptions.Multiline);
+        private static readonly Regex GuidRegex = new(@"{[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}}", RegexOptions.Compiled | RegexOptions.Multiline);
 
-        private static String RemoveGuids(String s)
+        private static string RemoveGuids(string s)
         {
-            return guidRegex.Replace(s, delegate (Match m)
+            return GuidRegex.Replace(s, delegate
             {
                 return string.Empty;
             });

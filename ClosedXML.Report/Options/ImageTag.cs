@@ -31,7 +31,8 @@ namespace ClosedXML.Report.Options
                     case Stream stream: picture = xlCell.Worksheet.AddPicture(stream); break;
                     case string path: picture = xlCell.Worksheet.AddPicture(path); break;
                     default: throw new TemplateParseException("Unsupported image type.", xlCell.AsRange());
-                };
+                }
+
                 picture.MoveTo(xlCell);
                 if (!string.IsNullOrEmpty(ImageName)) picture.Name = ImageName;
                 if (Scale > 0) picture.Scale(Scale);

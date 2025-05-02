@@ -13,8 +13,7 @@ namespace ClosedXML.Report.Tests.Utils
     {
         #region Static
         #region Private fields
-        private static readonly Dictionary<string, ResourceFileExtractor> ms_defaultExtractors =
-                new Dictionary<string, ResourceFileExtractor>();
+        private static readonly Dictionary<string, ResourceFileExtractor> DefaultExtractors = new();
         #endregion
         #region Public properties
         /// <summary>Instance of resource extractor for executing assembly </summary>
@@ -22,34 +21,31 @@ namespace ClosedXML.Report.Tests.Utils
         {
             get
             {
-                ResourceFileExtractor _return;
-                Assembly _assembly = Assembly.GetCallingAssembly();
-                string _key = _assembly.GetName().FullName;
-                if (!ms_defaultExtractors.TryGetValue(_key, out _return))
+                Assembly assembly = Assembly.GetCallingAssembly();
+                string key = assembly.GetName().FullName;
+                if (!DefaultExtractors.TryGetValue(key, out var resourceFileExtractor))
                 {
-                    lock (ms_defaultExtractors)
+                    lock (DefaultExtractors)
                     {
-                        if (!ms_defaultExtractors.TryGetValue(_key, out _return))
+                        if (!DefaultExtractors.TryGetValue(key, out resourceFileExtractor))
                         {
-                            _return = new ResourceFileExtractor(_assembly, true, null);
-                            ms_defaultExtractors.Add(_key, _return);
+                            resourceFileExtractor = new ResourceFileExtractor(assembly, true, null);
+                            DefaultExtractors.Add(key, resourceFileExtractor);
                         }
                     }
                 }
-                return _return;
+                return resourceFileExtractor;
             }
         }
         #endregion
-        #region Public methods
-        #endregion
         #endregion
         #region Private fields
-        private readonly Assembly m_assembly;
-        private readonly ResourceFileExtractor m_baseExtractor;
-        private readonly string m_assemblyName;
+        private readonly Assembly _assembly;
+        private readonly ResourceFileExtractor _baseExtractor;
+        private readonly string _assemblyName;
 
-        private bool m_isStatic;
-        private string m_resourceFilePath;
+        private bool _isStatic;
+        private string _resourceFilePath;
         #endregion
         #region Constructors
         /// <summary>
@@ -60,7 +56,7 @@ namespace ClosedXML.Report.Tests.Utils
         public ResourceFileExtractor(string resourceFilePath, ResourceFileExtractor baseExtractor)
                 : this(Assembly.GetCallingAssembly(), baseExtractor)
         {
-            m_resourceFilePath = resourceFilePath;
+            _resourceFilePath = resourceFilePath;
         }
         /// <summary>
         /// Create instance
@@ -86,7 +82,7 @@ namespace ClosedXML.Report.Tests.Utils
         public ResourceFileExtractor(Assembly assembly, string resourcePath)
                 : this(assembly ?? Assembly.GetCallingAssembly())
         {
-            m_resourceFilePath = resourcePath;
+            _resourceFilePath = resourcePath;
         }
         /// <summary>
         /// Instance constructor
@@ -127,11 +123,11 @@ namespace ClosedXML.Report.Tests.Utils
                 throw new ArgumentNullException("assembly");
             }
             #endregion
-            m_assembly = assembly;
-            m_baseExtractor = baseExtractor;
-            m_assemblyName = Assembly.GetName().Name;
+            _assembly = assembly;
+            _baseExtractor = baseExtractor;
+            _assemblyName = Assembly.GetName().Name;
             IsStatic = isStatic;
-            m_resourceFilePath = ".Resources.";
+            _resourceFilePath = ".Resources.";
         }
         #endregion
         #region Public properties
@@ -139,13 +135,13 @@ namespace ClosedXML.Report.Tests.Utils
         public Assembly Assembly
         {
             [DebuggerStepThrough]
-            get { return m_assembly; }
+            get { return _assembly; }
         }
         /// <summary> Work assembly name </summary>
         public string AssemblyName
         {
             [DebuggerStepThrough]
-            get { return m_assemblyName; }
+            get { return _assemblyName; }
         }
         /// <summary>
         /// Path to read resource files. Example: .Resources.Upgrades.
@@ -153,25 +149,25 @@ namespace ClosedXML.Report.Tests.Utils
         public string ResourceFilePath
         {
             [DebuggerStepThrough]
-            get { return m_resourceFilePath; }
+            get { return _resourceFilePath; }
             [DebuggerStepThrough]
-            set { m_resourceFilePath = value; }
+            set { _resourceFilePath = value; }
         }
         public bool IsStatic
         {
             [DebuggerStepThrough]
-            get { return m_isStatic; }
+            get { return _isStatic; }
             [DebuggerStepThrough]
-            set { m_isStatic = value; }
+            set { _isStatic = value; }
         }
         public IEnumerable<string> GetFileNames()
         {
-            string _path = AssemblyName + m_resourceFilePath;
-            foreach (string _resourceName in Assembly.GetManifestResourceNames())
+            string path = AssemblyName + _resourceFilePath;
+            foreach (string resourceName in Assembly.GetManifestResourceNames())
             {
-                if (_resourceName.StartsWith(_path))
+                if (resourceName.StartsWith(path))
                 {
-                    yield return _resourceName.Replace(_path, string.Empty);
+                    yield return resourceName.Replace(path, string.Empty);
                 }
             }
         }
@@ -179,18 +175,18 @@ namespace ClosedXML.Report.Tests.Utils
         #region Public methods
         public string ReadFileFromRes(string fileName)
         {
-            Stream _stream = ReadFileFromResToStream(fileName);
-            string _result;
-            StreamReader sr = new StreamReader(_stream);
+            Stream stream = ReadFileFromResToStream(fileName);
+            string result;
+            StreamReader sr = new StreamReader(stream);
             try
             {
-                _result = sr.ReadToEnd();
+                result = sr.ReadToEnd();
             }
             finally
             {
                 sr.Close();
             }
-            return _result;
+            return result;
         }
 
         public string ReadFileFromResFormat(string fileName, params object[] formatArgs)
@@ -206,8 +202,8 @@ namespace ClosedXML.Report.Tests.Utils
         /// <returns></returns>
         public string ReadSpecificFileFromRes(string specificPath, string fileName)
         {
-            ResourceFileExtractor _ext = new ResourceFileExtractor(Assembly, specificPath);
-            return _ext.ReadFileFromRes(fileName);
+            ResourceFileExtractor ext = new ResourceFileExtractor(Assembly, specificPath);
+            return ext.ReadFileFromRes(fileName);
         }
         /// <summary>
         /// Read file in current assembly by specific file name
@@ -217,21 +213,21 @@ namespace ClosedXML.Report.Tests.Utils
         /// <exception cref="ApplicationException"><c>ApplicationException</c>.</exception>
         public Stream ReadFileFromResToStream(string fileName)
         {
-            string _nameResFile = AssemblyName + m_resourceFilePath + fileName;
-            Stream _stream = Assembly.GetManifestResourceStream(_nameResFile);
+            string nameResFile = AssemblyName + _resourceFilePath + fileName;
+            Stream stream = Assembly.GetManifestResourceStream(nameResFile);
             #region Not found
-            if (ReferenceEquals(_stream, null))
+            if (ReferenceEquals(stream, null))
             {
                 #region Get from base extractor
-                if (!ReferenceEquals(m_baseExtractor, null))
+                if (!ReferenceEquals(_baseExtractor, null))
                 {
-                    return m_baseExtractor.ReadFileFromResToStream(fileName);
+                    return _baseExtractor.ReadFileFromResToStream(fileName);
                 }
                 #endregion
-                throw new ApplicationException("Can't find resource file " + _nameResFile);
+                throw new ApplicationException("Can't find resource file " + nameResFile);
             }
             #endregion
-            return _stream;
+            return stream;
         }
         #endregion
     }

@@ -1,5 +1,4 @@
-﻿using ClosedXML.Excel;
-using MoreLinq;
+﻿using MoreLinq;
 
 namespace ClosedXML.Report.Options
 {
