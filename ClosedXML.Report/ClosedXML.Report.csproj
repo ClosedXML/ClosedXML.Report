@@ -37,7 +37,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.105.0-rc" />
+    <PackageReference Include="ClosedXML" Version="0.105.*" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="morelinq" Version="4.4.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
