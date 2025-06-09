@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
-using ClosedXML.Report.Utils;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;

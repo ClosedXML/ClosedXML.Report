@@ -99,7 +99,7 @@ namespace ClosedXML.Report.Utils
                     return typeof(double);
 
                 case TypeCode.Empty:
-                    return null;
+                    break;
 
                 case TypeCode.Int16:
                     return typeof(short);
@@ -180,22 +180,16 @@ namespace ClosedXML.Report.Utils
             Expression<Func<TSource, TProperty>> propertyLambda)
         {
             if (!(propertyLambda.Body is MemberExpression member))
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a method, not a property.",
-                    propertyLambda.ToString()));
+                throw new ArgumentException($"Expression '{propertyLambda}' refers to a method, not a property.");
 
             PropertyInfo propInfo = member.Member as PropertyInfo;
             if (propInfo == null)
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a field, not a property.",
-                    propertyLambda.ToString()));
+                throw new ArgumentException($"Expression '{propertyLambda}' refers to a field, not a property.");
 
             if (type != propInfo.ReflectedType &&
                 !type.IsSubclassOf(propInfo.ReflectedType))
-                throw new ArgumentException(string.Format(
-                    "Expresion '{0}' refers to a property that is not from type {1}.",
-                    propertyLambda.ToString(),
-                    type));
+                throw new ArgumentException(
+                    $"Expression '{propertyLambda}' refers to a property that is not from type {type}.");
 
             return propInfo;
         }

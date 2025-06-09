@@ -1,5 +1,4 @@
-﻿using ClosedXML.Excel;
-using ClosedXML.Report.Options;
+﻿using ClosedXML.Report.Options;
 using FluentAssertions;
 using Xunit;
 

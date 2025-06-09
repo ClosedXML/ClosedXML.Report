@@ -87,7 +87,7 @@ namespace ClosedXML.Report.Tests
         [Fact]
         public void ExpressionParseTestNullPropagation()
         {
-            var customers = new Customer[]
+            var customers = new[]
             {
                 new Customer {Id = 1, Name = "Customer1", Manager = new Customer { Id = 3, Name = "Manager1"}},
                 new Customer {Id = 2, Name = "Customer2", Manager = null}

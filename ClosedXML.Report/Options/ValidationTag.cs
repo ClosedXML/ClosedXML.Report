@@ -25,10 +25,6 @@ EXAMPLES
 ================================================
 */
 
-using ClosedXML.Excel;
-using ClosedXML.Report.Excel;
-using ClosedXML.Report.Utils;
-
 namespace ClosedXML.Report.Options
 {
     public class ValidationTag: OptionTag

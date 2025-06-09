@@ -270,7 +270,6 @@ namespace ClosedXML.Report.Tests.Utils
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <param name="compareToFirstDifference"></param>
-        /// <param name="excludeMethod"></param>
         /// <param name="message"></param>
         /// <returns></returns>
         public static bool Compare(Package left, Package right, bool compareToFirstDifference, bool stripColumnWidths, out string message)

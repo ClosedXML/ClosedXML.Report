@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bogus;
-using ClosedXML.Report.Excel;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -132,7 +132,7 @@ namespace ClosedXML.Report.Tests
         {
             return new List<dynamic>
                 {
-                    new { Name = "Alice", Attendance = new List<dynamic> { } },
+                    new { Name = "Alice", Attendance = new List<dynamic>() },
                     new { Name = "Bob", Attendance = new List<dynamic> {
                         new { Month = "February", Visits = 2 },
                         new { Month = "March", Visits = 3 },
@@ -143,7 +143,7 @@ namespace ClosedXML.Report.Tests
                         new { Month = "July", Visits = 8 },
                         new { Month = "October", Visits = 6 },
                     } },
-                    new { Name = "Daniel", Attendance = new List<dynamic> { } },
+                    new { Name = "Daniel", Attendance = new List<dynamic>() },
                 };
         }
 
