@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
@@ -32,8 +33,8 @@ namespace ClosedXML.Report
         public void Evaluate(IXLRange range)
         {
             var rangeName = range.RangeAddress.ToStringRelative(true);
-            ParseTags(range, rangeName);
             EvaluateValues(range);
+            ParseTags(range, rangeName);
             TagsPostprocessing(rangeName, new ProcessingContext(range, null, _evaluator));
         }
 
@@ -44,29 +45,16 @@ namespace ClosedXML.Report
                 .Where(c => !c.HasFormula && !innerRanges.Any(nr => nr.Ranges.Contains(c.AsRange())))
                 .ToArray();
             var cells = from c in cellsUsed
-                let value = c.GetString()
-                where TagExtensions.HasTag(value)
-                select c;
+                        let value = c.GetString()
+                        where TagExtensions.HasTag(value)
+                        select c;
 
             if (!_tags.ContainsKey(rangeName))
                 _tags.Add(rangeName, new TagsList(_errors));
 
             foreach (var cell in cells)
             {
-                string value = cell.GetString();
-                OptionTag[] tags;
-                string newValue;
-                var templateCell = new TemplateCell(cell.Address.RowNumber, cell.Address.ColumnNumber, cell);
-                if (value.StartsWith("&="))
-                {
-                    tags = _tagsEvaluator.Parse(value.Substring(2), range, templateCell, out newValue);
-                    cell.FormulaA1 = newValue;
-                }
-                else
-                {
-                    tags = _tagsEvaluator.Parse(value, range, templateCell, out newValue);
-                    cell.Value = newValue;
-                }
+                OptionTag[] tags = _tagsEvaluator.ApplyTagsTo(cell, range);
                 _tags[rangeName].AddRange(tags);
             }
         }
@@ -88,24 +76,36 @@ namespace ClosedXML.Report
             _tags[destRangeName].AddRange(srcTags.CopyTo(destRange));
         }
 
+        /// <summary>
+        /// <para>
+        /// Apply variables to the template ranges and template cells in the <paramref name="range"/>.
+        /// </para>
+        /// </summary>
         public virtual void EvaluateValues(IXLRange range, params Parameter[] pars)
         {
             foreach (var parameter in pars)
             {
                 AddParameter(parameter.Value);
             }
-            var innerRanges = range.GetContainingNames()
-                .Select(BindToVariable)
-                .Where(nr => nr != null)
-                .ToArray();
 
-            var cells = range.CellsUsed()
+            // Get all defined names in the `range` that with the data from variables
+            var boundRanges = new List<BoundRange>();
+            foreach (var candidateName in range.GetContainingNames())
+            {
+                if (TryBindToVariable(candidateName, out var boundRange))
+                    boundRanges.Add(boundRange);
+            }
+
+            // Get cells that should be templated, but aren't part of a bounded range.
+            var cellsToTemplate = range.CellsUsed()
                 .Where(c => !c.HasFormula
                             && c.GetString().Contains("{{")
-                            && !innerRanges.Any(nr => nr.NamedRange.Ranges.Contains(c.AsRange())))
+                            && !boundRanges.Any(nr => nr.DefinedName.Ranges.Contains(c.AsRange())))
                 .ToArray();
 
-            foreach (var cell in cells)
+            // Apply template to the cell content, i.e. value, rich text, formula, comment or hyperlink.
+            // Unlike bound ranges, this doesn't change position of a cell, so it should be done first.
+            foreach (var cell in cellsToTemplate)
             {
                 string value = cell.GetString();
                 try
@@ -171,11 +171,12 @@ namespace ClosedXML.Report
                 }
             }
 
-            foreach (var nr in innerRanges)
+            // Render bound ranges
+            foreach (var nr in boundRanges)
             {
-                foreach (var rng in nr.NamedRange.Ranges)
+                foreach (var rng in nr.DefinedName.Ranges)
                 {
-                    var growedRange = rng.GrowToMergedRanges();
+                    var grownRange = rng.GrowToMergedRanges();
                     var items = nr.RangeData as object[] ?? nr.RangeData.Cast<object>().ToArray();
                     // Comment this section
                     // Revision: a38eda3a3a7092812c8358a949d4e489635501bf
@@ -184,29 +185,29 @@ namespace ClosedXML.Report
                     // Message:
                     // Forcibly remove a range representing a table if its data source is empty (#251) (#323)
                     /*if (!items.Any())
+
+                    if (!items.Any() && grownRange.IsOptionsRowEmpty())
                     {
-                        if (growedRange.IsOptionsRowEmpty())
-                        {
-                            growedRange.Delete(XLShiftDeletedCells.ShiftCellsUp);
-                        }
-                        else
-                        {
-                            var rangeWithoutOptionsRow = growedRange.Worksheet
-                                .Range(growedRange.FirstCell(), growedRange.LastCell().CellAbove());
-                            rangeWithoutOptionsRow.Delete(XLShiftDeletedCells.ShiftCellsUp);
-                        }
+                        // Related to #251. I am pretty sure this is wrong solution and dealing with empty items
+                        // should be done through RangeTemplate below. But if there are no items and empty option
+                        // row, the result is degenerated A1 rendered range in temp sheet. Deleting (empty) options
+                        // row would thus delete only first cell, not full (empty) options row.
+                        grownRange.Delete(XLShiftDeletedCells.ShiftCellsUp);
                         continue;
                     }*/
-                    var tplt = RangeTemplate.Parse(nr.NamedRange.Name, growedRange, _errors, _variables);
-                    using (var buff = tplt.Generate(items))
+
+                    // Range template generates output into a new temporary sheet, as not to affect other things
+                    // and then copies it to the range in the original sheet.
+                    var rangeTemplate = RangeTemplate.Parse(nr.DefinedName.Name, grownRange, _errors, _variables);
+                    using (var renderedBuffer = rangeTemplate.Generate(items))
                     {
-                        var ranges = nr.NamedRange.Ranges;
-                        var trgtRng = buff.CopyTo(growedRange);
+                        var ranges = nr.DefinedName.Ranges;
+                        var trgtRng = renderedBuffer.CopyTo(grownRange);
                         ranges.Remove(rng);
                         ranges.Add(trgtRng);
-                        nr.NamedRange.SetRefersTo(ranges);
+                        nr.DefinedName.SetRefersTo(ranges);
 
-                        tplt.RangeTagsApply(trgtRng, items);
+                        rangeTemplate.RangeTagsApply(trgtRng, items);
                         var isOptionsRowEmpty = trgtRng.IsOptionsRowEmpty();
                         if (isOptionsRowEmpty)
                             trgtRng.LastRow().Delete(XLShiftDeletedCells.ShiftCellsUp);
@@ -248,30 +249,38 @@ namespace ClosedXML.Report
             _evaluator.AddVariable(alias, value);
         }
 
-        private BoundRange BindToVariable(IXLNamedRange namedRange)
+        private bool TryBindToVariable(IXLDefinedName variableName, out BoundRange boundRange)
         {
-            if (_variables.TryGetValue(namedRange.Name, out var variableValue) &&
+            if (_variables.TryGetValue(variableName.Name, out var variableValue) &&
                 variableValue is IEnumerable data1)
-                return new BoundRange(namedRange, data1);
+            {
+                boundRange = new BoundRange(variableName, data1);
+                return true;
+            }
 
-            var expression = "{{" + namedRange.Name.Replace("_", ".") +"}}";
+            var expression = "{{" + variableName.Name.Replace("_", ".") + "}}";
 
             if (_evaluator.TryEvaluate(expression, out var res) &&
                 res is IEnumerable data2)
-                return new BoundRange(namedRange, data2);
+            {
+                boundRange = new BoundRange(variableName, data2);
+                return true;
+            }
 
-            return null;
+            boundRange = null;
+            return false;
         }
 
+        [DebuggerDisplay("Bound variable: {DefinedName.Name}")]
         private class BoundRange
         {
-            public IXLNamedRange NamedRange { get; }
+            public IXLDefinedName DefinedName { get; }
 
             public IEnumerable RangeData { get; }
 
-            public BoundRange(IXLNamedRange namedRange, IEnumerable rangeData)
+            public BoundRange(IXLDefinedName definedName, IEnumerable rangeData)
             {
-                NamedRange = namedRange;
+                DefinedName = definedName;
                 RangeData = rangeData;
             }
         }

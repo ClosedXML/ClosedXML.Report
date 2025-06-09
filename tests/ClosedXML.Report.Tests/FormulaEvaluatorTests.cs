@@ -51,13 +51,14 @@ namespace ClosedXML.Report.Tests
             eval.Evaluate("{{b}}{{a}}").Should().Be("1");
         }
 
-        [Fact]
-        public void PassNullParameter()
+        [Theory,
+        InlineData("{{\"Hello \"+a}}","Hello "),
+        InlineData("{{\"City: \"+Iif(a==null, string.Empty, a.City)}}","City: ")
+        ]
+        public void PassNullParameter(string formula, object expected)
         {
             var eval = new FormulaEvaluator();
-            eval.Evaluate("{{\"Hello \"+a}}", new Parameter("a", null)).Should().Be("Hello ");
-            eval.Evaluate("{{1+a}}", new Parameter("a", null)).Should().Be(null);
-            //TODO: eval.Evaluate("{{\"City: \"+Iif(a==null, string.Empty, a.City}}", new Parameter("a", null)).Should().Be("City: ");
+            eval.Evaluate(formula, new Parameter("a", null)).Should().Be(expected);
         }
 
         [Fact]
@@ -116,10 +117,8 @@ namespace ClosedXML.Report.Tests
             object CreateDicParameter(string name) => new Dictionary<string, object>
                 {{"Name", new Dictionary<string, object> {{"FirstName", name }}}};
 
-            var config = new ParsingConfig()
-            {
-                CustomTypeProvider = new DefaultDynamicLinqCustomTypeProvider()
-            };
+            var config = new ParsingConfig();
+            config.CustomTypeProvider = new DefaultDynamicLinqCustomTypeProvider(config, cacheCustomTypes: true);
             var parType = new Dictionary<string, object>().GetType();
             var lambda = DynamicExpressionParser.ParseLambda(config, new [] {Expression.Parameter(parType, "item")}, typeof(object), "item.Name.FirstName").Compile();
             lambda.DynamicInvoke(CreateDicParameter("Julio")).Should().Be("Julio");

@@ -195,6 +195,7 @@ namespace ClosedXML.Report.Options
             pt.MergeAndCenterWithLabels = pivot.HasParameter("MergeLabels");
             pt.ShowExpandCollapseButtons = pivot.HasParameter("ShowButtons");
             pt.ClassicPivotTableLayout = !pivot.HasParameter("TreeLayout");
+            pt.Layout = XLPivotLayout.Tabular;
             pt.AutofitColumns = pivot.HasParameter("AutofitColumns");
             pt.SortFieldsAtoZ = !pivot.HasParameter("NoSort");
             pt.PreserveCellFormatting = !pivot.HasParameter("NoPreserveFormatting");

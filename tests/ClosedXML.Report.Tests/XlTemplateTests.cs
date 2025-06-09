@@ -129,7 +129,7 @@ namespace ClosedXML.Report.Tests
                     sheet.Cell("G4").GetValue<string>().Should().Be(testData[0].Address.City);
                     sheet.Cell("G5").GetValue<string>().Should().Be(testData[1].Address.City);
                     sheet.Cell("G6").GetValue<string>().Should().Be(testData[2].Address.City);
-                    wb.NamedRange("PlanData").Ranges.First().RangeAddress.ToStringRelative().Should().Be("A4:K6");
+                    wb.DefinedName("PlanData")!.Ranges.First().RangeAddress.ToStringRelative().Should().Be("A4:K6");
                     sheet.Cell("H4").GetValue<int>().Should().Be(testData[0].Hours[0]);
                     sheet.Cell("H5").GetValue<int>().Should().Be(testData[1].Hours[0]);
                     sheet.Cell("H6").GetValue<int>().Should().Be(testData[2].Hours[0]);

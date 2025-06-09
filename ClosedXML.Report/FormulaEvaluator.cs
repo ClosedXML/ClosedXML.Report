@@ -1,10 +1,10 @@
 ﻿using ClosedXML.Report.Utils;
-using DocumentFormat.OpenXml.Bibliography;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Dynamic.Core.Exceptions;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -134,7 +134,7 @@ namespace ClosedXML.Report
     {
         public Parameter(string name, object value)
         {
-            ParameterExpression = Expression.Parameter(value?.GetType() ?? typeof(string), name);
+            ParameterExpression = Expression.Parameter(value?.GetType() ?? typeof(object), name);
             Value = value;
         }
 

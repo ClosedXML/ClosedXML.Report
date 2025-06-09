@@ -7,13 +7,22 @@ using Xunit;
 
 namespace ClosedXML.Report.Tests
 {
-    public class DeleteTagTests: TagTests
+    public class DeleteTagTests : TagTests
     {
+        private readonly TagsList _tagsList;
+
+        public DeleteTagTests()
+        {
+            var errorsList = new TemplateErrors();
+            _tagsList = new TagsList(errorsList);
+        }
+
         [Fact]
         public void TagInA2CellShouldDeleteWorksheet()
         {
-            var tag = CreateNotInRangeTag<DeleteTag>(_ws.Cell("A2"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
+            AddTagsToWorksheet("A2");
+
+            Act(_ws.AsRange()); 
 
             _wb.Worksheets.Count.Should().Be(0);
         }
@@ -24,8 +33,10 @@ namespace ClosedXML.Report.Tests
             _ws.Cell("B5").Value = 2.0;
             _ws.Cell("C5").Value = 3.0;
             _ws.Cell("D5").Value = 4.0;
-            var tag = CreateNotInRangeTag<DeleteTag>(_ws.Cell("C1"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
+
+            AddTagsToWorksheet("C1");
+
+            Act(_ws.AsRange());
 
             _ws.Cell("B5").GetDouble().Should().Be(2.0);
             _ws.Cell("C5").GetDouble().Should().Be(4.0);
@@ -37,11 +48,29 @@ namespace ClosedXML.Report.Tests
             _ws.Cell("D3").Value = 3.0;
             _ws.Cell("D4").Value = 4.0;
             _ws.Cell("D5").Value = 5.0;
-            var tag = CreateNotInRangeTag<DeleteTag>(_ws.Cell("A4"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
+
+            AddTagsToWorksheet("A4");
+
+            Act(_ws.AsRange());
 
             _ws.Cell("D3").GetDouble().Should().Be(3.0);
             _ws.Cell("D4").GetDouble().Should().Be(5.0);
+        }
+
+        [Fact]
+        public void TagsShouldDeleteFromLastToFirstCell()
+        {
+            _ws.Cell("B5").Value = 2.0;
+            _ws.Cell("C5").Value = 3.0;
+            _ws.Cell("D5").Value = 4.0;
+            _ws.Cell("E5").Value = 5.0;
+
+            AddTagsToWorksheet("A3", "A4", "C1", "D1");
+
+            Act(_ws.AsRange());
+
+            _ws.Cell("B3").GetDouble().Should().Be(2.0);
+            _ws.Cell("C3").GetDouble().Should().Be(5.0);
         }
 
         [Fact]
@@ -49,12 +78,32 @@ namespace ClosedXML.Report.Tests
         {
             var rng = FillData();
 
-            var tag = CreateInRangeTag<DeleteTag>(rng, rng.Cell("B2"));
-            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0]), new FormulaEvaluator()));
+            AddTagsToRange(rng, "B2");
+
+            Act(_ws.Range("B5", "F15"));
 
             rng.Cell("A1").GetText().Should().Be("Alice");
             rng.Cell("B1").GetText().Should().Be("Wonderland");
         }
+
+        private void AddTagsToRange(IXLRange range, params string[] cells)
+        {
+            foreach (var cell in cells)
+            {
+                _tagsList.Add(CreateInRangeTag<DeleteTag>(range, range.Cell(cell)));
+            }
+        }
+
+        private void AddTagsToWorksheet(params string[] cells)
+        {
+            foreach (var cell in cells)
+            {
+                _tagsList.Add(CreateNotInRangeTag<DeleteTag>(_ws.Cell(cell)));
+            }
+        }
+
+        private void Act(IXLRange range) =>
+            _tagsList.Execute(new ProcessingContext(range, new DataSource(Array.Empty<object>()), new FormulaEvaluator()));
 
         private IXLRange FillData()
         {

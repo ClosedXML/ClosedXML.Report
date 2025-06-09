@@ -34,6 +34,11 @@ namespace ClosedXML.Report.Utils
         private  class XLDynamicLinqCustomTypeProvider : DefaultDynamicLinqCustomTypeProvider
         {
             private static HashSet<Type> _customTypesCache;
+            private static readonly ParsingConfig _config = new ParsingConfig();
+
+            public XLDynamicLinqCustomTypeProvider() : base(_config, cacheCustomTypes: true)
+            {
+            }
 
             public override HashSet<Type> GetCustomTypes()
             {

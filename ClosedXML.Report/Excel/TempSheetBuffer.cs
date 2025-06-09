@@ -204,7 +204,7 @@ namespace ClosedXML.Report.Excel
 
         public void Dispose()
         {
-            var namedRanges = _wb.NamedRanges
+            var namedRanges = _wb.DefinedNames
                 .Where(nr => nr.Ranges.Any(r => r.Worksheet?.Name == SheetName))
                 .ToList();
             namedRanges.ForEach(nr => nr.Delete());

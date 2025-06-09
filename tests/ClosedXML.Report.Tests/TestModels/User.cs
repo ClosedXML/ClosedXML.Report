@@ -20,7 +20,7 @@ namespace ClosedXML.Report.Tests.TestModels
             var fruit = new[] {"apple", "banana", "orange", "strawberry", "kiwi"};
 
             var orderIds = 0;
-            var testOrders = new Faker<Order>()
+            var testOrders = new Faker<SimpleOrder>()
                 .RuleFor(o => o.OrderId, f => orderIds++)
                 .RuleFor(o => o.Item, f => f.PickRandom(fruit))
                 .RuleFor(o => o.Quantity, f => f.Random.Number(1, 10))
@@ -69,10 +69,10 @@ namespace ClosedXML.Report.Tests.TestModels
         public string SomethingUnique { get; set; }
         public Guid CartId { get; set; }
         public string FullName { get; set; }
-        public List<Order> Orders { get; set; }
+        public List<SimpleOrder> Orders { get; set; }
     }
 
-    public class Order
+    public class SimpleOrder
     {
         public int OrderId { get; set; }
         public string Item { get; set; }

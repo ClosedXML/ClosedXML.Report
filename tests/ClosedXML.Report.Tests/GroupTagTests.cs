@@ -89,7 +89,7 @@ namespace ClosedXML.Report.Tests
         public void EmptyDataSource(string templateFile)
         {
             XlTemplateTest(templateFile,
-                tpl => tpl.AddVariable("Orders", new order[0]),
+                tpl => tpl.AddVariable("Orders", new Order[0]),
                 wb => { });
         }
 
@@ -102,7 +102,7 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_DisableOutline.xlsx"),
          InlineData("GroupTagTests_FormulasInGroupRow.xlsx"),
          InlineData("GroupTagTests_MultiRanges.xlsx"),
-         //InlineData("GroupTagTests_FormulasWithTagsInGroupRow.xlsx"), // Formulas with tags got broken after upgrading to ClosedXML 0.100
+         InlineData("GroupTagTests_FormulasWithTagsInGroupRow.xlsx", Skip = "Formulas with tags got broken after upgrading to ClosedXML 0.100"),
          InlineData("GroupTagTests_TotalLabel.xlsx"),
          InlineData("GroupTagTests_DisableSubTotals_MergeLabels.xlsx")
        ]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
@@ -16,10 +17,61 @@ namespace ClosedXML.Report.Options
             return from Match match in matches select match.Value;
         }
 
-        public OptionTag[] Parse(string value, IXLRange range, TemplateCell cell, out string newValue)
+        /// <summary>
+        /// Apply tags to the <paramref name="cell"/>, if it contains tags.
+        /// </summary>
+        /// <param name="cell">Template cell that *might* contain tags (doesn't have to).</param>
+        /// <param name="range">Range each option will be associated with.</param>
+        /// <returns>Created tags for the cell (may be empty).</returns>
+        public OptionTag[] ApplyTagsTo(TemplateCell cell, IXLRange range)
+        {
+            OptionTag[] tags = Array.Empty<OptionTag>();
+            if (cell.CellType == TemplateCellType.Formula)
+            {
+                tags = Parse(cell.Formula, range, cell, out var newValue);
+                cell.Formula = newValue;
+            }
+            else if (cell.CellType == TemplateCellType.Value)
+            {
+                // Only text values can contain tags. Therefore skip all other types.
+                if (cell.Value.TryGetText(out var text))
+                {
+                    tags = Parse(text, range, cell, out var newValue);
+                    cell.Value = newValue == string.Empty ? Blank.Value : newValue;
+                }
+            }
+            else
+            {
+                // Other template cell types shouldn't even get here
+                cell.Value = Blank.Value;
+            }
+
+            return tags;
+        }
+
+        public OptionTag[] ApplyTagsTo(IXLCell cell, IXLRange range)
+        {
+            string value = cell.GetString();
+            OptionTag[] tags;
+            var templateCell = new TemplateCell(cell.Address.RowNumber, cell.Address.ColumnNumber, cell);
+            if (value.StartsWith("&="))
+            {
+                tags = Parse(value.Substring(2), range, templateCell, out var newValue);
+                cell.FormulaA1 = newValue;
+            }
+            else
+            {
+                tags = Parse(value, range, templateCell, out var newValue);
+                cell.Value = newValue;
+            }
+
+            return tags;
+        }
+
+        private OptionTag[] Parse(string templateLiteral, IXLRange range, TemplateCell cell, out string newValue)
         {
             List<OptionTag> result = new List<OptionTag>();
-            foreach (var expr in GetAllTags(value))
+            foreach (var expr in GetAllTags(templateLiteral))
             {
                 var optionTag = ParseTag(expr.Substring(2, expr.Length-4));
                 if (optionTag == null)
@@ -31,9 +83,10 @@ namespace ClosedXML.Report.Options
                     optionTag.RangeOptionsRow = range.LastRow().RangeAddress;
                 }
                 result.Add(optionTag);
-                value = value.Replace(expr, "");
+                templateLiteral = templateLiteral.Replace(expr, "");
             }
-            newValue = value.Trim();
+
+            newValue = templateLiteral.Trim();
             return result.ToArray();
         }
 
@@ -53,7 +106,6 @@ namespace ClosedXML.Report.Options
             }
 
             return TagsRegister.CreateOption(name, dictionary);
-
         }
     }
 }

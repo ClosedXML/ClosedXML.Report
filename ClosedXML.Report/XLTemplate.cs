@@ -58,6 +58,8 @@ namespace ClosedXML.Report
             TagsRegister.Add<HiddenTag>("Hide", 0);
             TagsRegister.Add<PageOptionsTag>("PageOptions", 0);
             TagsRegister.Add<ProtectedTag>("Protected", 0);
+            TagsRegister.Add<HeightTag>("Height", 0);
+            TagsRegister.Add<HeightRangeTag>("HeightRange", 0);
         }
 
         public XLTemplate(string fileName) : this(new XLWorkbook(fileName))

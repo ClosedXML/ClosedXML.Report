@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>10</LangVersion>
     <AssemblyName>ClosedXML.Report</AssemblyName>
-    <PackageId>CustomEa.ClosedXML.Report</PackageId>
+    <PackageId>ClosedXML.Report</PackageId>
     <Configurations>Debug;Release</Configurations>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eagleoriginal/ClosedXML.Report</RepositoryUrl>
@@ -31,7 +31,7 @@ ClosedXML.Report is a tool for report generation and data analysis in .NET appli
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
-    <Version>0.2.10-Beta5</Version>
+    <Version>0.2.13-Beta7</Version>
     <PackageIcon>favicon-01.png</PackageIcon>
   </PropertyGroup>
 
@@ -40,6 +40,7 @@ ClosedXML.Report is a tool for report generation and data analysis in .NET appli
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.*" />
     <None Include="..\Resources\favicon-01.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -47,10 +48,9 @@ ClosedXML.Report is a tool for report generation and data analysis in .NET appli
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.102.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="morelinq" Version="4.1.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.8" />
+    <PackageReference Include="morelinq" Version="4.4.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
   </ItemGroup>
 
 </Project>

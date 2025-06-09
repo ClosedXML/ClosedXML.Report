@@ -39,10 +39,10 @@ namespace ClosedXML.Report.Excel
         /// Find ranges within which contains the specified range (completely).
         /// </summary>
         /// <param name="range">range</param>
-        public static IEnumerable<IXLNamedRange> GetContainerNames(this IXLRange range)
+        public static IEnumerable<IXLDefinedName> GetContainerNames(this IXLRange range)
         {
-            return range.Worksheet.Workbook.NamedRanges.Where(x => GetContainingRanges(x, range))
-                .Union(range.Worksheet.NamedRanges.Where(x => GetContainingRanges(x, range)));
+            return range.Worksheet.Workbook.DefinedNames.Where(x => GetContainingRanges(x, range))
+                .Union(range.Worksheet.DefinedNames.Where(x => GetContainingRanges(x, range)));
         }
 
         public static bool Contains(this IXLRangeAddress rangeAddress, IXLAddress address)
@@ -121,14 +121,14 @@ namespace ClosedXML.Report.Excel
         /// Get the named ranges that contains the specified range (completely).
         /// </summary>
         /// <param name="range">range</param>
-        public static IEnumerable<IXLNamedRange> GetContainingNames(this IXLRange range)
+        public static IEnumerable<IXLDefinedName> GetContainingNames(this IXLRange range)
         {
-            return range.Worksheet.NamedRanges
-                .Union(range.Worksheet.Workbook.NamedRanges)
+            return range.Worksheet.DefinedNames
+                .Union(range.Worksheet.Workbook.DefinedNames)
                 .Where(x => GetContainingRanges(x, range));
         }
 
-        private static bool GetContainingRanges(IXLNamedRange x, IXLRange xlRange)
+        private static bool GetContainingRanges(IXLDefinedName x, IXLRange xlRange)
         {
             return x.Ranges.Select(GrowToMergedRanges)
                 .Where(r => r.Worksheet.Position == xlRange.Worksheet.Position && !r.Equals(xlRange))
@@ -142,7 +142,8 @@ namespace ClosedXML.Report.Excel
                 .ForEach(x =>
                 {
                     var xlCells = range.Union(x).Select(c => c.Address)
-                        .OrderBy(c => c.RowNumber).ThenBy(c => c.ColumnNumber);
+                        .OrderBy(c => c.RowNumber).ThenBy(c => c.ColumnNumber)
+                        .ToList();
                     range = sheet.Range(xlCells.First().ToStringFixed(), xlCells.Last().ToStringFixed());
                 });
             return range;

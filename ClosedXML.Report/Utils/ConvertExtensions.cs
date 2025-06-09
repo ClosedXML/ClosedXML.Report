@@ -59,6 +59,7 @@ namespace ClosedXML.Report.Utils
                 case "нет":
                 case "no":
                 case "not":
+                case "null":
                     return false;
                 default:
                     return true;
