@@ -1,4 +1,3 @@
-using System;
 using ClosedXML.Excel;
 
 namespace ClosedXML.Report.Excel

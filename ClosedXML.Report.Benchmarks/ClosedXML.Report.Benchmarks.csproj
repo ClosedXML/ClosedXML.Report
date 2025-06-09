@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+      <PackageReference Include="ClosedXML" Version="0.105.0-rc" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Benchmark.xlsx" />
+      <EmbeddedResource Include="Resources\Benchmark.xlsx" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ClosedXML.Report\ClosedXML.Report.csproj" />
+    </ItemGroup>
+
+</Project>

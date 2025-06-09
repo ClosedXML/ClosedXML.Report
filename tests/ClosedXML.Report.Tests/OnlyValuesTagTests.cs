@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Options;
 using FluentAssertions;
@@ -13,7 +14,7 @@ namespace ClosedXML.Report.Tests
         {
             FillData();
             var tag = CreateNotInRangeTag<OnlyValuesTag>(_ws.Cell("A2"));
-            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(new object[0]), new FormulaEvaluator()));
+            tag.Execute(new ProcessingContext(_ws.AsRange(), new DataSource(Array.Empty<object>()), new FormulaEvaluator()));
 
             _ws.CellsUsed(c => c.HasFormula).Should().BeEmpty();
         }
@@ -24,7 +25,7 @@ namespace ClosedXML.Report.Tests
             var rng = FillData();
 
             var tag = CreateInRangeTag<OnlyValuesTag>(rng, rng.Cell(2, 1));
-            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(new object[0]), new FormulaEvaluator()));
+            tag.Execute(new ProcessingContext(_ws.Range("B5", "F15"), new DataSource(Array.Empty<object>()), new FormulaEvaluator()));
 
             rng.CellsUsed(c => c.HasFormula).Should().BeEmpty();
             _ws.Cell("B3").HasFormula.Should().BeTrue();
@@ -37,7 +38,7 @@ namespace ClosedXML.Report.Tests
             var dataRng = _ws.Range("B5", "D7");
 
             var tag = CreateInRangeTag<OnlyValuesTag>(rng, rng.Cell(1, 2));
-            tag.Execute(new ProcessingContext(dataRng, new DataSource(new object[0]), new FormulaEvaluator()));
+            tag.Execute(new ProcessingContext(dataRng, new DataSource(Array.Empty<object>()), new FormulaEvaluator()));
 
             dataRng.Column(1).Cells(c => c.HasFormula).Count().Should().Be(3);
             dataRng.Column(2).Cells(c => c.HasFormula).Should().BeEmpty();

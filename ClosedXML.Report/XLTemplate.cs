@@ -118,8 +118,8 @@ namespace ClosedXML.Report
         public void AddVariable(string alias, object value)
         {
             CheckIsDisposed();
-            if (value is DataTable)
-                value = ((DataTable) value).Rows.Cast<DataRow>();
+            if (value is DataTable table)
+                value = table.Rows.Cast<DataRow>();
             _interpreter.AddVariable(alias, value);
         }
 
