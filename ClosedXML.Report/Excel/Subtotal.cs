@@ -358,8 +358,9 @@ namespace ClosedXML.Report.Excel
                                                                        gr.SummaryRow == null &&
                                                                        gr.Range.RangeAddress.LastAddress.RowNumber == row.RowNumber()) != null;
                 }
-
-                if (string.IsNullOrEmpty(val) && !isSummaryRow)
+                
+                if (this._summaryAbove && // TODO: Without _summaryAbove clarification all empty values fall into RangeType.HeaderRow category and as result no groups created
+                    string.IsNullOrEmpty(val) && !isSummaryRow)
                     {
                         if (groupStart > 0)
                         {

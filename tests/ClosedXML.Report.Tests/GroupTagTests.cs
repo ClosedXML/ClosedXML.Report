@@ -114,6 +114,7 @@ namespace ClosedXML.Report.Tests
                     using (var db = new DbDemos())
                     {
                         var orders = db.orders.LoadWith(x => x.Customer).ToList();
+                        //orders.ForEach(order => order.Customer.Company = order.Customer.Company == "Adventure Undersea"? "": order.Customer.Company);
                         tpl.AddVariable("Orders", orders);
                     }
                 },
@@ -130,7 +131,12 @@ namespace ClosedXML.Report.Tests
                 tpl =>
                 {
                     using (var db = new DbDemos())
-                        tpl.AddVariable("Orders", db.orders.LoadWith(x => x.Customer).OrderBy(c => c.OrderNo).ToArray());
+                    {
+                        db.orders.LoadWith(x => x.Customer);
+                        var orders = db.orders.LoadWith(x => x.Customer).ToList();
+                        //orders.ForEach(order => order.Customer.Company = order.Customer.Company == "Adventure Undersea" ? "" : "");
+                        tpl.AddVariable("Orders", orders.OrderBy(c => c.OrderNo).ToArray());
+                    }
                 },
                 wb =>
                 {
