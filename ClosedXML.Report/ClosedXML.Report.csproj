@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>10</LangVersion>
     <AssemblyName>ClosedXML.Report</AssemblyName>
-    <PackageId>ClosedXML.Report</PackageId>
+    <PackageId>CustomEa.ClosedXML.Report</PackageId>
     <Configurations>Debug;Release</Configurations>
     <PackageProjectUrl>https://github.com/ClosedXML/ClosedXML.Report</PackageProjectUrl>
     <RepositoryUrl>https://github.com/eagleoriginal/ClosedXML.Report</RepositoryUrl>
@@ -31,7 +31,7 @@ ClosedXML.Report is a tool for report generation and data analysis in .NET appli
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ClosedXML.Report.snk</AssemblyOriginatorKeyFile>
-    <Version>0.2.13-Beta8</Version>
+    <Version>0.2.13-Beta9</Version>
     <PackageIcon>favicon-01.png</PackageIcon>
   </PropertyGroup>
 

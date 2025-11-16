@@ -35,7 +35,16 @@ namespace ClosedXML.Report.Options
                 summRow = context.Range.LastRow();
                 calculatedRange = context.Range.Offset(0, summ.Column - 1, context.Range.RowCount() - 1, 1);
             }
-            var items = summ.DataSource.GetAll();
+
+            object[] items;
+            if (summ.DataSource != null)
+            {
+                items = summ.DataSource.GetAll();
+            }
+            else
+            {
+                items = (context.Value as IDataSource).GetAll();
+            }
 
             if (items == null || items.Length == 0)
             {
