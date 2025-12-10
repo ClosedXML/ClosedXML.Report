@@ -184,7 +184,7 @@ namespace ClosedXML.Report
                     // Date: 27.07.2023 23:54:54
                     // Message:
                     // Forcibly remove a range representing a table if its data source is empty (#251) (#323)
-                    /*if (!items.Any())
+                    //if (!items.Any())
 
                     if (!items.Any() && grownRange.IsOptionsRowEmpty())
                     {
@@ -194,7 +194,7 @@ namespace ClosedXML.Report
                         // row would thus delete only first cell, not full (empty) options row.
                         grownRange.Delete(XLShiftDeletedCells.ShiftCellsUp);
                         continue;
-                    }*/
+                    }
 
                     // Range template generates output into a new temporary sheet, as not to affect other things
                     // and then copies it to the range in the original sheet.
