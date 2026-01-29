@@ -43,7 +43,7 @@ namespace ClosedXML.Report.Options
             }
             else
             {
-                items = (context.Value as IDataSource).GetAll();
+                items = (context.Value as IDataSource)?.GetAll();
             }
 
             if (items == null || items.Length == 0)
