@@ -12,6 +12,7 @@ OPTION          PARAMS                OBJECTS      RNG     Priority
                 "\PageBreaks"
                 "\TotalLabel"
                 "\GrandLabel"
+                "\DisableSubtotalLine"
 
 "SummaryAbove"                        Range        rD      Normal
 
@@ -30,6 +31,8 @@ using System.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Utils;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Spreadsheet;
 using MoreLinq;
 
 namespace ClosedXML.Report.Options
@@ -40,6 +43,7 @@ namespace ClosedXML.Report.Options
 
         public bool PageBreaks => Parameters.ContainsKey("pagebreaks");
         public bool DisableSubtotals => Parameters.ContainsKey("disablesubtotals");
+        public bool DisableSubtotalLine => Parameters.ContainsKey("disablesubtotalline");
         public bool Collapse => Parameters.ContainsKey("collapse");
         public bool DisableOutLine => Parameters.ContainsKey("disableoutline");
         public bool OutLine => !Parameters.ContainsKey("disableoutline");
@@ -110,11 +114,48 @@ namespace ClosedXML.Report.Options
             var level = 0;
             var rows = root.RowCount() - 1;
             var columns = root.ColumnCount();
-            if (rows <= 0 || columns <= 0)
+            if (columns <= 0)
+            {
                 return;
+            }
 
+            // Empty Total grand for report
+            if (rows <= 0)
+            {
+                if (disableGrandTotal)
+                    return;
+                
+                var r2= root.Offset(0, 0, 1, columns);
+                using (var subtotal = new Subtotal(r2, summaryAbove, groups, context.Evaluator))
+                {
+                    if (TotalLabel != null) subtotal.TotalLabel = TotalLabel;
+                    if (GrandLabel != null) subtotal.GrandLabel = GrandLabel;
+                    if (!disableGrandTotal)
+                    {
+                        var total = subtotal.AddGrandTotal(summaries);
+                        total.SummaryRow.Cell(2).Value = total.SummaryRow.Cell(1).Value;
+                        total.SummaryRow.Cell(1).Value = Blank.Value;
+                        level++;
+                    }
+
+                    foreach (var subGroup in subtotal.Groups.OrderBy(x => x.Column).Reverse())
+                    {
+                        FormatHeaderFooter(subGroup, groupRow);
+
+                        GroupRender(subGroup, new GroupTag { Column = 1, Level = 1 });
+                    }
+
+                    r2.Rows().ForEach(r => r.WorksheetRow().OutlineLevel = 0);
+                }
+
+                //   Rem DoDeleteSpecialRow
+                root.LastRow().Delete(XLShiftDeletedCells.ShiftCellsUp);
+
+                return;
+            }
+            
             var r = root.Offset(0, 0, rows, columns);
-
+            
             using (var subtotal = new Subtotal(r, summaryAbove, groups, context.Evaluator))
             {
                 if (TotalLabel != null) subtotal.TotalLabel = TotalLabel;
@@ -129,9 +170,18 @@ namespace ClosedXML.Report.Options
 
                 foreach (var g in groups.OrderBy(x => x.Column))
                 {
+                    // Todo: New Feature Group Without Subtotal. Only Merge.
+                    if (g.DisableSubtotalLine)
+                    {
+                        subtotal.ScanForGroups(g.Column);
+                        g.Level = ++level;
+
+                        continue;
+                    }
+
                     Func<string, string> labFormat = null;
                     if (!string.IsNullOrEmpty(g.LabelFormat))
-                        labFormat = title => string.Format(LabelFormat, title);
+                        labFormat = title => string.Format(g.LabelFormat, title);
 
                     if (g.MergeLabels == MergeMode.Merge2 && summaries.Length == 0)
                         subtotal.ScanForGroups(g.Column);
@@ -218,7 +268,12 @@ namespace ClosedXML.Report.Options
                 var rng = subGroup.Range.Column(subGroup.Column);
                 if (subGroup.Range.RowCount() > 1)
                 {
-                    int cellIdx = _maxLevel - subGroup.Level + 1;
+                    // TODO: Wrong Style apply for merged cells if on right has grouped total
+                    // But in first cell i expect already cell with value and style
+                    // Plus with DisableSubtotalLine feature this became totally wrong
+                    int cellIdx = 1;
+                    //int cellIdx = _maxLevel - subGroup.Level + 1; // TODO: Comment for future investigation
+
                     var style = rng.Cell(cellIdx).Style;
                     rng.Merge();
                     rng.Style = style;

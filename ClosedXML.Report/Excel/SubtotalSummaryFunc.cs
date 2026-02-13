@@ -56,6 +56,8 @@ namespace ClosedXML.Report.Excel
             }
         }
 
+        public object DefaultValueForEmptySource { get; set; }
+
         public Func<Type, Delegate> GetCalculateDelegate;
 
         internal object Calculate(IDataSource dataSource)

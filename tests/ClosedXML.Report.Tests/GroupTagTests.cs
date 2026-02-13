@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using ClosedXML.Report.Tests.TestModels;
 using LinqToDB;
 using Xunit;
@@ -28,6 +32,7 @@ namespace ClosedXML.Report.Tests
          InlineData("tLists7_image.xlsx"),
          InlineData("tPage1_options.xlsx"),
          InlineData("tLists7_horizontal_images.xlsx"),
+         InlineData("SumaryTests_Simple.xlsx"),
         ]
         public void Simple(string templateFile)
         {
@@ -36,7 +41,7 @@ namespace ClosedXML.Report.Tests
                 {
                     using (var db = new DbDemos())
                     {
-                        var cust = db.customers.LoadWith(x=>x.Orders.First().Items).OrderBy(c => c.CustNo).First(x=>x.CustNo == 1356);
+                        var cust = db.customers.LoadWith(x => x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
                         cust.Logo = Resource.toms_diving_center;
                         tpl.AddVariable("MoreOrders", cust.Orders.Take(5));
                         tpl.AddVariable(cust);
@@ -50,6 +55,32 @@ namespace ClosedXML.Report.Tests
                 });
         }
 
+        [Theory,
+         InlineData("GroupTagTests_Simple_Empty.xlsx"),
+         InlineData("SumaryTests_Simple_Empty.xlsx"),
+         InlineData("SumaryTests_Simple_Empty_NoDefault.xlsx"),
+         InlineData("SumaryTests_Simple_Empty_NoSummary.xlsx")]
+        public void Simple_EmptyResult(string templateFile)
+        {
+            XlTemplateTest(templateFile,
+                tpl =>
+                {
+                    using (var db = new DbDemos())
+                    {
+                        var cust = db.customers.LoadWith(x => x.Orders.First().Items).OrderBy(c => c.CustNo).First(x => x.CustNo == 1356);
+                        cust.Orders.Clear();
+                        cust.Logo = Resource.toms_diving_center;
+                        tpl.AddVariable("MoreOrders", cust.Orders.Take(0));
+                        tpl.AddVariable(cust);
+                    }
+                    tpl.AddVariable("Tax", 13);
+                },
+                wb =>
+                {
+                    CompareWithGauge(wb, templateFile);
+                });
+        }
+        
         [Theory,
          InlineData("GroupTagTests_SummaryAbove.xlsx"),
          InlineData("GroupTagTests_MergeLabels.xlsx"),
@@ -77,6 +108,7 @@ namespace ClosedXML.Report.Tests
          InlineData("GroupTagTests_MultiRanges.xlsx"),
          InlineData("GroupTagTests_FormulasWithTagsInGroupRow.xlsx", Skip = "Formulas with tags got broken after upgrading to ClosedXML 0.100"),
          InlineData("GroupTagTests_TotalLabel.xlsx"),
+         InlineData("GroupTagTests_DisableSubTotals_MergeLabels.xlsx")
        ]
         public void Customers(string templateFile)
         {
@@ -86,6 +118,7 @@ namespace ClosedXML.Report.Tests
                     using (var db = new DbDemos())
                     {
                         var orders = db.orders.LoadWith(x => x.Customer).ToList();
+                        //orders.ForEach(order => order.Customer.Company = order.Customer.Company == "Adventure Undersea"? "": order.Customer.Company);
                         tpl.AddVariable("Orders", orders);
                     }
                 },
@@ -102,7 +135,12 @@ namespace ClosedXML.Report.Tests
                 tpl =>
                 {
                     using (var db = new DbDemos())
-                        tpl.AddVariable("Orders", db.orders.LoadWith(x => x.Customer).OrderBy(c => c.OrderNo).ToArray());
+                    {
+                        db.orders.LoadWith(x => x.Customer);
+                        var orders = db.orders.LoadWith(x => x.Customer).ToList();
+                        //orders.ForEach(order => order.Customer.Company = order.Customer.Company == "Adventure Undersea" ? "" : "");
+                        tpl.AddVariable("Orders", orders.OrderBy(c => c.OrderNo).ToArray());
+                    }
                 },
                 wb =>
                 {

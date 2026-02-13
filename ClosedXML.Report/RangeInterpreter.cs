@@ -178,6 +178,13 @@ namespace ClosedXML.Report
                 {
                     var grownRange = rng.GrowToMergedRanges();
                     var items = nr.RangeData as object[] ?? nr.RangeData.Cast<object>().ToArray();
+                    // Comment this section
+                    // Revision: a38eda3a3a7092812c8358a949d4e489635501bf
+                    // Author: Aleksei <pankraty@gmail.com>
+                    // Date: 27.07.2023 23:54:54
+                    // Message:
+                    // Forcibly remove a range representing a table if its data source is empty (#251) (#323)
+                    //if (!items.Any())
 
                     if (!items.Any() && grownRange.IsOptionsRowEmpty())
                     {

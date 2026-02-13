@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using ClosedXML.Excel;
 using ClosedXML.Report.Excel;
 using ClosedXML.Report.Utils;
+using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ClosedXML.Report.Options
 {
@@ -26,14 +29,47 @@ namespace ClosedXML.Report.Options
             }
             else
             {
-                if (context.Range.RowCount() < 2)
+                if (context.Range.RowCount() < 1)
                     return;
 
-                summRow = context.Range.LastRow();
-                calculatedRange = context.Range.Offset(0, summ.Column - 1, context.Range.RowCount() - 1, 1);
+                if (context.Range.RowCount() == 1)
+                {
+                    summRow = context.Range.LastRow();
+                    var sheet = context.Range.Worksheet;
+                    // Make empty range
+                    calculatedRange = sheet.Range(
+                        context.Range.RangeAddress.FirstAddress.RowNumber,
+                        context.Range.RangeAddress.FirstAddress.ColumnNumber + summ.Column - 1,
+                        context.Range.RangeAddress.FirstAddress.RowNumber - 1, // makes range empty 
+                        context.Range.RangeAddress.FirstAddress.ColumnNumber + summ.Column - 1);
+
+                    //calculatedRange = context.Range.Offset(0, summ.Column - 1, 0, 1);
+                }
+                else
+                {
+                    summRow = context.Range.LastRow();
+                    calculatedRange = context.Range.Offset(0, summ.Column - 1, context.Range.RowCount() - 1, 1);
+                }
             }
 
-            if (summ.FuncNum == 0)
+            object[] items;
+            if (summ.DataSource != null)
+            {
+                items = summ.DataSource.GetAll();
+            }
+            else
+            {
+                items = (context.Value as IDataSource)?.GetAll();
+            }
+
+            if (items == null || items.Length == 0)
+            {
+                if (summ.DefaultValueForEmptySource != null)
+                {
+                    summRow.Cell(summ.Column).Value = XLCellValueConverter.FromObject(summ.DefaultValueForEmptySource);
+                }
+            }
+            else if (summ.FuncNum == 0)
             {
                 var value = summ.Calculate((IDataSource)context.Value);
                 summRow.Cell(summ.Column).Value = XLCellValueConverter.FromObject(value);
@@ -62,6 +98,14 @@ namespace ClosedXML.Report.Options
                     //return XLDynamicExpressionParser.ParseLambda(new[] {par}, null, GetParameter("Over"));
                 };
             func.DataSource = DataSource;
+
+            if (HasParameter("Default"))
+            {
+                var dlg = context.Evaluator.ParseExpression(GetParameter("Default"), new ParameterExpression[] {});
+                
+                func.DefaultValueForEmptySource = dlg.DynamicInvoke();
+            }
+
             return func;
         }
     }
