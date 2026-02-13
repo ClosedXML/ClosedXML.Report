@@ -32,6 +32,7 @@ namespace ClosedXML.Report.Tests
          InlineData("tLists7_image.xlsx"),
          InlineData("tPage1_options.xlsx"),
          InlineData("tLists7_horizontal_images.xlsx"),
+         InlineData("SumaryTests_Simple.xlsx"),
         ]
         public void Simple(string templateFile)
         {
@@ -54,10 +55,13 @@ namespace ClosedXML.Report.Tests
                 });
         }
 
-        [Xunit.Fact]
-        public void Simple_EmptyResult()
+        [Theory,
+         InlineData("GroupTagTests_Simple_Empty.xlsx"),
+         InlineData("SumaryTests_Simple_Empty.xlsx"),
+         InlineData("SumaryTests_Simple_Empty_NoDefault.xlsx"),
+         InlineData("SumaryTests_Simple_Empty_NoSummary.xlsx")]
+        public void Simple_EmptyResult(string templateFile)
         {
-            string templateFile = "GroupTagTests_Simple_Empty.xlsx";
             XlTemplateTest(templateFile,
                 tpl =>
                 {

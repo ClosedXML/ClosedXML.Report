@@ -29,11 +29,27 @@ namespace ClosedXML.Report.Options
             }
             else
             {
-                if (context.Range.RowCount() < 2)
+                if (context.Range.RowCount() < 1)
                     return;
 
-                summRow = context.Range.LastRow();
-                calculatedRange = context.Range.Offset(0, summ.Column - 1, context.Range.RowCount() - 1, 1);
+                if (context.Range.RowCount() == 1)
+                {
+                    summRow = context.Range.LastRow();
+                    var sheet = context.Range.Worksheet;
+                    // Make empty range
+                    calculatedRange = sheet.Range(
+                        context.Range.RangeAddress.FirstAddress.RowNumber,
+                        context.Range.RangeAddress.FirstAddress.ColumnNumber + summ.Column - 1,
+                        context.Range.RangeAddress.FirstAddress.RowNumber - 1, // makes range empty 
+                        context.Range.RangeAddress.FirstAddress.ColumnNumber + summ.Column - 1);
+
+                    //calculatedRange = context.Range.Offset(0, summ.Column - 1, 0, 1);
+                }
+                else
+                {
+                    summRow = context.Range.LastRow();
+                    calculatedRange = context.Range.Offset(0, summ.Column - 1, context.Range.RowCount() - 1, 1);
+                }
             }
 
             object[] items;
